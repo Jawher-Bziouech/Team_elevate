@@ -1,0 +1,128 @@
+<div class="gam-container">
+  <div class="gam-header mb-4">
+    <h2>My <span class="highlight">Progress</span></h2>
+    <p>Track your quiz performance, badges, and credits.</p>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tab-bar mb-4">
+    <button [class.active]="activeTab==='overview'" (click)="activeTab='overview'">Overview</button>
+    <button [class.active]="activeTab==='badges'" (click)="activeTab='badges'">Badges ({{ earnedCount }}/13)</button>
+    <button [class.active]="activeTab==='history'" (click)="activeTab='history'">History</button>
+    <button [class.active]="activeTab==='leaderboard'" (click)="activeTab='leaderboard'">Leaderboard</button>
+  </div>
+
+  <!-- OVERVIEW TAB -->
+  <div *ngIf="activeTab==='overview'">
+    <div class="stats-grid" *ngIf="progression">
+      <div class="stat-card">
+        <div class="stat-icon">🪙</div>
+        <div class="stat-value">{{ progression.totalCredits }}</div>
+        <div class="stat-label">Total Credits</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">📝</div>
+        <div class="stat-value">{{ progression.totalAttempts }}</div>
+        <div class="stat-label">Quizzes Taken</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">✅</div>
+        <div class="stat-value">{{ passRate }}%</div>
+        <div class="stat-label">Pass Rate</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">📊</div>
+        <div class="stat-value">{{ progression.averageScore | number:'1.0-0' }}%</div>
+        <div class="stat-label">Avg Score</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🔥</div>
+        <div class="stat-value">{{ progression.currentStreak }}</div>
+        <div class="stat-label">Day Streak</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🏅</div>
+        <div class="stat-value">{{ earnedCount }}</div>
+        <div class="stat-label">Badges</div>
+      </div>
+    </div>
+    <div *ngIf="!progression" class="empty-state">
+      <p>No data yet. Take a quiz to get started!</p>
+    </div>
+  </div>
+
+  <!-- BADGES TAB -->
+  <div *ngIf="activeTab==='badges'">
+    <div class="badges-grid">
+      <div *ngFor="let b of allBadges" class="badge-tile" [class.earned]="hasBadge(b.type)" [class.locked]="!hasBadge(b.type)">
+        <div class="badge-tile-icon">{{ b.icon }}</div>
+        <div class="badge-tile-name">{{ b.label }}</div>
+        <div class="badge-tile-desc">{{ b.desc }}</div>
+        <div class="badge-tile-cat">{{ b.category }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HISTORY TAB -->
+  <div *ngIf="activeTab==='history'">
+    <div *ngIf="attempts.length === 0" class="empty-state"><p>No attempts yet.</p></div>
+    <table *ngIf="attempts.length > 0" class="history-table">
+      <thead>
+        <tr>
+          <th>Quiz ID</th>
+          <th>Score</th>
+          <th>Credits</th>
+          <th>Time</th>
+          <th>Result</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let a of attempts">
+          <td>#{{ a.quizId }}</td>
+          <td>{{ a.score | number:'1.0-0' }}%</td>
+          <td>+{{ a.creditsEarned }}</td>
+          <td>{{ formatTime(a.timeTakenSeconds) }}</td>
+          <td>
+            <span class="result-tag" [class.pass]="a.passed" [class.fail]="!a.passed">
+              {{ a.passed ? 'PASS' : 'FAIL' }}
+            </span>
+          </td>
+          <td>{{ a.attemptDate | date:'short' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- LEADERBOARD TAB -->
+  <div *ngIf="activeTab==='leaderboard'">
+    <div *ngIf="leaderboard.length === 0" class="empty-state"><p>No data yet.</p></div>
+    <table *ngIf="leaderboard.length > 0" class="history-table">
+      <thead>
+        <tr>
+          <th>Rank</th>
+          <th>User ID</th>
+          <th>Credits</th>
+          <th>Quizzes</th>
+          <th>Avg Score</th>
+          <th>Streak</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let entry of leaderboard; let i = index" [class.me]="entry.userId === userId">
+          <td>
+            <span *ngIf="i === 0">🥇</span>
+            <span *ngIf="i === 1">🥈</span>
+            <span *ngIf="i === 2">🥉</span>
+            <span *ngIf="i > 2">#{{ i + 1 }}</span>
+          </td>
+          <td>User {{ entry.userId }}</td>
+          <td>{{ entry.totalCredits }}</td>
+          <td>{{ entry.totalAttempts }}</td>
+          <td>{{ entry.averageScore | number:'1.0-0' }}%</td>
+          <td>{{ entry.currentStreak }}d</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
