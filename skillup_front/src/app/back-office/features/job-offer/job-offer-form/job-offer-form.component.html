@@ -1,0 +1,58 @@
+<div class="form-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>{{ isEdit ? 'Edit Job Offer' : 'Create Job Offer' }}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Job Title</mat-label>
+          <input matInput formControlName="jobTitle">
+          <mat-error *ngIf="form.get('jobTitle')?.hasError('required')">Required</mat-error>
+          <mat-error *ngIf="form.get('jobTitle')?.hasError('minlength')">Min 3 characters</mat-error>
+          <mat-error *ngIf="form.get('jobTitle')?.hasError('maxlength')">Max 100 characters</mat-error>
+        </mat-form-field>
+
+        <!-- Native select inside Material form field -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Firm</mat-label>
+          <select matNativeControl formControlName="firmId">
+            <option value="" disabled selected>Select a firm</option>
+            <option *ngFor="let firm of firms" [value]="firm.id">{{ firm.nom }}</option>
+          </select>
+          <mat-error *ngIf="form.get('firmId')?.hasError('required')">Select a firm</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Industry</mat-label>
+          <input matInput formControlName="industry">
+          <mat-error *ngIf="form.get('industry')?.hasError('required')">Required</mat-error>
+          <mat-error *ngIf="form.get('industry')?.hasError('minlength')">Min 2 characters</mat-error>
+          <mat-error *ngIf="form.get('industry')?.hasError('maxlength')">Max 50 characters</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Location</mat-label>
+          <input matInput formControlName="location">
+          <mat-error *ngIf="form.get('location')?.hasError('required')">Required</mat-error>
+          <mat-error *ngIf="form.get('location')?.hasError('minlength')">Min 2 characters</mat-error>
+          <mat-error *ngIf="form.get('location')?.hasError('maxlength')">Max 100 characters</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Salary Range (e.g., 50000-70000)</mat-label>
+          <input matInput formControlName="salaryRange">
+          <mat-error *ngIf="form.get('salaryRange')?.hasError('required')">Required</mat-error>
+          <mat-error *ngIf="form.get('salaryRange')?.hasError('pattern')">Format: 50000-70000</mat-error>
+        </mat-form-field>
+
+        <div class="form-actions">
+          <button mat-raised-button type="button" (click)="onCancel()">Cancel</button>
+          <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
+            {{ isEdit ? 'Update' : 'Create' }}
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

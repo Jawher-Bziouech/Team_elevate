@@ -11,7 +11,6 @@ import lombok.Setter;
 
 import java.io.Serializable;
 
-
 @Entity
 @Getter
 @Setter
@@ -20,10 +19,14 @@ import java.io.Serializable;
 public class Certificat implements Serializable {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    private long id;
+    private Long id;
+
     private String nom;
     private String issuer;
-    private String date;
+    private String date; // You could also use LocalDate here
+    private String description;
+    private String certificateUrl;
 
-
+    // Link to the user who owns this certificate
+    private Long userId;
 }

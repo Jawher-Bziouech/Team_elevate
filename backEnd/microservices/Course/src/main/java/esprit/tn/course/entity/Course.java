@@ -59,13 +59,7 @@ public class Course {
     protected void onUpdate() {
         this.updatedAt = new Date();
     }
-   /* @ManyToOne
-    private Instructor instructor;*/
 
-    @OneToMany(mappedBy = "course")
-    private List<Evaluation> evaluations;
-    @ManyToOne
-    private User user;
-    @ManyToOne
-    private Training training;
+
+
 }

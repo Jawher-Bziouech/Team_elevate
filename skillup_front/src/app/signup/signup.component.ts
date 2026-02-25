@@ -8,8 +8,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./signup.component.css']
 })
 export class SignupComponent {
-  user = { username: '', email: '', password: '', role: 'USER' };
-
+user = { username: '', email: '', password: '', role: 'TRAINEE' };
   constructor(private authService: AuthService, private router: Router) {}
 
   onSignup() {

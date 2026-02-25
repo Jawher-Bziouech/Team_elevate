@@ -1,0 +1,113 @@
+.welcome-container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+/* HERO SECTION */
+.welcome-hero {
+    background: white;
+    padding: 60px 40px;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    text-align: center;
+    margin-bottom: 40px;
+    border: 1px solid var(--card-border);
+}
+
+.welcome-hero h1 {
+    font-size: 42px;
+    color: var(--text-dark);
+    margin-bottom: 20px;
+}
+
+.welcome-hero .highlight {
+    color: var(--primary-blue);
+}
+
+.welcome-hero p {
+    color: var(--text-gray);
+    font-size: 18px;
+    line-height: 1.6;
+    max-width: 600px;
+    margin: 0 auto 30px;
+}
+
+.hero-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.btn-main {
+    background-color: var(--primary-blue);
+    color: white;
+    padding: 12px 30px;
+    border-radius: 10px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-outline {
+    background-color: transparent;
+    color: var(--primary-blue);
+    padding: 12px 30px;
+    border-radius: 10px;
+    border: 2px solid var(--primary-blue);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* HUB GRID */
+.hub-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+.hub-card {
+    background: white;
+    padding: 25px;
+    border-radius: 16px;
+    border: 1px solid var(--card-border);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.hub-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+    border-color: var(--primary-blue);
+}
+
+.hub-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    margin-bottom: 20px;
+}
+
+.hub-icon.blue { background: rgba(37, 99, 235, 0.1); }
+.hub-icon.purple { background: rgba(147, 51, 234, 0.1); color: #9333ea; }
+.hub-icon.orange { background: rgba(234, 88, 12, 0.1); color: #ea580c; }
+.hub-icon.green { background: rgba(22, 163, 74, 0.1); color: #16a34a; }
+
+.hub-info h3 {
+    margin-bottom: 8px;
+    color: var(--text-dark);
+    font-size: 18px;
+}
+
+.hub-info p {
+    color: var(--text-gray);
+    font-size: 14px;
+    line-height: 1.4;
+}

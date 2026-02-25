@@ -1,45 +1,22 @@
 package tn.esprit.joboffer.service;
 
-import org.springframework.stereotype.Service;
-import tn.esprit.joboffer.entity.JobOffer;
-import tn.esprit.joboffer.repository.JobOfferRepository;
+import tn.esprit.joboffer.dto.JobOfferRequest;
+import tn.esprit.joboffer.dto.JobOfferResponse;
 
 import java.util.List;
 import java.util.Optional;
 
-@Service
-public class JobOfferService {
+public interface JobOfferService {
+    List<JobOfferResponse> getAllJobOffers();
+    Optional<JobOfferResponse> getJobOfferById(Long id);
+    JobOfferResponse createJobOffer(JobOfferRequest request);
+    JobOfferResponse updateJobOffer(Long id, JobOfferRequest request);
+    void deleteJobOffer(Long id);
 
-    private final JobOfferRepository repository;
-
-    public JobOfferService(JobOfferRepository repository) {
-        this.repository = repository;
-    }
-
-    public List<JobOffer> getAllJobOffers() {
-        return repository.findAll();
-    }
-
-    public Optional<JobOffer> getJobOfferById(Long id) {
-        return repository.findById(id);
-    }
-
-    public JobOffer createJobOffer(JobOffer jobOffer) {
-        return repository.save(jobOffer);
-    }
-
-    public JobOffer updateJobOffer(Long id, JobOffer jobOfferDetails) {
-        JobOffer jobOffer = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("JobOffer not found"));
-        jobOffer.setJobTitle(jobOfferDetails.getJobTitle());
-        jobOffer.setCompany(jobOfferDetails.getCompany());
-        jobOffer.setIndustry(jobOfferDetails.getIndustry());
-        jobOffer.setLocation(jobOfferDetails.getLocation());
-        jobOffer.setSalaryRange(jobOfferDetails.getSalaryRange());
-        return repository.save(jobOffer);
-    }
-
-    public void deleteJobOffer(Long id) {
-        repository.deleteById(id);
-    }
+    // Advanced business methods (to be added)
+    List<JobOfferResponse> searchJobOffers(String company, String industry, String location, Integer minSalary, Integer maxSalary);
+    List<JobOfferResponse> getJobOffersByCompany(String company);
+    List<JobOfferResponse> getJobOffersByIndustry(String industry);
+    List<JobOfferResponse> getJobOffersByLocation(String location);
+    List<JobOfferResponse> getJobOffersBySalaryRange(String minSalary, String maxSalary);
 }

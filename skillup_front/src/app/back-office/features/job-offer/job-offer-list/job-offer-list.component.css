@@ -1,0 +1,53 @@
+.container {
+  padding: 20px;
+}
+
+.search-card {
+  margin: 20px 0;
+  padding: 20px;
+}
+
+.search-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.search-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+}
+
+.add-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+}
+.slider-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-bottom: 1.25em; /* adjust as needed */
+}
+.slider-container mat-label {
+  font-size: 0.9em;
+  color: rgba(0,0,0,0.6);
+  margin-bottom: 0.5em;
+}
+.slider-values {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-size: 0.9em;
+  color: rgba(0,0,0,0.6);
+}

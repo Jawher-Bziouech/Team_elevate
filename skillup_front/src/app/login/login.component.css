@@ -1,0 +1,71 @@
+.auth-wrapper {
+    width: 100vw; 
+    min-height: 100vh;
+    background: #00152cf0; /* PROFESSIONAL NAVY BLUE */
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    padding: 20px;
+    font-family: 'Outfit', 'Inter', sans-serif;
+    margin: 0 !important;
+}
+
+.pro-login-card {
+    width: 100%; max-width: 440px;
+    background: #ffffff;
+    padding: 60px 45px; border-radius: 32px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.pro-square-logo {
+    width: 55px; height: 55px; 
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    border-radius: 16px; margin: 0 auto 24px;
+    box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.4);
+}
+
+.auth-header h1 { font-size: 30px; font-weight: 800; color: #0f172a; letter-spacing: -0.5px; }
+.auth-header p { color: #64748b; font-size: 15px; margin-top: 4px; }
+
+.input-group label { color: #475569; font-weight: 700; font-size: 13px; margin-bottom: 8px; display: block; }
+
+.input-group input {
+    width: 100%; background: #f8fafc; border: 2px solid #f1f5f9;
+    padding: 14px 20px; border-radius: 14px; font-size: 15px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); outline: none;
+}
+
+.input-group input:focus {
+    border-color: #3b82f6; background: #ffffff;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+.btn-login-pro {
+    width: 100%; border: none; padding: 16px; border-radius: 14px;
+    background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+    color: white; font-weight: 800; font-size: 16px; cursor: pointer;
+    transition: all 0.3s; box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.2);
+}
+
+.btn-login-pro:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 25px -5px rgba(37, 99, 235, 0.3);
+}
+
+.auth-footer { border-top: 1px solid #f1f5f9; padding-top: 25px; text-align: center; }
+.auth-footer p { color: #94a3b8; font-size: 13px; margin-top: 25px; }
+.auth-footer a { color: #2563eb; font-weight: 800; font-size: 15px; text-decoration: none; }
+
+
+/* Increased Spacing for Login */
+
+
+
+
+.btn-login-pro {
+    margin-top: 40px !important;     /* Significant space before the login button */
+    margin-bottom: 20px !important;
+}
+
+
