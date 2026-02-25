@@ -1,0 +1,72 @@
+<div class="forum-container">
+    <div class="forum-header">
+        <h2>Community <span class="highlight">Discussion</span></h2>
+        <p>Share knowledge, ask questions, and connect with other students.</p>
+    </div>
+
+    <!-- Create Post Area -->
+    <div class="create-post-card shadow-card">
+        <h3>Create a New Post</h3>
+        <input type="text" class="custom-input" placeholder="Give your post a title..." [(ngModel)]="newPost.title">
+        <textarea class="custom-textarea" rows="3" placeholder="What's on your mind?" [(ngModel)]="newPost.content"></textarea>
+        <div class="action-bar">
+            <button class="btn-post" [disabled]="isSubmitting" (click)="onCreatePost()">
+                {{ isSubmitting ? 'Posting...' : 'Share Post' }}
+            </button>
+        </div>
+    </div>
+
+    <!-- Post Feed -->
+    <div class="post-feed">
+        <div *ngIf="posts.length === 0" class="empty-state">
+            <p>No discussions yet. Start the conversation!</p>
+        </div>
+
+        <div *ngFor="let post of posts" class="native-post-card">
+            <div class="post-meta">
+                <div class="user-avatar">{{ post.authorId }}</div>
+                <div class="post-info">
+                    <span class="user-name">Author {{ post.authorId }}</span>
+                    <span class="post-date">{{ post.createdAt | date:'medium' }}</span>
+                </div>
+            </div>
+            
+            <div class="post-body">
+                <h4>{{ post.title }}</h4>
+                <p>{{ post.content }}</p>
+            </div>
+
+            <div class="post-footer">
+                <button class="footer-btn" (click)="toggleComments(post)">
+                    <span>💬</span> {{ post.comments?.length || 0 }} Comments
+                </button>
+                <button class="footer-btn action" (click)="toggleComments(post)">
+                    {{ expandedPosts[post.id!] ? 'Hide Section' : 'Join Discussion' }}
+                </button>
+            </div>
+
+            <!-- Comments Section Toggle -->
+            <div class="comments-section" *ngIf="expandedPosts[post.id!]">
+                <div class="comments-list" *ngIf="post.comments && post.comments.length > 0">
+                    <div *ngFor="let comment of post.comments" class="comment-item">
+                        <div class="comment-avatar">{{ comment.authorId }}</div>
+                        <div class="comment-content">
+                            <span class="comment-author">User {{ comment.authorId }}</span>
+                            <p>{{ comment.content }}</p>
+                            <small class="comment-date">{{ comment.createdAt | date:'short' }}</small>
+                        </div>
+                    </div>
+                </div>
+                <div *ngIf="!post.comments || post.comments.length === 0" class="small text-muted mb-3">
+                    No comments yet.
+                </div>
+
+                <div class="add-comment-box">
+                    <input type="text" class="comment-input" placeholder="Write a comment..." 
+                           [(ngModel)]="commentTexts[post.id!]" (keyup.enter)="onAddComment(post)">
+                    <button class="btn-send-comment" (click)="onAddComment(post)">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

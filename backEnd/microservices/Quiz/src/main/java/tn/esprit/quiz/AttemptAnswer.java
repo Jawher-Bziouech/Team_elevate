@@ -7,16 +7,17 @@ import lombok.*;
 @Entity
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
-public class Answer {
+public class AttemptAnswer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String text;
-    private Boolean isCorrect; // Support multiple correct answers!
+    private Long questionId;
+    private Long selectedAnswerId;
+    private Boolean correct;
 
     @ManyToOne
-    @JoinColumn(name = "question_id")
+    @JoinColumn(name = "quiz_attempt_id")
     @JsonBackReference
-    private Question question;
+    private QuizAttempt quizAttempt;
 }
