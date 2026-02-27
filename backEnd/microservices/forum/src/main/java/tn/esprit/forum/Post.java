@@ -1,5 +1,6 @@
 package tn.esprit.forum;
 
+<<<<<<< HEAD
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -34,3 +35,7 @@ public class Post {
         createdAt = LocalDateTime.now();
     }
 }
+=======
+public class Post {
+}
+>>>>>>> cb93fa2fdf96a55ba80d2c859ecd05d11de45e53

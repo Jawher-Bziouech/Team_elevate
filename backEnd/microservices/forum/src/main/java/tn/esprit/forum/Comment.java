@@ -1,5 +1,6 @@
 package tn.esprit.forum;
 
+<<<<<<< HEAD
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -32,3 +33,7 @@ public class Comment {
         createdAt = LocalDateTime.now();
     }
 }
+=======
+public class Comment {
+}
+>>>>>>> cb93fa2fdf96a55ba80d2c859ecd05d11de45e53

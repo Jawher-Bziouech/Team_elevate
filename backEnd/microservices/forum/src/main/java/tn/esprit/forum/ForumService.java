@@ -1,5 +1,6 @@
 package tn.esprit.forum;
 
+<<<<<<< HEAD
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
@@ -54,3 +55,7 @@ public class ForumService {
         commentRepository.deleteById(id);
     }
 }
+=======
+public class ForumService {
+}
+>>>>>>> cb93fa2fdf96a55ba80d2c859ecd05d11de45e53

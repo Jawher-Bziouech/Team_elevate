@@ -1,5 +1,6 @@
 package tn.esprit.forum;
 
+<<<<<<< HEAD
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -45,3 +46,7 @@ public class ForumRestApi {
         service.deleteComment(id);
     }
 }
+=======
+public class ForumRestApi {
+}
+>>>>>>> cb93fa2fdf96a55ba80d2c859ecd05d11de45e53

@@ -1,5 +1,6 @@
 package tn.esprit.quiz;
 
+<<<<<<< HEAD
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
@@ -25,3 +26,7 @@ public class Question {
     @JsonBackReference
     private Quiz quiz;
 }
+=======
+public class Question {
+}
+>>>>>>> cb93fa2fdf96a55ba80d2c859ecd05d11de45e53

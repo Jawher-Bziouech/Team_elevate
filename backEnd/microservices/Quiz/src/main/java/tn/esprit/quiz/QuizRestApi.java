@@ -1,5 +1,6 @@
 package tn.esprit.quiz;
 
+<<<<<<< HEAD
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -33,3 +34,7 @@ public class QuizRestApi {
         quizService.deleteQuiz(id);
     }
 }
+=======
+public class QuizRestApi {
+}
+>>>>>>> cb93fa2fdf96a55ba80d2c859ecd05d11de45e53

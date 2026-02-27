@@ -1,5 +1,6 @@
 package tn.esprit.quiz;
 
+<<<<<<< HEAD
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
@@ -38,3 +39,7 @@ public class QuizService {
         quizRepository.deleteById(id);
     }
 }
+=======
+public class QuizService {
+}
+>>>>>>> cb93fa2fdf96a55ba80d2c859ecd05d11de45e53
