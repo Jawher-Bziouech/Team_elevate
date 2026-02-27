@@ -1,0 +1,71 @@
+<div class="user-tickets-container">
+  <div class="header">
+    <h2>Mes Tickets</h2>
+    <button class="btn-create" routerLink="/create-ticket">+ Nouveau Ticket</button>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-spinner">
+    Chargement...
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error" class="error-message">
+    {{ error }}
+  </div>
+
+  <!-- No tickets -->
+  <div *ngIf="!loading && !error && tickets.length === 0" class="no-tickets">
+    <p>Vous n'avez aucun ticket pour le moment.</p>
+    <a routerLink="/create-ticket" class="btn-create-link">Créer votre premier ticket</a>
+  </div>
+
+  <!-- Tickets list -->
+  <div class="tickets-list" *ngIf="!loading && !error && tickets.length > 0">
+    <div class="ticket-card" *ngFor="let ticket of tickets">
+      <div class="ticket-header">
+        <div class="ticket-info">
+          <h3>Ticket #{{ ticket.ticketId }}</h3>
+          <span class="status-badge" [ngClass]="getStatusClass(ticket.status!)">
+            {{ ticket.status }}
+          </span>
+        </div>
+        <span class="ticket-category">{{ ticket.category }}</span>
+      </div>
+
+      <div class="ticket-date">
+        Créé le: {{ ticket.createdAt | date:'dd/MM/yyyy HH:mm' }}
+      </div>
+
+      <div class="ticket-description">
+        <strong>Description:</strong>
+        <p>{{ ticket.description }}</p>
+      </div>
+
+      <!-- Admin Response -->
+      <div *ngIf="ticket.adminResponse" class="admin-response">
+        <div class="response-header">
+          <strong>Réponse de l'admin:</strong>
+          <span>{{ ticket.responseDate | date:'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+        <div class="response-content">
+          {{ ticket.adminResponse }}
+        </div>
+      </div>
+
+      <!-- Resolution -->
+      <div *ngIf="ticket.resolutionDescription" class="resolution-section">
+        <strong>Résolution:</strong>
+        <p>{{ ticket.resolutionDescription }}</p>
+        <small>le {{ ticket.resolutionDate | date:'dd/MM/yyyy HH:mm' }}</small>
+      </div>
+
+      <!-- Actions -->
+      <div class="ticket-actions" *ngIf="ticket.status !== 'CLOSED' && ticket.status !== 'RESOLVED'">
+        <button class="btn-close" (click)="closeTicket(ticket.ticketId!)">
+          Fermer le ticket
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

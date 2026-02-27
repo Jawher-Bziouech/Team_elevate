@@ -1,0 +1,30 @@
+<div class="create-ticket-container">
+  <div class="card">
+    <h2>Créer un nouveau ticket</h2>
+    
+    <div class="form-group">
+      <label>Catégorie</label>
+      <select [(ngModel)]="ticket.category" class="form-control">
+        <option value="">Sélectionnez une catégorie</option>
+        <option value="Technical">Technique</option>
+        <option value="Payment">Paiement</option>
+        <option value="Course">Cours</option>
+        <option value="Account">Compte</option>
+        <option value="Other">Autre</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Description</label>
+      <textarea [(ngModel)]="ticket.description" 
+                rows="5" 
+                class="form-control"
+                placeholder="Décrivez votre problème..."></textarea>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn-cancel" routerLink="/my-tickets">Annuler</button>
+      <button class="btn-submit" (click)="submit()">Créer le ticket</button>
+    </div>
+  </div>
+</div>

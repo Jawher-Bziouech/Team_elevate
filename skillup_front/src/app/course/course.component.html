@@ -1,0 +1,71 @@
+<div class="container mt-4">
+
+  <h3>Gestion des Courses</h3>
+
+  <form [formGroup]="courseForm" (ngSubmit)="submit()" class="row g-3">
+
+    <div class="col-md-3">
+      <input class="form-control" placeholder="Title" formControlName="title">
+    </div>
+
+    <div class="col-md-3">
+      <input class="form-control" placeholder="Category" formControlName="category">
+    </div>
+
+    <div class="col-md-2">
+      <input type="number" class="form-control" placeholder="Duration"
+             formControlName="durationHours">
+    </div>
+
+    <div class="col-md-2">
+      <input type="number" class="form-control" placeholder="Price"
+             formControlName="price">
+    </div>
+
+    <div class="col-md-2">
+      <button class="btn btn-primary w-100">
+        {{ isEdit ? 'Update' : 'Add' }}
+      </button>
+    </div>
+
+  </form>
+
+  <hr>
+
+  <table class="table table-bordered table-hover mt-3">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Category</th>
+        <th>Duration</th>
+        <th>Price</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let c of courses">
+        <td>{{ c.id }}</td>
+        <td>{{ c.title }}</td>
+        <td>{{ c.category }}</td>
+        <td>{{ c.durationHours }}</td>
+        <td>{{ c.price }}</td>
+        <td>{{ c.status }}</td>
+        <td>
+          <button class="btn btn-warning btn-sm me-2"
+                  (click)="edit(c)">
+            Edit
+          </button>
+
+          <button class="btn btn-danger btn-sm"
+                  (click)="delete(c.id!)">
+            Delete
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>

@@ -1,13 +1,43 @@
 <header class="top-bar">
-    <div class="page-title">SkillUp Dashboard</div>
+    <div class="page-title">SkillUp <span style="opacity: 0.6; font-weight: 400;">Connect</span></div>
+    
     <div class="top-actions">
+        <!-- Notification -->
         <button class="icon-btn">
-            <span>🔔</span>
-            <span class="badge">3</span>
+            <span>⚡</span>
+            <span class="badge" style="background: #f97316;">2</span>
         </button>
-        <div style="display: flex; align-items: center; gap: 8px;">
-            <img src="https://placehold.co/100x100/2563eb/white?text=User" style="width: 32px; height: 32px; border-radius: 50%;" alt="Profile">
-            <span style="font-size: 14px;">User v</span>
+
+        <!-- User Profile Dropdown -->
+        <div class="user-dropdown-container">
+            <div class="profile-trigger" (click)="toggleMenu()">
+                <div class="user-avatar-small">{{ authService.getUsername()?.charAt(0)?.toUpperCase() || 'U' }}</div>
+                <span class="username-display">{{ authService.getUsername() || 'Guest' }}</span>
+                <span class="arrow-icon">▼</span>
+            </div>
+
+            <!-- Dropdown Menu -->
+            <div class="dropdown-menu" *ngIf="showMenu" (mouseleave)="showMenu = false">
+                <div class="menu-header">
+                    <strong>{{ authService.getUsername() }}</strong>
+                    <span class="role-tag">✨ {{ authService.getRole() }}</span>
+                </div>
+                
+                <a class="menu-item" (click)="showMenu = false">
+                    <span style="font-size: 18px;">👤</span> My Profile
+                </a>
+                <a class="menu-item" (click)="showMenu = false">
+                    <span style="font-size: 18px;">🏆</span> Achievements
+                </a>
+                <a class="menu-item" (click)="showMenu = false">
+                    <span style="font-size: 18px;">⚙️</span> Account Settings
+                </a>
+                
+                <a class="menu-item logout-item" (click)="logout()">
+                    <span style="font-size: 18px;">🚪</span> Sign Out
+                </a>
+               
+            </div>
         </div>
     </div>
 </header>

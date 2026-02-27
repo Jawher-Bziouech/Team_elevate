@@ -1,0 +1,138 @@
+<div class="admin-tickets-container">
+  <h2>Gestion des Tickets</h2>
+  
+  <!-- Filtres -->
+  <div class="filters-card">
+    <h3>Filtres de recherche</h3>
+    <div class="filters-grid">
+      <div class="filter-item">
+        <label>Date début</label>
+        <input type="date" [(ngModel)]="filters.startDate" class="form-control">
+      </div>
+      <div class="filter-item">
+        <label>Date fin</label>
+        <input type="date" [(ngModel)]="filters.endDate" class="form-control">
+      </div>
+      <div class="filter-item">
+        <label>ID Ticket</label>
+        <input type="number" [(ngModel)]="filters.ticketId" class="form-control" placeholder="ID du ticket">
+      </div>
+      <div class="filter-item">
+        <label>Nom du créateur</label>
+        <input type="text" [(ngModel)]="filters.trainerName" class="form-control" placeholder="Nom du TRAINER">
+      </div>
+      <div class="filter-item">
+        <label>Statut</label>
+        <select [(ngModel)]="filters.status" class="form-control">
+          <option value="">Tous</option>
+          <option *ngFor="let status of statusOptions" [value]="status">{{status}}</option>
+        </select>
+      </div>
+      <div class="filter-actions">
+        <button class="btn-apply" (click)="applyFilters()">🔍 Appliquer</button>
+        <button class="btn-reset" (click)="resetFilters()">⟲ Réinitialiser</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Statistiques -->
+  <div class="stats-card">
+    <p>Total des tickets: <strong>{{ totalElements }}</strong></p>
+  </div>
+
+  <!-- Liste des tickets -->
+  <div class="tickets-list">
+    <div class="ticket-card" *ngFor="let ticket of tickets">
+      <div class="ticket-header">
+        <div class="ticket-info">
+          <h4>#{{ ticket.ticketId }} - {{ ticket.createdByName }}</h4>
+          <span class="badge" [ngClass]="{
+            'badge-open': ticket.status === 'OPEN',
+            'badge-progress': ticket.status === 'IN_PROGRESS',
+            'badge-resolved': ticket.status === 'RESOLVED',
+            'badge-closed': ticket.status === 'CLOSED'
+          }">{{ ticket.status }}</span>
+        </div>
+        <small>Créé le: {{ ticket.createdAt | date:'dd/MM/yyyy HH:mm' }}</small>
+      </div>
+      
+      <div class="ticket-body">
+        <p><strong>Catégorie:</strong> {{ ticket.category }}</p>
+        <p><strong>Description:</strong> {{ ticket.description }}</p>
+      </div>
+
+      <!-- Section réponse admin -->
+      <div class="ticket-response">
+        <div *ngIf="!ticket.adminResponse" class="response-form">
+          <textarea [(ngModel)]="responseText[ticket.ticketId!]" 
+                    placeholder="Votre réponse..." 
+                    rows="3"></textarea>
+          <button class="btn-send" (click)="respond(ticket.ticketId!)">Envoyer la réponse</button>
+        </div>
+
+        <div *ngIf="ticket.adminResponse" class="response-box">
+          <div class="response-header">
+            <strong>Réponse de {{ ticket.adminName }}:</strong>
+            <small>le {{ ticket.responseDate | date:'dd/MM/yyyy HH:mm' }}</small>
+            <span *ngIf="ticket.responseEditable" class="editable-badge">Modifiable</span>
+          </div>
+          <p>{{ ticket.adminResponse }}</p>
+          
+          <div class="response-actions">
+            <button *ngIf="ticket.responseEditable" 
+                    class="btn-edit" 
+                    (click)="editResponse(ticket)">
+              ✏️ Modifier
+            </button>
+            <button class="btn-resolve" 
+                    *ngIf="ticket.status !== 'RESOLVED' && ticket.status !== 'CLOSED'"
+                    (click)="resolveTicket(ticket)">
+              ✅ Résoudre
+            </button>
+            <button class="btn-close" 
+                    *ngIf="ticket.status !== 'CLOSED'"
+                    (click)="closeTicket(ticket.ticketId!)">
+              🔒 Fermer
+            </button>
+          </div>
+        </div>
+
+        <!-- Résolution -->
+        <div *ngIf="ticket.resolutionDescription" class="resolution-box">
+          <strong>Résolution:</strong>
+          <p>{{ ticket.resolutionDescription }}</p>
+          <small>le {{ ticket.resolutionDate | date:'dd/MM/yyyy HH:mm' }}</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination-controls" *ngIf="totalPages > 0">
+    <div class="pagination-info">
+      Affichage {{ currentPage * pageSize + 1 }} - 
+      {{ Math.min((currentPage + 1) * pageSize, totalElements) }} 
+      sur {{ totalElements }} tickets
+    </div>
+    
+    <div class="page-size-selector">
+      <label>Afficher:</label>
+      <select (change)="onPageSizeChange($event)" [value]="pageSize">
+        <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
+      </select>
+    </div>
+
+    <div class="pagination">
+      <button [disabled]="currentPage === 0" (click)="onPageChange(currentPage - 1)">◀ Précédent</button>
+      
+      <button *ngFor="let page of getPageNumbers()" 
+              [class.active]="page === currentPage"
+              (click)="onPageChange(page)">
+        {{ page + 1 }}
+      </button>
+      
+      <button [disabled]="currentPage === totalPages - 1" 
+              (click)="onPageChange(currentPage + 1)">Suivant ▶</button>
+    </div>
+  </div>
+</div>

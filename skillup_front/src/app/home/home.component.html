@@ -1,41 +1,50 @@
-<div class="catalog-container">
-    <div class="courses-area">
-        <div class="search-bar">
-            <span>🔍</span>
-            <input type="text" class="search-input" placeholder="Search for courses, skills, or certifications...">
-        </div>
-
-        <div class="card-grid">
-            <!-- Course Card 1 -->
-            <div class="card">
-                <div class="card-img-top">
-                    <span class="card-badge"></span>
-                    <img src="https://placehold.co/600x400/2563eb/white?text=Python+Course" alt="Python">
-                </div>
-                <div class="card-body">
-                    <div class="course-cat">Programming</div>
-                    <div class="course-title">Advanced Python with AI Integration</div>
-                    <div class="course-meta">
-                        <span style="color:#fbbf24; font-weight:600;">★ 4.8</span>
-                        <span>20 Hours</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Course Card 2 -->
-            <div class="card">
-                <div class="card-img-top">
-                    <img src="https://placehold.co/600x400/ea580c/white?text=PMP+Prep" alt="PMP">
-                </div>
-                <div class="card-body">
-                    <div class="course-cat">Management</div>
-                    <div class="course-title">Project Management Professional (PMP)</div>
-                    <div class="course-meta">
-                        <span style="color:#fbbf24; font-weight:600;">★ 4.9</span>
-                        <span>3 Months</span>
-                    </div>
-                </div>
-            </div>
-        </div>
+<div class="welcome-container">
+  <!-- Brand Hero -->
+  <div class="welcome-hero">
+    <h1>Welcome to <span class="highlight">SkillUp</span></h1>
+    <p>Your centralized hub for professional growth. Explore courses, join discussions, and validate your skills through microservices.</p>
+    <div class="hero-actions">
+      <button class="btn-main" routerLink="/courses">Explore Catalog</button>
+      <button class="btn-outline" routerLink="/forum">Visit Forum</button>
     </div>
+  </div>
+
+  <!-- Selection Hub -->
+  <div class="hub-grid">
+    <!-- Course Hub -->
+    <div class="hub-card" routerLink="/bulk">
+      <div class="hub-icon blue">🎓</div>
+      <div class="hub-info">
+        <h3>My Courses</h3>
+        <p>Continue your learning journey and discover new skills.</p>
+      </div>
+    </div>
+
+    <!-- Forum Hub -->
+    <div class="hub-card" routerLink="/forum">
+      <div class="hub-icon purple">💬</div>
+      <div class="hub-info">
+        <h3>Community Forum</h3>
+        <p>Discuss, collaborate, and share with other university members.</p>
+      </div>
+    </div>
+
+    <!-- Quiz Hub -->
+    <div class="hub-card" routerLink="/quiz">
+      <div class="hub-icon orange">⚡</div>
+      <div class="hub-info">
+        <h3>Skill Quizzes</h3>
+        <p>Test your knowledge with our new interactive quiz system.</p>
+      </div>
+    </div>
+
+    <!-- Certs Hub -->
+    <div class="hub-card" routerLink="/certifications">
+      <div class="hub-icon green">📜</div>
+      <div class="hub-info">
+        <h3>Certifications</h3>
+        <p>Track your achievements and view earned badges.</p>
+      </div>
+    </div>
+  </div>
 </div>
