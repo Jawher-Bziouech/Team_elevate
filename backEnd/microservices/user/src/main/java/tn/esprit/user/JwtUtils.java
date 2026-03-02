@@ -15,11 +15,15 @@ public class JwtUtils {
     private static final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
     // 2. Generate a token for a specific username
-    public String generateToken(String username) {
+
+    // Updated to accept Role
+    public String generateToken(String username, Role role, Long userId) {
         return Jwts.builder()
                 .setSubject(username)
+                .claim("role", role.name())
+                .claim("id", userId) // <--- Add this line!
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 86400000)) // Expire in 24 hours
+                .setExpiration(new Date(System.currentTimeMillis() + 86400000))
                 .signWith(key)
                 .compact();
     }

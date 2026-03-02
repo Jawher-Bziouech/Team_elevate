@@ -1,0 +1,108 @@
+<div class="admin-dashboard-container animate-fade">
+    <!-- 1. LEFT SIDEBAR (Dark Theme) -->
+    <aside class="admin-sidebar">
+        <div class="sidebar-top">
+            <div class="admin-logo">
+                <div class="logo-circle">S</div>
+                <span>SkillUp</span>
+            </div>
+            <nav class="admin-nav">
+                <div class="nav-group">
+                    <p class="nav-label">Main Menu</p>
+                    <a class="admin-nav-item" [class.active]="currentView === 'dashboard'" (click)="showView('dashboard')">
+                        <span>📊</span> Dashboard
+                    </a>
+                    <a class="admin-nav-item" [class.active]="currentView === 'forum'" (click)="showView('forum')">
+                        <span>💬</span> Gestion Forum
+                    </a>
+                    <a class="admin-nav-item" [class.active]="currentView === 'quiz'" (click)="showView('quiz')">
+    <span>📝</span> Gestion Quizzes</a>
+                    <a class="admin-nav-item" [class.active]="currentView === 'certificats'" (click)="showView('certificats')">
+                        <span>🏆</span> Gestion Certificats
+                    </a>
+
+                </div>
+                
+                <div class="nav-group mt-4">
+                    <p class="nav-label">System</p>
+                    <a class="admin-nav-item disabled-link">
+                        <span>⚙️</span> Settings
+                    </a>
+                </div>
+            </nav>
+        </div>
+
+        <div class="sidebar-bottom">
+            <div class="admin-profile-box">
+                <div class="admin-avatar">{{ authService.getUsername()?.charAt(0)?.toUpperCase() }}</div>
+                <div class="admin-user-details">
+                    <span class="aname">{{ authService.getUsername() }}</span>
+                    <span class="arole">{{ authService.getRole() }}</span>
+                </div>
+            </div>
+            <button class="admin-logout-btn" (click)="onLogout()">🚪 Logout</button>
+        </div>
+    </aside>
+
+    <!-- 2. MAIN AREA -->
+    <main class="admin-main">
+        <header class="admin-header">
+            <div class="header-breadcrumb">
+                <h2>Admin Area / <span style="opacity: 0.5; font-weight: 400">{{ currentView | titlecase }}</span></h2>
+            </div>
+            <div class="admin-search">
+               <input type="text" placeholder="Global search...">
+            </div>
+        </header>
+
+        <div class="admin-content-scroll">
+            
+            <!-- A. DASHBOARD VIEW (Statistics & Quick Access) -->
+            <div *ngIf="currentView === 'dashboard'" class="dashboard-content animate-fade">
+                <div class="stats-grid mb-5">
+                    <div class="stats-card">
+                        <div class="s-icon">👥</div>
+                        <div class="s-info"><h4>1,280</h4><p>Total Students</p></div>
+                    </div>
+                    <div class="stats-card">
+                        <div class="s-icon" style="background: #ecfdf5; color: #10b981;">💬</div>
+                        <div class="s-info"><h4>{{ allPosts.length }}</h4><p>Forum Activity</p></div>
+                    </div>
+                    <div class="stats-card">
+                        <div class="s-icon" style="background: #fff7ed; color: #f97316;">🎓</div>
+                        <div class="s-info"><h4>42</h4><p>Active Courses</p></div>
+                    </div>
+                </div>
+
+                <h3 class="fw-bold mb-4 text-dark">Quick Management</h3>
+                <div class="admin-course-grid">
+                    <div class="admin-card">
+                        <div class="card-thumb">Python AI</div>
+                        <div class="card-content">
+                            <h4>Machine Learning Basics</h4>
+                            <button class="btn-manage disabled">Manage Details</button>
+                        </div>
+                    </div>
+                    <div class="admin-card">
+                        <div class="card-thumb" style="background: linear-gradient(135deg, #7c3aed, #4f46e5);">Angular Pro</div>
+                        <div class="card-content">
+                            <h4>Advanced Architecture</h4>
+                            <button class="btn-manage disabled">Manage Details</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- B. MODULAR GESTION COMPONENTS -->
+            
+            <!-- Gestion Forum Part -->
+            <app-gestion-forum *ngIf="currentView === 'forum'"></app-gestion-forum>
+            <app-gestion-quiz *ngIf="currentView === 'quiz'"></app-gestion-quiz>
+                        <app-gestion-certificat *ngIf="currentView === 'certificats'"></app-gestion-certificat>
+
+            <!-- Future Gestions go here -->
+            <!-- <app-gestion-courses *ngIf="currentView === 'courses'"></app-gestion-courses> -->
+
+        </div>
+    </main>
+</div>

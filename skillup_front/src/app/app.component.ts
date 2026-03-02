@@ -15,5 +15,10 @@ export class AppComponent {
     const url = this.router.url;
     // Hide ONLY on these two pages
     return url.includes('/login') || url.includes('/signup');
+    
   }
+ isAdminPage(): boolean {
+  // .startsWith is safer than .includes
+  return this.router.url.split('?')[0].startsWith('/back-office');
+}
 }

@@ -9,6 +9,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 
 import java.io.Serializable;
 
@@ -25,5 +27,6 @@ public class User implements Serializable {
     private String username;
     private String password;
     private String email;
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private Role role;
 }
