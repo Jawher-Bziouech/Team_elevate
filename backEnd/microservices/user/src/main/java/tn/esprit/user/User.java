@@ -13,6 +13,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name="app_user")
@@ -29,4 +30,7 @@ public class User implements Serializable {
     private String email;
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    private String badges;
+
 }

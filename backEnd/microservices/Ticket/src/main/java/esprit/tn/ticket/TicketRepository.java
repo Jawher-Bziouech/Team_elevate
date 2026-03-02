@@ -35,4 +35,5 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
             @Param("trainerName") String trainerName,
             @Param("status") TicketStatus status,
             Pageable pageable);
+
 }

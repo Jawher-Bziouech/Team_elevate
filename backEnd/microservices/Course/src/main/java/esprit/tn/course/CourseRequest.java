@@ -1,14 +1,6 @@
 package esprit.tn.course;
 
-
-
 import lombok.Data;
-/*@Data
-public class CourseRequestDTO {
-    private String title;
-    private String description;
-    private Double price;
-}*/
 
 @Data
 public class CourseRequest {

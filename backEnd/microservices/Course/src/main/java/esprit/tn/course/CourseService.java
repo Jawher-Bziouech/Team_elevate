@@ -1,60 +1,11 @@
 package esprit.tn.course;
 
-/*import esprit.tn.course.entity.Course;
-import esprit.tn.course.CourseRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-
-@Service
-@RequiredArgsConstructor
-public class CourseService {
-
-    private final CourseRepository courseRepository;
-
-    public Course addCourse(Course course) {
-        return courseRepository.save(course);
-    }
-
-    public List<Course> getAllCourses() {
-        return courseRepository.findAll();
-    }
-
-    public Course getCourseById(Long id) {
-        return courseRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Course not found"));
-    }
-
-    public Course updateCourse(Long id, Course updatedCourse) {
-        Course course = getCourseById(id);
-
-        course.setTitle(updatedCourse.getTitle());
-        course.setDescription(updatedCourse.getDescription());
-        course.setCategory(updatedCourse.getCategory());
-        course.setLevel(updatedCourse.getLevel());
-        course.setDurationHours(updatedCourse.getDurationHours());
-        course.setLanguage(updatedCourse.getLanguage());
-        course.setPrice(updatedCourse.getPrice());
-        course.setStatus(updatedCourse.getStatus());
-        course.setTrainerId(updatedCourse.getTrainerId());
-        course.setFormationId(updatedCourse.getFormationId());
-
-        return courseRepository.save(course);
-    }
-
-    public void deleteCourse(Long id) {
-        courseRepository.deleteById(id);
-    }
-}*/
-// esprit.tn.course.CourseService.java
-
-
 import esprit.tn.course.FormationClient;
 import esprit.tn.course.BulkCourseRequest;
 import esprit.tn.course.CourseRequest;
 import esprit.tn.course.CourseResponse;
 import esprit.tn.course.entity.Course;
+import esprit.tn.course.CourseRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -71,7 +22,6 @@ public class CourseService {
     private final CourseRepository courseRepository;
     private final FormationClient formationClient;
 
-    // Ajouter un seul cours
     @Transactional
     public CourseResponse addCourse(CourseRequest request) {
         // Vérifier que la formation existe
@@ -84,7 +34,6 @@ public class CourseService {
         return mapToResponse(savedCourse);
     }
 
-    // Ajouter plusieurs cours à une formation (BULK)
     @Transactional
     public List<CourseResponse> addBulkCourses(BulkCourseRequest bulkRequest) {
         // Vérifier que la formation existe
@@ -107,34 +56,29 @@ public class CourseService {
                 .collect(Collectors.toList());
     }
 
-    // Récupérer tous les cours
     public List<CourseResponse> getAllCourses() {
         return courseRepository.findAll().stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
 
-    // Récupérer les cours d'une formation spécifique
     public List<CourseResponse> getCoursesByFormation(Long formationId) {
         return courseRepository.findByFormationId(formationId).stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
 
-    // Récupérer un cours par ID
     public CourseResponse getCourseById(Long id) {
         Course course = courseRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Course non trouvé avec l'ID: " + id));
         return mapToResponse(course);
     }
 
-    // Modifier un cours
     @Transactional
     public CourseResponse updateCourse(Long id, CourseRequest request) {
         Course course = courseRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Course non trouvé avec l'ID: " + id));
 
-        // Mise à jour des champs
         course.setTitle(request.getTitle());
         course.setDescription(request.getDescription());
         course.setCategory(request.getCategory());
@@ -150,7 +94,6 @@ public class CourseService {
         return mapToResponse(updatedCourse);
     }
 
-    // Supprimer un cours
     @Transactional
     public void deleteCourse(Long id) {
         if (!courseRepository.existsById(id)) {
@@ -159,14 +102,12 @@ public class CourseService {
         courseRepository.deleteById(id);
     }
 
-    // Supprimer tous les cours d'une formation
     @Transactional
     public void deleteCoursesByFormation(Long formationId) {
         courseRepository.deleteByFormationId(formationId);
         log.info("Tous les cours de la formation {} ont été supprimés", formationId);
     }
 
-    // Méthodes de mapping
     private Course mapToEntity(CourseRequest request) {
         return Course.builder()
                 .title(request.getTitle())

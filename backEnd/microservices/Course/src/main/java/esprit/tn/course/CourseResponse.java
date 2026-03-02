@@ -1,26 +1,6 @@
-
-// CourseResponseDTO.java
 package esprit.tn.course;
 
 import lombok.Data;
-
-import java.time.LocalDateTime;
-import java.util.Date;
-
-
-/*@Data
-
-public class CourseResponseDTO {
-    private Long id;
-    private String title;
-    private String description;
-    private Double price;
-    private Date createdAt;
-}*/
-// esprit.tn.course.dto.CourseResponse.java
-
-
-
 import java.util.Date;
 
 @Data

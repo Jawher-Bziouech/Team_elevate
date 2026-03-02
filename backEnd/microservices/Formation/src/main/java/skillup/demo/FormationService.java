@@ -55,4 +55,10 @@ public class FormationService {
         }
         return "Formation non trouvée";
     }
+
+
+    // Dans FormationService.java
+    public boolean existsById(Long id) {
+        return formationRepository.existsById(id);
+    }
 }

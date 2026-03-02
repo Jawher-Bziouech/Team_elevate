@@ -1,17 +1,7 @@
-/*import { Component } from '@angular/core';
-
-@Component({
-  selector: 'app-formation-courses',
-  templateUrl: './formation-courses.component.html',
-  styleUrl: './formation-courses.component.css'
-})
-export class FormationCoursesComponent {
-
-}*/
-import { Component, OnInit } from '@angular/core';
+/*import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CourseService } from '../course.service';
-import { Course } from '../models/course.model';
+import { CourseService } from '.././course.service';
+import { Course } from '.././models/course.model';
 
 @Component({
   selector: 'app-formation-courses',
@@ -54,9 +44,9 @@ export class FormationCoursesComponent implements OnInit {
 
   addCourses(): void {
     this.router.navigate(['/backoffice/courses/bulk'], {
-      state: { 
+      state: {
         formationId: this.formationId,
-        formationName: this.formationName 
+        formationName: this.formationName
       }
     });
   }
@@ -70,7 +60,7 @@ export class FormationCoursesComponent implements OnInit {
       this.courseService.deleteCourse(id).subscribe({
         next: () => {
           this.loadCourses();
-          alert('Cours supprimé');
+          alert('Cours supprimé avec succès');
         },
         error: (error) => alert('Erreur: ' + error.message)
       });
@@ -88,5 +78,51 @@ export class FormationCoursesComponent implements OnInit {
       case 'EN_PREPARATION': return 'badge bg-warning';
       default: return 'badge bg-secondary';
     }
+  }
+}*/
+
+
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { CourseService } from '../course.service';
+import { Course } from '.././models/course.model';
+
+@Component({
+  selector: 'app-formation-courses',
+  templateUrl: './formation-courses.component.html'
+})
+export class FormationCoursesComponent implements OnInit {
+  formationId!: number;
+  courses: Course[] = [];
+  loading = false;
+
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private courseService: CourseService
+  ) { }
+
+  ngOnInit(): void {
+    this.formationId = Number(this.route.snapshot.paramMap.get('id'));
+    this.loadCourses();
+  }
+
+  loadCourses(): void {
+    this.loading = true;
+    this.courseService.getCoursesByFormation(this.formationId).subscribe({
+      next: (data) => {
+        this.courses = data;
+        this.loading = false;
+      },
+      error: () => this.loading = false
+    });
+  }
+
+  goBack(): void {
+    this.router.navigate(['/courses']);
+  }
+
+  addBulkCourses(): void {
+    this.router.navigate(['/courses/bulk']);
   }
 }

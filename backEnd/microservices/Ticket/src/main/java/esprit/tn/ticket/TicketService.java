@@ -2,6 +2,8 @@ package esprit.tn.ticket;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
+
 import java.util.Date;
 import java.util.List;
 
@@ -15,4 +17,9 @@ public interface TicketService {
     TicketResponse getTicketById(Long ticketId, Long userId, String userRole);
     TicketResponse resolveTicket(Long ticketId, Long userId, String userRole, String resolution);
     TicketResponse closeTicket(Long ticketId, Long userId, String userRole);
+
+    // NOUVELLE MÉTHODE
+    TicketResponse rateTicket(Long ticketId, Long userId, String userRole, RatingRequest ratingRequest);
+
 }
+

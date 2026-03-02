@@ -1,26 +1,26 @@
-<div class="user-tickets-container">
+<!--<div class="user-tickets-container">
   <div class="header">
     <h2>Mes Tickets</h2>
     <button class="btn-create" routerLink="/create-ticket">+ Nouveau Ticket</button>
   </div>
 
-  <!-- Loading -->
+  
   <div *ngIf="loading" class="loading-spinner">
     Chargement...
   </div>
 
-  <!-- Error -->
+  
   <div *ngIf="error" class="error-message">
     {{ error }}
   </div>
 
-  <!-- No tickets -->
+  
   <div *ngIf="!loading && !error && tickets.length === 0" class="no-tickets">
     <p>Vous n'avez aucun ticket pour le moment.</p>
     <a routerLink="/create-ticket" class="btn-create-link">Créer votre premier ticket</a>
   </div>
 
-  <!-- Tickets list -->
+  
   <div class="tickets-list" *ngIf="!loading && !error && tickets.length > 0">
     <div class="ticket-card" *ngFor="let ticket of tickets">
       <div class="ticket-header">
@@ -42,7 +42,7 @@
         <p>{{ ticket.description }}</p>
       </div>
 
-      <!-- Admin Response -->
+      
       <div *ngIf="ticket.adminResponse" class="admin-response">
         <div class="response-header">
           <strong>Réponse de l'admin:</strong>
@@ -53,18 +53,228 @@
         </div>
       </div>
 
-      <!-- Resolution -->
+      
       <div *ngIf="ticket.resolutionDescription" class="resolution-section">
         <strong>Résolution:</strong>
         <p>{{ ticket.resolutionDescription }}</p>
         <small>le {{ ticket.resolutionDate | date:'dd/MM/yyyy HH:mm' }}</small>
       </div>
 
-      <!-- Actions -->
+      
       <div class="ticket-actions" *ngIf="ticket.status !== 'CLOSED' && ticket.status !== 'RESOLVED'">
         <button class="btn-close" (click)="closeTicket(ticket.ticketId!)">
           Fermer le ticket
         </button>
+      </div>
+    </div>
+  </div>
+</div> -->
+
+
+<div class="tickets-container">
+  <!-- En-tête avec statistiques -->
+  <div class="dashboard-header">
+    <div class="header-title">
+      <h1>Mes Tickets</h1>
+      <p class="subtitle">Suivez et gérez vos demandes d'assistance</p>
+    </div>
+    <button class="btn-primary" routerLink="/create-ticket">
+      <span class="btn-icon">+</span>
+      Nouveau Ticket
+    </button>
+  </div>
+
+  <!-- Statistiques rapides -->
+  <div class="stats-grid" *ngIf="tickets.length > 0">
+    <div class="stat-card">
+      <div class="stat-icon open">📋</div>
+      <div class="stat-content">
+        <span class="stat-value">{{ getTicketsByStatus('OPEN').length }}</span>
+        <span class="stat-label">Tickets ouverts</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon progress">⏳</div>
+      <div class="stat-content">
+        <span class="stat-value">{{ getTicketsByStatus('IN_PROGRESS').length }}</span>
+        <span class="stat-label">En cours</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon resolved">✅</div>
+      <div class="stat-content">
+        <span class="stat-value">{{ getTicketsByStatus('RESOLVED').length }}</span>
+        <span class="stat-label">Résolus</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon closed">🔒</div>
+      <div class="stat-content">
+        <span class="stat-value">{{ getTicketsByStatus('CLOSED').length }}</span>
+        <span class="stat-label">Fermés</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- États de chargement -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Chargement de vos tickets...</p>
+  </div>
+
+  <!-- Message d'erreur -->
+  <div *ngIf="error" class="error-state">
+    <div class="error-icon">⚠️</div>
+    <h3>Oups ! Une erreur est survenue</h3>
+    <p>{{ error }}</p>
+    <button class="btn-retry" (click)="loadTickets()">Réessayer</button>
+  </div>
+
+  <!-- Aucun ticket -->
+  <div *ngIf="!loading && !error && tickets.length === 0" class="empty-state">
+    <div class="empty-illustration">📭</div>
+    <h3>Aucun ticket pour le moment</h3>
+    <p>Créez votre premier ticket pour obtenir de l'aide</p>
+    <a routerLink="/create-ticket" class="btn-create">Créer un ticket</a>
+  </div>
+
+  <!-- Liste des tickets -->
+  <div class="tickets-list" *ngIf="!loading && !error && tickets.length > 0">
+    <div class="ticket-card" *ngFor="let ticket of tickets">
+      <!-- En-tête du ticket avec statut -->
+      <div class="ticket-header">
+        <div class="ticket-title">
+          <span class="ticket-id">#{{ ticket.ticketId }}</span>
+          <span class="ticket-category">{{ ticket.category }}</span>
+          <span class="status-badge" [ngClass]="getStatusClass(ticket.status!)">
+            {{ getStatusLabel(ticket.status!) }}
+          </span>
+        </div>
+        <div class="ticket-date">
+          <span class="date-icon">📅</span>
+          {{ ticket.createdAt | date:'dd MMM yyyy à HH:mm' }}
+        </div>
+      </div>
+
+      <!-- Contenu du ticket -->
+      <div class="ticket-content">
+        <div class="ticket-description">
+          <p>{{ ticket.description }}</p>
+        </div>
+
+        <!-- Pièces jointes (si implémentées plus tard) -->
+        <div *ngIf="ticket.attachments?.length" class="attachments">
+          <span class="attachment-icon">📎</span>
+          <span *ngFor="let att of ticket.attachments" class="attachment-link">
+            {{ att.fileName }}
+          </span>
+        </div>
+
+        <!-- Réponse de l'admin -->
+        <div *ngIf="ticket.adminResponse" class="admin-response">
+          <div class="response-header">
+            <div class="admin-info">
+              <span class="admin-avatar">👤</span>
+              <strong>{{ ticket.adminName || 'Administrateur' }}</strong>
+            </div>
+            <span class="response-date">{{ ticket.responseDate | date:'dd MMM yyyy HH:mm' }}</span>
+          </div>
+          <div class="response-content">
+            {{ ticket.adminResponse }}
+          </div>
+        </div>
+
+        <!-- Résolution -->
+        <div *ngIf="ticket.resolutionDescription" class="resolution-section">
+          <div class="resolution-header">
+            <span class="resolution-icon">🔧</span>
+            <strong>Résolution</strong>
+          </div>
+          <p>{{ ticket.resolutionDescription }}</p>
+          <small>{{ ticket.resolutionDate | date:'dd MMM yyyy HH:mm' }}</small>
+        </div>
+
+        <!-- SECTION D'ÉVALUATION PROFESSIONNELLE -->
+        <div class="rating-section-container">
+          <!-- Formulaire d'évaluation (si ticket évaluable et non encore évalué) -->
+          <div *ngIf="ticket.canBeRated && !ticket.rating" class="rating-form">
+            <div class="rating-title">
+              <span class="rating-icon">⭐</span>
+              <h4>Comment s'est passée votre expérience ?</h4>
+            </div>
+            <p class="rating-subtitle">Votre avis nous aide à améliorer notre service</p>
+            
+            <!-- Système d'étoiles interactif -->
+            <div class="star-rating-container">
+              <div class="stars">
+                <span *ngFor="let star of [1,2,3,4,5]" 
+                      class="star" 
+                      [class.active]="star <= (hoverRating[ticket.ticketId!] || ratingValue[ticket.ticketId!])"
+                      (mouseenter)="hoverRating[ticket.ticketId!] = star"
+                      (mouseleave)="hoverRating[ticket.ticketId!] = 0"
+                      (click)="setRating(ticket.ticketId!, star)">
+                  ★
+                </span>
+              </div>
+              <span class="rating-text" *ngIf="ratingValue[ticket.ticketId!]">
+                {{ getRatingLabel(ratingValue[ticket.ticketId!]) }}
+              </span>
+            </div>
+
+            <!-- Commentaire optionnel -->
+            <div class="comment-section" *ngIf="ratingValue[ticket.ticketId!]">
+              <textarea 
+                [(ngModel)]="ratingComment[ticket.ticketId!]" 
+                placeholder="Partagez votre expérience (optionnel)"
+                rows="2"
+                class="rating-comment"></textarea>
+            </div>
+
+            <!-- Bouton d'envoi -->
+            <button *ngIf="ratingValue[ticket.ticketId!]" 
+                    class="btn-submit-rating" 
+                    (click)="submitRating(ticket.ticketId!)"
+                    [disabled]="isSubmittingRating[ticket.ticketId!]">
+              <span *ngIf="!isSubmittingRating[ticket.ticketId!]">Envoyer mon évaluation</span>
+              <span *ngIf="isSubmittingRating[ticket.ticketId!]" class="spinner-small"></span>
+            </button>
+          </div>
+
+          <!-- Affichage de l'évaluation existante -->
+          <div *ngIf="ticket.rating" class="rating-display">
+            <div class="rating-display-header">
+              <span class="rating-icon">⭐</span>
+              <h4>Votre évaluation</h4>
+            </div>
+            <div class="rating-display-content">
+              <div class="stars-display">
+                <span *ngFor="let star of [1,2,3,4,5]" 
+                      class="star-display" 
+                      [class.filled]="star <= ticket.rating">
+                  ★
+                </span>
+                <span class="rating-badge">{{ ticket.rating }}/5</span>
+              </div>
+              <p *ngIf="ticket.ratingComment" class="rating-feedback">
+                "{{ ticket.ratingComment }}"
+              </p>
+              <div class="rating-footer">
+                <span class="rating-date">
+                  <span class="date-icon">📅</span>
+                  Évalué le {{ ticket.ratingDate | date:'dd MMM yyyy' }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions du ticket -->
+        <div class="ticket-actions" *ngIf="ticket.status !== 'CLOSED' && ticket.status !== 'RESOLVED'">
+          <button class="btn-close-ticket" (click)="closeTicket(ticket.ticketId!)">
+            <span class="btn-icon">🔒</span>
+            Fermer le ticket
+          </button>
+        </div>
       </div>
     </div>
   </div>

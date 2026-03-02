@@ -19,6 +19,9 @@
     <span>📝</span> Gestion Quizzes</a>
      <a class="admin-nav-item" [class.active]="currentView === 'admin-tickets'" (click)="showView('admin-tickets')">
     <span>📝</span> tickets</a>
+    
+     <a class="admin-nav-item" [class.active]="currentView === 'analytics'" (click)="showView('analytics')">
+    <span>📝</span> Analytics</a>
 
 
                 </div>
@@ -91,6 +94,16 @@
                             <button class="btn-manage disabled">Manage Details</button>
                         </div>
                     </div>
+                    
+                    <!-- Dans profile.component.html -->
+<div class="profile">
+  <h2>Mon Profil</h2>
+  
+  <!-- Vos infos de profil -->
+  
+  <!-- Section badges -->
+  
+</div>
                 </div>
             </div>
 
@@ -100,6 +113,8 @@
             <app-gestion-forum *ngIf="currentView === 'forum'"></app-gestion-forum>
             <app-gestion-quiz *ngIf="currentView === 'quiz'"></app-gestion-quiz>
             <app-admin-tickets *ngIf="currentView === 'admin-tickets'"></app-admin-tickets>
+            <app-analytics-dashboard *ngIf="currentView === 'analytics'"></app-analytics-dashboard>
+            
             
             <!-- Future Gestions go here -->
             <!-- <app-gestion-courses *ngIf="currentView === 'courses'"></app-gestion-courses> -->

@@ -1,16 +1,6 @@
-/*import { Component } from '@angular/core';
-
-@Component({
-  selector: 'app-bulk-course-form',
-  templateUrl: './bulk-course-form.component.html',
-  styleUrl: './bulk-course-form.component.css'
-})
-export class BulkCourseFormComponent {
-
-}*/
-import { Component, Input, OnInit } from '@angular/core';
+/*import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { CourseService } from '../course.service';
+import { CourseService } from '.././course.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -19,8 +9,8 @@ import { Router } from '@angular/router';
   styleUrls: ['./bulk-course-form.component.css']
 })
 export class BulkCourseFormComponent implements OnInit {
-  @Input() formationId!: number;
-  @Input() formationName!: string;
+  formationId!: number;
+  formationName!: string;
   
   bulkForm: FormGroup;
   loading = false;
@@ -42,6 +32,15 @@ export class BulkCourseFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    const state = history.state;
+    this.formationId = state.formationId;
+    this.formationName = state.formationName;
+    
+    if (!this.formationId) {
+      this.router.navigate(['/backoffice/formations']);
+      return;
+    }
+    
     this.addCourse(); // Ajouter un premier cours par défaut
   }
 
@@ -74,6 +73,9 @@ export class BulkCourseFormComponent implements OnInit {
 
   onSubmit(): void {
     if (this.bulkForm.invalid) {
+      Object.keys(this.bulkForm.controls).forEach(key => {
+        this.bulkForm.get(key)?.markAsTouched();
+      });
       return;
     }
 
@@ -100,6 +102,93 @@ export class BulkCourseFormComponent implements OnInit {
   }
 
   cancel(): void {
-    this.router.navigate(['/backoffice/formations']);
+    this.router.navigate(['/backoffice/courses/formation', this.formationId]);
+  }
+}*/
+
+
+import { Component, OnInit } from '@angular/core';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CourseService } from '../course.service';
+import { Router } from '@angular/router';
+
+@Component({
+  selector: 'app-bulk-course-form',
+  templateUrl: './bulk-course-form.component.html'
+})
+export class BulkCourseFormComponent implements OnInit {
+  bulkForm: FormGroup;
+  loading = false;
+  successMessage = '';
+  errorMessage = '';
+
+  categories = ['Développement', 'Design', 'Marketing', 'Business'];
+  levels = ['Débutant', 'Intermédiaire', 'Avancé'];
+  languages = ['Français', 'Anglais', 'Arabe'];
+
+  constructor(
+    private fb: FormBuilder,
+    private courseService: CourseService,
+    private router: Router
+  ) {
+    this.bulkForm = this.fb.group({
+      formationId: ['', Validators.required],
+      formationName: [''],
+      courses: this.fb.array([])
+    });
+  }
+
+  ngOnInit(): void {
+    this.addCourse();
+  }
+
+  get coursesArray() {
+    return this.bulkForm.get('courses') as FormArray;
+  }
+
+  createCourseForm(): FormGroup {
+    return this.fb.group({
+      title: ['', Validators.required],
+      description: [''],
+      category: [''],
+      level: [''],
+      durationHours: [''],
+      language: [''],
+      price: [''],
+      status: ['ACTIF'],
+      trainerId: [null],
+      trainerName: ['']
+    });
+  }
+
+  addCourse(): void {
+    this.coursesArray.push(this.createCourseForm());
+  }
+
+  removeCourse(index: number): void {
+    this.coursesArray.removeAt(index);
+  }
+
+  onSubmit(): void {
+    if (this.bulkForm.invalid) {
+      this.errorMessage = 'Veuillez remplir l\'ID de la formation';
+      return;
+    }
+
+    this.loading = true;
+    this.courseService.addBulkCourses(this.bulkForm.value).subscribe({
+      next: (response) => {
+        this.successMessage = `${response.length} cours ajoutés`;
+        setTimeout(() => this.router.navigate(['/courses']), 2000);
+      },
+      error: () => {
+        this.errorMessage = 'Erreur d\'ajout';
+        this.loading = false;
+      }
+    });
+  }
+
+  cancel(): void {
+    this.router.navigate(['/courses']);
   }
 }

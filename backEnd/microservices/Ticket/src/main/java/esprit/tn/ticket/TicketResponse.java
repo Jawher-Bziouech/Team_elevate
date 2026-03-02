@@ -3,6 +3,7 @@ package esprit.tn.ticket;
 import esprit.tn.ticket.entity.TicketStatus;
 import lombok.Data;
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class TicketResponse {
@@ -25,4 +26,9 @@ public class TicketResponse {
 
     private String resolutionDescription;
     private Date resolutionDate;
+    private Integer rating;
+    private String ratingComment;
+    private Date ratingDate;
+    private boolean canBeRated;
+
 }

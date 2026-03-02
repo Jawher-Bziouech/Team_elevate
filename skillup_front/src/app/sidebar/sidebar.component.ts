@@ -8,11 +8,15 @@ import { Router } from '@angular/router';
   styleUrl: './sidebar.component.css'
 })
 export class SidebarComponent {
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router ) {}
 
   onLogout() {
     this.authService.logout(); // Clears the token
     alert('You have been logged out.');
     this.router.navigate(['/login']); // Send back to start
+  
+
+  
+
   }
 }

@@ -57,4 +57,13 @@ public class FormationRestApi {
         }
         return new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
     }
+    // Dans FormationRestApi.java
+    @GetMapping("/{id}/exists")
+    public ResponseEntity<Boolean> formationExists(@PathVariable Long id) {
+        boolean exists = formationService.existsById(id);
+        return new ResponseEntity<>(exists, HttpStatus.OK);
+    }
+
+
+
 }

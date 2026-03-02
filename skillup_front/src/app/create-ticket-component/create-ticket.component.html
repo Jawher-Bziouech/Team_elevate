@@ -1,4 +1,4 @@
-<div class="create-ticket-container">
+ <!--<div class="create-ticket-container">
   <div class="card">
     <h2>Créer un nouveau ticket</h2>
     
@@ -26,5 +26,231 @@
       <button class="btn-cancel" routerLink="/my-tickets">Annuler</button>
       <button class="btn-submit" (click)="submit()">Créer le ticket</button>
     </div>
+  </div>
+</div> -->
+
+<!-- vrai
+<div class="create-ticket-container">
+  
+  <div class="page-header">
+    <h1>Créer un nouveau ticket</h1>
+    <p class="subtitle">Décrivez votre problème pour obtenir de l'aide</p>
+  </div>
+
+  
+  <div class="form-card">
+    <form (ngSubmit)="submit()" #ticketForm="ngForm">
+      
+      <div class="form-group">
+        <label class="form-label">
+          <span class="label-icon">📌</span>
+          Catégorie <span class="required">*</span>
+        </label>
+        <select 
+          [(ngModel)]="ticket.category" 
+          name="category"
+          required
+          #category="ngModel"
+          class="form-select">
+          <option value="" disabled selected>Choisissez une catégorie</option>
+          <option value="Technical">💻 Technique</option>
+          <option value="Payment">💰 Paiement</option>
+          <option value="Course">📚 Cours</option>
+          <option value="Account">👤 Compte</option>
+          <option value="Other">❓ Autre</option>
+        </select>
+        <div *ngIf="category.invalid && category.touched" class="error-message">
+          La catégorie est requise
+        </div>
+      </div>
+
+      
+      <div class="form-group">
+        <label class="form-label">
+          <span class="label-icon">📝</span>
+          Description <span class="required">*</span>
+        </label>
+        <textarea 
+          [(ngModel)]="ticket.description" 
+          name="description"
+          required
+          minlength="5"
+          #description="ngModel"
+          rows="5"
+          class="form-textarea"
+          placeholder="Décrivez votre problème en détail..."></textarea>
+        <div *ngIf="description.invalid && description.touched" class="error-message">
+          <span *ngIf="description.errors?.['required']">La description est requise</span>
+          <span *ngIf="description.errors?.['minlength']">Minimum 5 caractères</span>
+        </div>
+      </div>
+
+      
+      <div class="form-actions">
+        <button type="button" class="btn-cancel" routerLink="/my-tickets">
+          Annuler
+        </button>
+        <button 
+          type="submit" 
+          class="btn-submit" 
+          [disabled]="ticketForm.invalid || isSubmitting">
+          <span *ngIf="!isSubmitting">✓ Créer le ticket</span>
+          <span *ngIf="isSubmitting" class="spinner"></span>
+          <span *ngIf="isSubmitting">Création en cours...</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div> -->
+
+
+
+<div class="create-ticket-container">
+  <!-- En-tête -->
+  <div class="page-header">
+    <div>
+      <h1>
+        <span class="header-icon">🎫</span>
+        Créer un nouveau ticket
+      </h1>
+      <p class="subtitle">Décrivez votre problème pour obtenir de l'aide</p>
+    </div>
+    <button class="btn-chat-toggle" (click)="toggleChatbot()" [class.active]="showChatbot">
+      <span class="chat-icon">💬</span>
+      {{ showChatbot ? 'Masquer l\'assistant' : 'Assistant virtuel' }}
+    </button>
+  </div>
+
+  <!-- Chatbot -->
+  <div class="chatbot-container" *ngIf="showChatbot">
+    <div class="chatbot-header">
+      <div class="chatbot-title">
+        <span class="chatbot-avatar">🤖</span>
+        <div>
+          <h3>Assistant virtuel</h3>
+          <p class="chatbot-status">En ligne • Réponse instantanée</p>
+        </div>
+      </div>
+      <button class="chatbot-close" (click)="toggleChatbot()">✕</button>
+    </div>
+
+    <div class="chatbot-messages" #chatMessages>
+      <div *ngFor="let msg of chatMessagesList" class="message" [class.user]="msg.isUser" [class.bot]="!msg.isUser">
+        <div class="message-avatar">{{ msg.isUser ? '👤' : '🤖' }}</div>
+        <div class="message-content">
+          <div class="message-text">{{ msg.text }}</div>
+          <div class="message-time">{{ getCurrentTime() }}</div>
+        </div>
+      </div>
+      
+      <!-- Indicateur de frappe -->
+      <div class="message bot typing" *ngIf="isTyping">
+        <div class="message-avatar">🤖</div>
+        <div class="message-content">
+          <div class="typing-indicator">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chatbot-input">
+      <div class="suggested-category" *ngIf="suggestedCategory && !ticket.category">
+        <span class="suggestion-text">Catégorie suggérée : {{ getCategoryLabel(suggestedCategory) }}</span>
+        <button class="suggestion-btn" (click)="applySuggestedCategory()">Appliquer</button>
+      </div>
+      
+      <div class="input-group">
+        <input 
+          type="text" 
+          [(ngModel)]="currentMessage" 
+          (keyup.enter)="sendMessage()"
+          placeholder="Posez votre question..."
+          class="chat-input">
+        <button class="chat-send" (click)="sendMessage()" [disabled]="!currentMessage.trim()">
+          <span class="send-icon">➤</span>
+        </button>
+      </div>
+      
+      <div class="chat-actions" *ngIf="chatMessagesList.length > 1">
+        <button class="action-btn" (click)="useLastMessageAsDescription()">
+          <span class="action-icon">📝</span>
+          Utiliser comme description
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Formulaire -->
+  <div class="form-card" [class.with-chatbot]="showChatbot">
+    <form (ngSubmit)="submit()" #ticketForm="ngForm">
+      <!-- Catégorie -->
+      <div class="form-group">
+        <label class="form-label">
+          <span class="label-icon">📌</span>
+          Catégorie <span class="required">*</span>
+        </label>
+        <select 
+          [(ngModel)]="ticket.category" 
+          name="category"
+          required
+          #category="ngModel"
+          class="form-select">
+          <option value="" disabled selected>Choisissez une catégorie</option>
+          <option value="Technical">💻 Technique</option>
+          <option value="Payment">💰 Paiement</option>
+          <option value="Course">📚 Cours</option>
+          <option value="Account">👤 Compte</option>
+          <option value="Other">❓ Autre</option>
+        </select>
+        <div *ngIf="category.invalid && category.touched" class="error-message">
+          La catégorie est requise
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div class="form-group">
+        <label class="form-label">
+          <span class="label-icon">📝</span>
+          Description <span class="required">*</span>
+        </label>
+        <textarea 
+          [(ngModel)]="ticket.description" 
+          name="description"
+          required
+          minlength="5"
+          #description="ngModel"
+          rows="5"
+          class="form-textarea"
+          placeholder="Décrivez votre problème en détail..."></textarea>
+        <div *ngIf="description.invalid && description.touched" class="error-message">
+          <span *ngIf="description.errors?.['required']">La description est requise</span>
+          <span *ngIf="description.errors?.['minlength']">Minimum 5 caractères</span>
+        </div>
+        
+        <!-- Suggestion de description -->
+        <div class="suggestion-box" *ngIf="!ticket.description && chatMessagesList.length > 1">
+          <span class="suggestion-icon">💡</span>
+          <span class="suggestion-text">Utilisez la conversation avec l'assistant pour pré-remplir la description</span>
+        </div>
+      </div>
+
+      <!-- Boutons -->
+      <div class="form-actions">
+        <button type="button" class="btn-cancel" routerLink="/my-tickets">
+          Annuler
+        </button>
+        <button 
+          type="submit" 
+          class="btn-submit" 
+          [disabled]="ticketForm.invalid || isSubmitting">
+          <span *ngIf="!isSubmitting">✓ Créer le ticket</span>
+          <span *ngIf="isSubmitting" class="spinner"></span>
+          <span *ngIf="isSubmitting">Création en cours...</span>
+        </button>
+      </div>
+    </form>
   </div>
 </div>

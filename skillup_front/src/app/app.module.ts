@@ -14,11 +14,22 @@ import { ForumComponent } from './forum/forum.component';
 import { QuizComponent } from './quiz/quiz.component';
 import { GestionForumComponent } from './back-office/gestion-forum/gestion-forum.component';
 import { GestionQuizComponent } from './back-office/gestion-quiz/gestion-quiz.component';
-import { CreateTicketComponent } from './create-ticket-component/create-ticket.component'; 
+
 import { UserTicketsComponent } from './user-tickets/user-tickets.component';
 import { AdminTicketsComponent } from './admin-tickets/admin-tickets.component';
 import { BulkCourseFormComponent } from './bulk-course-form/bulk-course-form.component';
 import { FormationCoursesComponent } from './formation-courses/formation-courses.component';
+import { RouterModule } from '@angular/router';
+import { CreateTicketComponent } from './create-ticket-component/create-ticket.component';
+import { FileSizePipe } from './pipes/filesize.pipe';
+import { AnalyticsDashboardComponent } from './analytics-dashboard/analytics-dashboard.component';
+import { ChatbotService } from './chatbot.service';
+import { BadgeSimpleComponent } from './badge-simple/badge-simple.component';
+import { CourseListComponent } from './course-list/course-list.component';
+import { CourseEditComponent } from './course-edit/course-edit.component';
+
+
+
 
 //import { TicketDetailComponent } from './ticket-detail/ticket-detail.component';
 
@@ -36,13 +47,21 @@ import { FormationCoursesComponent } from './formation-courses/formation-courses
     QuizComponent,
     GestionForumComponent,
     GestionQuizComponent,
-    CreateTicketComponent,
+    
     UserTicketsComponent,
     AdminTicketsComponent,
     BulkCourseFormComponent,
     FormationCoursesComponent,
     //TicketDetailComponent,
+    CreateTicketComponent, 
+    FileSizePipe, AnalyticsDashboardComponent,
+    AnalyticsDashboardComponent,
+    BadgeSimpleComponent,
+    CourseListComponent,
+    CourseEditComponent,
     
+    
+          
     
   ],
   imports: [
@@ -50,9 +69,10 @@ import { FormationCoursesComponent } from './formation-courses/formation-courses
     AppRoutingModule,
     HttpClientModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    RouterModule
   ],
-  providers: [],
+  providers: [ChatbotService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -80,4 +80,87 @@ export class TicketDetailComponent implements OnInit {
   }
  // Dans ticket-detail.component.ts
 
+}
+
+
+
+
+
+// admin-dashboard.component.ts
+import { Component, OnInit } from '@angular/core';
+import { TicketService } from '../ticket.service';
+
+@Component({
+  selector: 'app-ticket-dashboard',
+  templateUrl: './ticket-dashboard.component.html',
+  styleUrls: ['./ticket-dashboard.component.css']
+})
+export class TicketDashboardComponent implements OnInit {
+  stats: any = {};
+  responseTimes: any[] = [];
+  loading = true;
+  
+  // Chart data
+  categoryChartData: any[] = [];
+  adminChartData: any[] = [];
+  
+  constructor(private ticketService: TicketService) {}
+  
+  ngOnInit() {
+    this.loadStats();
+    this.loadResponseTimes();
+  }
+  
+  loadStats() {
+    this.ticketService.getDashboardStats().subscribe({
+      next: (data) => {
+        this.stats = data;
+        this.prepareChartData();
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Erreur chargement stats:', err);
+        this.loading = false;
+      }
+    });
+  }
+  
+  loadResponseTimes() {
+    this.ticketService.getResponseTimeStats().subscribe({
+      next: (data) => {
+        this.responseTimes = data;
+      }
+    });
+  }
+  
+  prepareChartData() {
+    // Données pour le graphique par catégorie
+    this.categoryChartData = Object.keys(this.stats.averageResponseTimeByCategory || {}).map(key => ({
+      name: key,
+      value: Math.round(this.stats.averageResponseTimeByCategory[key])
+    }));
+    
+    // Données pour le graphique par admin
+    this.adminChartData = Object.keys(this.stats.averageResponseTimeByAdmin || {}).map(key => ({
+      name: key,
+      value: Math.round(this.stats.averageResponseTimeByAdmin[key])
+    }));
+  }
+  
+  getStatusClass(status: string): string {
+    const classes: any = {
+      'OPEN': 'badge-open',
+      'IN_PROGRESS': 'badge-progress',
+      'RESOLVED': 'badge-resolved',
+      'CLOSED': 'badge-closed'
+    };
+    return classes[status] || '';
+  }
+  
+  formatMinutes(minutes: number): string {
+    if (!minutes) return 'N/A';
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return `${hours}h ${mins}m`;
+  }
 }*/

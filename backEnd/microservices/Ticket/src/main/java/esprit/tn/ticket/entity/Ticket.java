@@ -3,6 +3,10 @@ package esprit.tn.ticket.entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 
 @Entity
@@ -62,9 +66,41 @@ public class Ticket {
             this.status = TicketStatus.OPEN;
         }
     }
+    // NOUVEAU: Pour les statistiques
+    private Long responseTimeMinutes;
+
+    // NOUVEAU: Pour les notes
+    private Integer adminRating;
+    private String adminRatingComment;
+
+
+    /*@PrePersist
+    protected void onCreate() {
+        this.createdAt = new Date();
+        this.updatedAt = new Date();
+        if (this.status == null) {
+            this.status = TicketStatus.OPEN;
+        }
+    }*/
 
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = new Date();
+        // Calcul du temps de réponse si c'est la première réponse
+        if (this.adminResponse != null && this.responseTimeMinutes == null && this.createdAt != null) {
+            long diffInMillies = new Date().getTime() - this.createdAt.getTime();
+            this.responseTimeMinutes = diffInMillies / (60 * 1000);
+        }
+    }
+    // NOUVEAUX CHAMPS POUR L'ÉVALUATION
+    private Integer rating; // 1 à 5
+    private String ratingComment;// Commentaire optionnel
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date ratingDate;
+
+    // Nouvelle méthode pour vérifier si le ticket peut être évalué
+    public boolean canBeRated() {
+        return this.status == TicketStatus.RESOLVED || this.status == TicketStatus.CLOSED;
     }
 }

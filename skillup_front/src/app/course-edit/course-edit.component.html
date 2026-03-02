@@ -1,0 +1,232 @@
+<div class="container mt-4">
+  <!-- Bouton retour -->
+  <button class="btn btn-link text-decoration-none p-0 mb-3" (click)="cancel()">
+    <i class="fas fa-arrow-left"></i> Retour à la liste
+  </button>
+
+  <div class="card shadow-sm">
+    <div class="card-header bg-white py-3">
+      <h4 class="mb-0">
+        <i class="fas fa-edit me-2 text-primary"></i>
+        Modifier le cours #{{ courseId }}
+      </h4>
+    </div>
+
+    <div class="card-body">
+      <!-- Messages -->
+      <div *ngIf="successMessage" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i>
+        {{ successMessage }}
+        <button type="button" class="btn-close" (click)="successMessage = ''"></button>
+      </div>
+
+      <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-circle me-2"></i>
+        {{ errorMessage }}
+        <button type="button" class="btn-close" (click)="errorMessage = ''"></button>
+      </div>
+
+      <!-- Loading -->
+      <div *ngIf="loading" class="text-center py-5">
+        <div class="spinner-border text-primary mb-3" role="status">
+          <span class="visually-hidden">Chargement...</span>
+        </div>
+        <p class="text-muted">Chargement du cours...</p>
+      </div>
+
+      <!-- Formulaire -->
+      <form *ngIf="!loading" [formGroup]="courseForm" (ngSubmit)="onSubmit()">
+        <!-- Formation (lecture seule) -->
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <label class="form-label fw-bold">
+              <i class="fas fa-graduation-cap me-2 text-primary"></i>
+              Formation *
+            </label>
+            <div class="input-group">
+              <span class="input-group-text bg-light">ID</span>
+              <input type="number" 
+                     class="form-control bg-light" 
+                     formControlName="formationId"
+                     readonly>
+              <span class="input-group-text bg-light">Nom</span>
+              <input type="text" 
+                     class="form-control bg-light" 
+                     formControlName="formationName"
+                     readonly>
+            </div>
+            <small class="text-muted">La formation ne peut pas être modifiée</small>
+          </div>
+        </div>
+
+        <hr class="my-4">
+
+        <!-- Informations principales -->
+        <h5 class="mb-3 text-primary">Informations générales</h5>
+        
+        <div class="row mb-3">
+          <div class="col-md-8">
+            <label class="form-label fw-bold">
+              Titre du cours <span class="text-danger">*</span>
+            </label>
+            <input type="text" 
+                   class="form-control" 
+                   [class.is-invalid]="hasError('title', 'required') || hasError('title', 'minlength')"
+                   formControlName="title"
+                   placeholder="Ex: Introduction à Spring Boot">
+            <div class="invalid-feedback">{{ getErrorMessage('title') }}</div>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label fw-bold">Statut</label>
+            <select class="form-control" formControlName="status">
+              <option *ngFor="let status of statuses" [value]="status">{{ status }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-bold">Description</label>
+          <textarea class="form-control" 
+                    formControlName="description" 
+                    rows="4"
+                    placeholder="Description détaillée du cours..."></textarea>
+        </div>
+
+        <hr class="my-4">
+
+        <!-- Détails du cours -->
+        <h5 class="mb-3 text-primary">Détails du cours</h5>
+        
+        <div class="row mb-3">
+          <div class="col-md-3">
+            <label class="form-label fw-bold">Catégorie</label>
+            <select class="form-control" formControlName="category">
+              <option value="">Non spécifié</option>
+              <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label fw-bold">Niveau</label>
+            <select class="form-control" formControlName="level">
+              <option value="">Non spécifié</option>
+              <option *ngFor="let level of levels" [value]="level">{{ level }}</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label fw-bold">Langue</label>
+            <select class="form-control" formControlName="language">
+              <option value="">Non spécifié</option>
+              <option *ngFor="let lang of languages" [value]="lang">{{ lang }}</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label fw-bold">Durée (heures)</label>
+            <input type="number" 
+                   class="form-control" 
+                   [class.is-invalid]="hasError('durationHours', 'min')"
+                   formControlName="durationHours"
+                   min="1">
+            <div class="invalid-feedback">{{ getErrorMessage('durationHours') }}</div>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-3">
+            <label class="form-label fw-bold">Prix (€)</label>
+            <input type="number" 
+                   class="form-control" 
+                   [class.is-invalid]="hasError('price', 'min')"
+                   formControlName="price"
+                   min="0"
+                   step="0.01">
+            <div class="invalid-feedback">{{ getErrorMessage('price') }}</div>
+          </div>
+        </div>
+
+        <hr class="my-4">
+
+        <!-- Formateur -->
+        <h5 class="mb-3 text-primary">Informations du formateur</h5>
+        
+        <div class="row mb-3">
+          <div class="col-md-4">
+            <label class="form-label fw-bold">ID Formateur</label>
+            <input type="number" 
+                   class="form-control" 
+                   formControlName="trainerId"
+                   placeholder="123"
+                   min="1">
+          </div>
+          <div class="col-md-8">
+            <label class="form-label fw-bold">Nom du formateur</label>
+            <input type="text" 
+                   class="form-control" 
+                   formControlName="trainerName"
+                   placeholder="Nom du formateur">
+          </div>
+        </div>
+
+        <!-- Boutons d'action -->
+        <hr class="my-4">
+
+        <div class="d-flex justify-content-end gap-2">
+          <button type="button" class="btn btn-light px-4" (click)="cancel()" [disabled]="submitting">
+            Annuler
+          </button>
+          <button type="submit" 
+                  class="btn btn-primary px-4" 
+                  [disabled]="courseForm.invalid || submitting">
+            <i class="fas" [class.fa-spinner]="submitting" [class.fa-save]="!submitting"></i>
+            {{ submitting ? 'Enregistrement...' : 'Enregistrer les modifications' }}
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Pied de page avec informations supplémentaires -->
+    <div *ngIf="!loading" class="card-footer bg-white py-3 text-muted small">
+      <div class="d-flex justify-content-between align-items-center">
+        <span>
+          <i class="fas fa-info-circle me-1"></i>
+          Les champs marqués d'un <span class="text-danger">*</span> sont obligatoires
+        </span>
+        <span>
+          <i class="far fa-clock me-1"></i>
+          ID: {{ courseId }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Carte de résumé (optionnelle) -->
+  <div *ngIf="!loading && courseForm.valid" class="card mt-3 bg-light">
+    <div class="card-body">
+      <h6 class="card-title text-primary mb-3">
+        <i class="fas fa-eye me-2"></i>
+        Aperçu du cours
+      </h6>
+      <div class="row">
+        <div class="col-md-3">
+          <small class="text-muted d-block">Titre</small>
+          <strong>{{ courseForm.get('title')?.value || '-' }}</strong>
+        </div>
+        <div class="col-md-2">
+          <small class="text-muted d-block">Catégorie</small>
+          <strong>{{ courseForm.get('category')?.value || '-' }}</strong>
+        </div>
+        <div class="col-md-2">
+          <small class="text-muted d-block">Niveau</small>
+          <strong>{{ courseForm.get('level')?.value || '-' }}</strong>
+        </div>
+        <div class="col-md-2">
+          <small class="text-muted d-block">Durée/Prix</small>
+          <strong>{{ courseForm.get('durationHours')?.value || '0' }}h / {{ courseForm.get('price')?.value || '0' }}€</strong>
+        </div>
+        <div class="col-md-3">
+          <small class="text-muted d-block">Formateur</small>
+          <strong>{{ courseForm.get('trainerName')?.value || 'Non assigné' }}</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
