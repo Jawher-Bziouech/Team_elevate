@@ -1,0 +1,80 @@
+<div class="admin-dashboard-container animate-fade">
+    <!-- LEFT SIDEBAR -->
+    <aside class="admin-sidebar">
+        <div class="sidebar-top">
+            <div class="admin-logo">
+                <div class="logo-circle">S</div>
+                <span>SkillUp</span>
+            </div>
+            <nav class="admin-nav">
+                <div class="nav-group">
+                    <p class="nav-label">Main Menu</p>
+                    
+                    <!-- ✅ UTILISER routerLink POUR TOUS LES LIENS -->
+                    <a class="admin-nav-item" routerLink="/admin/dashboard" routerLinkActive="active">
+                        <span>📊</span> Dashboard
+                    </a>
+                    
+                    <a class="admin-nav-item" routerLink="/admin/formations" routerLinkActive="active">
+                        <span>🎓</span> Gestion Formations
+                    </a>
+                    
+                    <a class="admin-nav-item" routerLink="/admin/inscriptions" routerLinkActive="active">
+                        <span>📋</span> Gestion Inscriptions
+                    </a>
+                    
+                    <a class="admin-nav-item" routerLink="/admin/statistiques" routerLinkActive="active">
+                        <span>📊</span> Statistiques
+                    </a>
+                    
+                    <a class="admin-nav-item" routerLink="/admin/predictions" routerLinkActive="active">
+                        <span>🔮</span> Predictions
+                    </a>
+                    
+                    <a class="admin-nav-item" routerLink="/admin/forum" routerLinkActive="active">
+                        <span>💬</span> Gestion Forum
+                    </a>
+                    
+                    <a class="admin-nav-item" routerLink="/admin/quiz" routerLinkActive="active">
+                        <span>📝</span> Gestion Quizzes
+                    </a>
+                </div>
+                
+                <div class="nav-group mt-4">
+                    <p class="nav-label">System</p>
+                    <a class="admin-nav-item disabled-link">
+                        <span>⚙️</span> Settings
+                    </a>
+                </div>
+            </nav>
+        </div>
+
+        <div class="sidebar-bottom">
+            <div class="admin-profile-box">
+                <div class="admin-avatar">{{ authService.getUsername()?.charAt(0)?.toUpperCase() }}</div>
+                <div class="admin-user-details">
+                    <span class="aname">{{ authService.getUsername() }}</span>
+                    <span class="arole">{{ authService.getRole() }}</span>
+                </div>
+            </div>
+            <button class="admin-logout-btn" (click)="onLogout()">🚪 Logout</button>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="admin-main">
+        <header class="admin-header">
+            <div class="header-breadcrumb">
+                <h2>Admin Area / <span style="opacity: 0.5; font-weight: 400">{{ currentView | titlecase }}</span></h2>
+            </div>
+            <div class="admin-search">
+               <input type="text" placeholder="Global search...">
+            </div>
+        </header>
+
+        <!-- ✅ UNIQUEMENT LE ROUTER-OUTLET (pas de *ngIf) -->
+        <div class="admin-content-scroll">
+            <router-outlet></router-outlet>
+        </div>
+    </main>
+</div>

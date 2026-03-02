@@ -1,0 +1,118 @@
+<div class="container py-4">
+  <button class="btn btn-outline-primary mb-4" (click)="goBack()">
+    <i class="fas fa-arrow-left me-2"></i> Retour aux formations
+  </button>
+
+  <!-- Loading state -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Chargement...</span>
+    </div>
+    <p class="mt-2">Chargement de la formation...</p>
+  </div>
+
+  <!-- Error state -->
+  <div *ngIf="error" class="alert alert-danger">
+    <i class="fas fa-exclamation-triangle me-2"></i>
+    {{error}}
+  </div>
+
+  <!-- Formation details -->
+  <div *ngIf="formation && !loading" class="row">
+    <!-- Colonne gauche : Détails -->
+    <div class="col-md-6">
+      <div class="card detail-card">
+        <div class="card-header" [ngStyle]="{'background': formation.couleur || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'}">
+          <h2>{{formation.titre}}</h2>
+          <span class="badge">{{formation.categorie}}</span>
+        </div>
+        <div class="card-body">
+          <h4>Description</h4>
+          <p class="description-text">{{formation.description}}</p>
+          
+          <div class="details-grid">
+            <!-- Durée -->
+            <div class="detail-item">
+              <i class="far fa-clock"></i>
+              <div>
+                <strong>Durée</strong>
+                <span>{{formation.dureeHeures}} heures</span>
+              </div>
+            </div>
+            
+            <!-- Date début -->
+            <div class="detail-item">
+              <i class="fas fa-calendar-alt"></i>
+              <div>
+                <strong>Date début</strong>
+                <span>{{formation.dateDebut | date:'dd/MM/yyyy'}}</span>
+              </div>
+            </div>
+            
+            <!-- Date fin -->
+            <div class="detail-item">
+              <i class="fas fa-calendar-check"></i>
+              <div>
+                <strong>Date fin</strong>
+                <span>{{formation.dateFin | date:'dd/MM/yyyy'}}</span>
+              </div>
+            </div>
+            
+            <!-- Prix -->
+            <div class="detail-item">
+              <i class="fas fa-tag"></i>
+              <div>
+                <strong>Prix</strong>
+                <span>{{formation.prix | currency:'TND'}}</span>
+              </div>
+            </div>
+            
+            <!-- Places disponibles -->
+            <div class="detail-item">
+              <i class="fas fa-users"></i>
+              <div>
+                <strong>Places disponibles</strong>
+                <span [class.text-danger]="formation.placesDisponibles < 5">
+                  {{formation.placesDisponibles}}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Bouton QR Code -->
+      <div class="button-wrapper mt-3">
+        <button class="btn btn-info" (click)="openQRCodeModal()">
+          <i class="fas fa-qrcode me-2"></i> QR Code Vidéo
+        </button>
+      </div>
+    </div>
+
+    <!-- Colonne droite : Formulaire d'inscription -->
+    <div class="col-md-6">
+      <app-inscription-formation [formation]="formation"></app-inscription-formation>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ UN SEUL MODAL POUR LE QR CODE -->
+<div class="modal fade" id="qrCodeModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title">
+          <i class="fas fa-qrcode me-2"></i> QR Code - {{formation?.titre}}
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- ✅ UTILISATION DU COMPOSANT QR CODE STANDALONE -->
+        <app-formation-qrcode-modal 
+          [formation]="formation"
+          [lienPersonnalise]="formation?.videoUrl">
+        </app-formation-qrcode-modal>
+      </div>
+    </div>
+  </div>
+</div>

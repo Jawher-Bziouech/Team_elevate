@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/microservices/certificat/Certificat.iml" filepath="$PROJECT_DIR$/microservices/certificat/Certificat.iml" />
+      <module fileurl="file://$PROJECT_DIR$/microservices/Course/Course.iml" filepath="$PROJECT_DIR$/microservices/Course/Course.iml" />
+      <module fileurl="file://$PROJECT_DIR$/microservices/eventGestion/eventGestion.iml" filepath="$PROJECT_DIR$/microservices/eventGestion/eventGestion.iml" />
+      <module fileurl="file://$PROJECT_DIR$/microservices/job-offer/job-offer.iml" filepath="$PROJECT_DIR$/microservices/job-offer/job-offer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/microservices/user/user.iml" filepath="$PROJECT_DIR$/microservices/user/user.iml" />
+    </modules>
+  </component>
+</project>

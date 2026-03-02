@@ -14,10 +14,15 @@ export class LoginComponent {
 
   onLogin() {
     this.authService.login(this.credentials).subscribe({
-      next: (token) => {
-        alert('Login Successful! Welcome back.');
-        this.router.navigate(['/']); // Go to home
-      },
+      next: () => {
+  const role = this.authService.getRole();
+
+  if (role === 'ADMIN') {
+    this.router.navigate(['/back-office']);
+  } else {
+    this.router.navigate(['/home']);
+  }
+},
       error: (err) => alert('Login Failed: ' + err.error)
     });
   }

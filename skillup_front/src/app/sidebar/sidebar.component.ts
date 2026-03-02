@@ -15,4 +15,8 @@ export class SidebarComponent {
     alert('You have been logged out.');
     this.router.navigate(['/login']); // Send back to start
   }
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
 }

@@ -8,17 +8,34 @@ import { Router } from '@angular/router';
   styleUrls: ['./signup.component.css']
 })
 export class SignupComponent {
-  user = { username: '', email: '', password: '', role: 'USER' };
+  user = {
+    username: '',
+    email: '',
+    password: ''
+  };
+  termsAccepted = false;  // ← AJOUTEZ POUR LE CHECKBOX
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) {}
 
-  onSignup() {
+  onSignup(): void {
+    if (!this.termsAccepted) {
+      alert('Veuillez accepter les conditions d\'utilisation');
+      return;
+    }
+    
+    console.log('Tentative d\'inscription:', this.user);
     this.authService.register(this.user).subscribe({
-      next: (res) => {
-        alert('Registration Successful! You can now login.');
+      next: (response) => {
+        console.log('Inscription réussie', response);
         this.router.navigate(['/login']);
       },
-      error: (err) => alert('Registration Failed: ' + err.error)
+      error: (err) => {
+        console.error('Erreur inscription', err);
+        alert('Erreur lors de l\'inscription');
+      }
     });
   }
 }

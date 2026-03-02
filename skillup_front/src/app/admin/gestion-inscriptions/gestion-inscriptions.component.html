@@ -1,0 +1,114 @@
+<div class="container-fluid mt-4">
+  <h2 class="mb-4">📋 Gestion des Inscriptions</h2>
+  
+  <!-- Filtres -->
+  <div class="row mb-4">
+    <div class="col-md-4">
+      <input type="text" class="form-control" placeholder="Rechercher..."
+             [(ngModel)]="searchTerm" (input)="applyFilters()">
+    </div>
+    <!-- <div class="col-md-3">
+      <select class="form-select" [(ngModel)]="statutFilter" (change)="applyFilters()">
+        <option value="">Tous les statuts</option>
+        <option value="INSCRIT">Inscrit</option>
+        <option value="CONFIRMÉE">Confirmée</option>
+        <option value="ANNULÉE">Annulée</option>
+      </select>
+    </div> -->
+  </div>
+
+  <!-- Tableau -->
+  <table class="table table-striped table-hover">
+    <thead class="table-dark">
+      <tr>
+        <th>ID</th>
+        <th>Nom</th>
+        <th>Prénom</th>
+        <th>Email</th>
+        <th>Formation</th>
+        <th>Date</th>
+        <th>Statut</th>
+        <th>Actions</th> 
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let ins of filteredInscriptions">
+        <td>{{ins.id}}</td>
+        <td>{{ins.nom}}</td>
+        <td>{{ins.prenom}}</td>
+        <td>{{ins.email}}</td>
+        <td>{{ins.formation?.titre || 'N/A'}}</td>
+        <td>{{ins.dateInscription | date:'dd/MM/yyyy'}}</td>
+        <td>
+          <span class="badge" [ngClass]="{
+            'bg-success': ins.statut === 'CONFIRMÉE',
+            'bg-warning': ins.statut === 'INSCRIT',
+            'bg-danger': ins.statut === 'ANNULÉE'
+          }">{{ins.statut}}</span>
+        </td>
+        <td>
+          <!-- ✅ UNIQUEMENT MODIFIER ET SUPPRIMER -->
+          <button class="btn btn-sm btn-warning me-1" (click)="modifierInscription(ins)" title="Modifier">
+            <i class="fas fa-edit"></i>
+          </button>
+          <button class="btn btn-sm btn-danger" (click)="supprimerInscription(ins.id!)" title="Supprimer">
+            <i class="fas fa-trash"></i>
+          </button>
+        </td> 
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Message si aucun résultat -->
+  <div *ngIf="filteredInscriptions.length === 0" class="alert alert-info text-center">
+    Aucune inscription trouvée
+  </div>
+</div>
+
+<!-- ✅ MODAL DE MODIFICATION -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-warning">
+        <h5 class="modal-title">✏️ Modifier l'inscription</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="editForm" *ngIf="inscriptionSelectionnee">
+          <div class="mb-3">
+            <label class="form-label">Nom</label>
+            <input type="text" class="form-control" formControlName="nom">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Prénom</label>
+            <input type="text" class="form-control" formControlName="prenom">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-control" formControlName="email">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Formation</label>
+            <select class="form-control" formControlName="formationId">
+              <option *ngFor="let f of formations" [value]="f.id">{{ f.titre }}</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Statut</label>
+            <select class="form-control" formControlName="statut">
+              <option value="INSCRIT">INSCRIT</option>
+              <option value="CONFIRMÉE">CONFIRMÉE</option>
+              <option value="ANNULÉE">ANNULÉE</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+        <button type="button" class="btn btn-warning" (click)="sauvegarderModification()">
+          <i class="fas fa-save"></i> Sauvegarder
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

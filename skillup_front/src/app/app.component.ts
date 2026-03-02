@@ -1,19 +1,17 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { AuthService } from './auth.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'skillup-front';
-  constructor(private router: Router) {}
+  title = 'skillup_front';
 
-  // This function returns TRUE if we are on Login or Signup pages
-  isAuthPage(): boolean {
-    const url = this.router.url;
-    // Hide ONLY on these two pages
-    return url.includes('/login') || url.includes('/signup');
-  }
+  constructor(
+    public authService: AuthService,
+    public router: Router  // ← CHANGEZ DE private À public
+  ) {}
 }

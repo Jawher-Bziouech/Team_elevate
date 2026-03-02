@@ -1,0 +1,150 @@
+.top-bar {
+    height: 70px;
+    background: linear-gradient(90deg, #1e3a8a 0%, #2563eb 100%);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 30px; color: white; flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    position: relative;
+    z-index: 100;
+}
+
+.page-title { font-size: 18px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
+
+.top-actions { display: flex; align-items: center; gap: 15px; }
+
+/* NOTIFICATION ICON */
+.icon-btn { 
+    background: rgba(255, 255, 255, 0.1); border: none; color: white; 
+    cursor: pointer; position: relative; font-size: 18px;
+    width: 40px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+}
+.icon-btn:hover { background: rgba(255, 255, 255, 0.2); transform: scale(1.05); }
+
+/* USER TRIGGER */
+.user-dropdown-container { position: relative; }
+
+.profile-trigger {
+    display: flex; align-items: center; gap: 12px;
+    padding: 6px 14px; border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    cursor: pointer; transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.profile-trigger:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+}
+
+.user-avatar-small {
+    width: 34px; height: 34px; 
+    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+    color: white; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 14px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.username-display { font-size: 14px; font-weight: 600; }
+.arrow-icon { font-size: 9px; opacity: 0.5; transition: transform 0.2s; }
+.profile-trigger:hover .arrow-icon { transform: rotate(180deg); opacity: 1; }
+
+/* PREMIUM DROPDOWN GASSMORHISM */
+.dropdown-menu {
+    position: absolute; top: 60px; right: 0;
+    width: 240px; background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    padding: 15px 0; z-index: 1000;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    animation: slideUp 0.3s ease;
+    overflow: hidden;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.menu-header {
+    padding: 10px 20px 15px; border-bottom: 1px solid #f1f5f9;
+    margin-bottom: 8px;
+}
+.menu-header strong { display: block; color: var(--text-dark); font-size: 15px; }
+.role-tag {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    color: var(--primary-blue); background: #eff6ff;
+    padding: 3px 10px; border-radius: 6px; margin-top: 6px; display: inline-block;
+}
+
+.menu-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 20px; color: #475569; font-size: 14px;
+    text-decoration: none; cursor: pointer; transition: all 0.2s;
+}
+
+.menu-item:hover { background: #f8fafc; color: var(--primary-blue); padding-left: 25px; }
+
+.logout-item { color: #ef4444; border-top: 1px solid #f1f5f9; margin-top: 8px; }
+.logout-item:hover { background: #fef2f2; color: #dc2626; }
+.admin-links {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-right: 15px;
+}
+
+.admin-link {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+.admin-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(102, 126, 234, 0.4);
+}
+
+.admin-link .badge {
+    background: #ff4757;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 10px;
+    min-width: 18px;
+    text-align: center;
+    margin-left: 4px;
+}
+
+.badge-menu {
+    background: #ff4757;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 10px;
+    min-width: 18px;
+    text-align: center;
+    margin-left: 8px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .admin-link .link-text {
+        display: none;
+    }
+    
+    .admin-link {
+        padding: 6px 10px;
+    }
+}

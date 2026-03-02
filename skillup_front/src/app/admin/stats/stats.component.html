@@ -1,0 +1,169 @@
+<!-- admin/stats/stats.component.html -->
+<div class="stats-container animate-fade">
+  <div class="stats-header">
+    <h2>
+      <i class="fas fa-chart-line me-2"></i>
+      Tableau de bord statistiques
+    </h2>
+  </div>
+
+  <!-- Loader -->
+  <div *ngIf="loading" class="text-center my-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Chargement...</span>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && dashboardStats">
+    <!-- Cartes KPI -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-icon" style="background: #e0f2fe; color: #0284c7;">
+          <i class="fas fa-graduation-cap"></i>
+        </div>
+        <div class="kpi-info">
+          <h3>{{dashboardStats.totalFormations}}</h3>
+          <p>Total Formations</p>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon" style="background: #fef3c7; color: #f59e0b;">
+          <i class="fas fa-users"></i>
+        </div>
+        <div class="kpi-info">
+          <h3>{{dashboardStats.totalInscriptions}}</h3>
+          <p>Total Inscriptions</p>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon" style="background: #ecfdf5; color: #10b981;">
+          <i class="fas fa-calendar-check"></i>
+        </div>
+        <div class="kpi-info">
+          <h3>{{dashboardStats.inscriptionsMois}}</h3>
+          <p>Ce mois</p>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon" style="background: #ffedd5; color: #ea580c;">
+          <i class="fas fa-calendar-day"></i>
+        </div>
+        <div class="kpi-info">
+          <h3>{{dashboardStats?.inscriptionsAujourdhui}}</h3>
+          <p>Aujourd'hui</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filtres période -->
+    <div class="filters-card">
+      <h4>Évolution des inscriptions</h4>
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label>Date début</label>
+          <input type="date" class="form-control" [(ngModel)]="periodeDebut">
+        </div>
+        <div class="col-md-4">
+          <label>Date fin</label>
+          <input type="date" class="form-control" [(ngModel)]="periodeFin">
+        </div>
+        <div class="col-md-4 d-flex align-items-end">
+          <button class="btn btn-primary w-100" (click)="filtrerParPeriode()">
+            <i class="fas fa-filter me-2"></i>Filtrer
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Graphique -->
+    <div class="chart-card" *ngIf="inscriptionsJournalieres && chartData.length > 0">
+      <div style="height: 300px;">
+        <canvas 
+          baseChart 
+          [data]="{ labels: chartLabels, datasets: chartData }"
+          [options]="chartOptions"
+          [type]="'line'">
+        </canvas>
+      </div>
+    </div>
+
+    <!-- Statistiques détaillées -->
+    <div class="row">
+      <!-- Top formations -->
+      <div class="col-md-6">
+        <div class="stats-card">
+          <h4>Top formations</h4>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Formation</th>
+                <th class="text-center">Inscriptions</th>
+                <th class="text-center">%</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of getTopFormationsEntries(); let i = index">
+                <td>
+                  <span class="rank-badge">{{i+1}}</span>
+                  {{item[0]}}
+                </td>
+                <td class="text-center">{{item[1]}}</td>
+                <td class="text-center">
+                  {{(item[1] / dashboardStats.totalInscriptions * 100) | number:'1.0-1'}}%
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Répartition -->
+      <div class="col-md-6">
+        <div class="stats-card">
+          <h4>Répartition des formations</h4>
+          <div class="stat-item">
+            <span class="label">
+              <span class="dot" style="background: #10b981;"></span>
+              Places disponibles
+            </span>
+            <span class="value">{{dashboardStats.formationsAvecPlaces}}</span>
+          </div>
+          <div class="progress mb-3">
+            <div class="progress-bar bg-success" 
+                 [style.width.%]="(dashboardStats.formationsAvecPlaces / dashboardStats.totalFormations * 100)">
+              {{dashboardStats.formationsAvecPlaces}}
+            </div>
+          </div>
+
+          <div class="stat-item">
+            <span class="label">
+              <span class="dot" style="background: #ef4444;"></span>
+              Formations complètes
+            </span>
+            <span class="value">{{dashboardStats.formationsCompletes}}</span>
+          </div>
+          <div class="progress">
+            <div class="progress-bar bg-danger" 
+                 [style.width.%]="(dashboardStats.formationsCompletes / dashboardStats.totalFormations * 100)">
+              {{dashboardStats.formationsCompletes}}
+            </div>
+          </div>
+
+          <div class="stats-summary mt-4">
+            <div class="summary-item">
+              <span>Taux de remplissage</span>
+              <strong>{{getPourcentageComplet()}}%</strong>
+            </div>
+            <div class="summary-item">
+              <span>Moyenne inscriptions/jour</span>
+              <strong>{{(dashboardStats.inscriptionsSemaine / 7) | number:'1.0-1'}}</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

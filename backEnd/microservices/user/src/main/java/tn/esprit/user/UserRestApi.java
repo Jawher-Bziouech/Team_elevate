@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.List;
 import java.util.Optional;
-
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/users")
 public class UserRestApi {
@@ -40,6 +40,12 @@ public class UserRestApi {
     @PostMapping("/signup")
     public User createUser(@RequestBody User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        // Add this check!
+        if (user.getRole() == null) {
+            user.setRole(Role.TRAINEE);
+        }
+
         return userRepository.save(user);
     }
     @PostMapping("/signin")
@@ -52,8 +58,7 @@ public class UserRestApi {
             // 4. Verify the password matches the hashed one
             if (passwordEncoder.matches(loginRequest.getPassword(), user.get().getPassword())) {
                 // 5. Success! Return the JWT Token (the Badge)
-                return jwtUtils.generateToken(user.get().getUsername());
-            }
+                return jwtUtils.generateToken(user.get().getUsername(), user.get().getRole(), user.get().getId());            }
         }
 
         // 6. Fail

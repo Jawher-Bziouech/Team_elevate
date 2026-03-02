@@ -1,0 +1,82 @@
+/* Layout principal avec sidebar */
+.main-layout {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.content-wrapper {
+  flex: 1;
+  overflow-y: auto; /* ← CRITIQUE pour le scroll */
+  padding: 20px;
+  background-color: #f8f9fa;
+}
+
+/* Layout public des formations - CORRIGÉ */
+.formations-public-layout {
+  height: 100vh; /* ← changé de min-height à height */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background-color: #f8f9fa;
+}
+
+/* Pour que le contenu des formations défile */
+.formations-public-layout .scrollable-content {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* Layout auth (login/signup) */
+.auth-layout {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* Navbar personnalisée pour formations */
+.formations-public-layout .navbar {
+  flex-shrink: 0; /* Empêche la navbar de rétrécir */
+  box-shadow: 0 2px 4px rgba(0,0,0,.1);
+}
+
+.formations-public-layout .navbar-brand {
+  font-weight: bold;
+  font-size: 1.5rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .main-layout {
+    flex-direction: column;
+  }
+  
+  .content-wrapper {
+    padding: 10px;
+  }
+}
+/* Layout public des formations */
+.formations-public-layout {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background-color: #f8f9fa;
+}
+
+/* Le composant formations prend tout l'espace */
+app-formations {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}

@@ -1,6 +1,11 @@
-<div class="main-layout" *ngIf="!isAuthPage()">
-  <app-sidebar></app-sidebar>
-  
+<!-- ADMIN WORLD -->
+<div *ngIf="router.url.includes('/admin/') || router.url.includes('/back-office')">
+  <router-outlet></router-outlet>
+</div>
+
+<!-- USER WORLD -->
+<div class="main-layout" *ngIf="!router.url.includes('/admin/') && !router.url.includes('/back-office') && !router.url.includes('/login') && !router.url.includes('/signup')">
+  <app-sidebar></app-sidebar> 
   <div class="main-content">
     <app-header></app-header>
     <div class="content-wrapper">
@@ -9,6 +14,7 @@
   </div>
 </div>
 
-<div *ngIf="isAuthPage()">
+<!-- LOGIN/SIGNUP WORLD -->
+<div *ngIf="router.url.includes('/login') || router.url.includes('/signup')">
   <router-outlet></router-outlet>
 </div>

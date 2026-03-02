@@ -1,0 +1,148 @@
+<div class="inscription-container">
+  <h3 class="mb-4">Inscription à la formation</h3>
+  <h5 class="text-primary mb-4">{{ formation?.titre }}</h5>
+
+  <!-- Message de succès -->
+  <div class="alert alert-success" *ngIf="success" role="alert">
+    <i class="fas fa-check-circle me-2"></i>
+    Votre inscription a été enregistrée avec succès ! Vous recevrez un email de confirmation.
+  </div>
+
+  <!-- Message d'erreur -->
+  <div class="alert alert-danger" *ngIf="errorMessage" role="alert">
+    <i class="fas fa-exclamation-triangle me-2"></i>
+    {{ errorMessage }}
+  </div>
+
+  <!-- Formulaire -->
+  <form [formGroup]="inscriptionForm" (ngSubmit)="onSubmit()" *ngIf="!success">
+    
+    <!-- Ligne Nom / Prénom -->
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label for="nom" class="form-label">
+          Nom <span class="text-danger">*</span>
+        </label>
+        <input 
+          type="text" 
+          class="form-control" 
+          id="nom"
+          formControlName="nom"
+          [class.is-invalid]="submitted && f['nom'].errors">
+        
+        <div class="invalid-feedback" *ngIf="submitted && f['nom'].errors">
+          <span *ngIf="f['nom'].errors['required']">Le nom est obligatoire</span>
+          <span *ngIf="f['nom'].errors['minlength']">Le nom doit contenir au moins 2 caractères</span>
+        </div>
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <label for="prenom" class="form-label">
+          Prénom <span class="text-danger">*</span>
+        </label>
+        <input 
+          type="text" 
+          class="form-control" 
+          id="prenom"
+          formControlName="prenom"
+          [class.is-invalid]="submitted && f['prenom'].errors">
+        
+        <div class="invalid-feedback" *ngIf="submitted && f['prenom'].errors">
+          <span *ngIf="f['prenom'].errors['required']">Le prénom est obligatoire</span>
+          <span *ngIf="f['prenom'].errors['minlength']">Le prénom doit contenir au moins 2 caractères</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Email -->
+    <div class="mb-3">
+      <label for="email" class="form-label">
+        Email <span class="text-danger">*</span>
+      </label>
+      <input 
+        type="email" 
+        class="form-control" 
+        id="email"
+        formControlName="email"
+        [class.is-invalid]="submitted && f['email'].errors">
+      
+      <div class="invalid-feedback" *ngIf="submitted && f['email'].errors">
+        <span *ngIf="f['email'].errors['required']">L'email est obligatoire</span>
+        <span *ngIf="f['email'].errors['email']">Veuillez saisir un email valide</span>
+      </div>
+    </div>
+
+    <!-- Téléphone -->
+    <div class="mb-3">
+      <label for="telephone" class="form-label">
+        Téléphone <span class="text-danger">*</span>
+      </label>
+      <input 
+        type="tel" 
+        class="form-control" 
+        id="telephone"
+        formControlName="telephone"
+        placeholder="12345678"
+        [class.is-invalid]="submitted && f['telephone'].errors">
+      
+      <div class="invalid-feedback" *ngIf="submitted && f['telephone'].errors">
+        <span *ngIf="f['telephone'].errors['required']">Le téléphone est obligatoire</span>
+        <span *ngIf="f['telephone'].errors['pattern']">Veuillez saisir 8 chiffres</span>
+      </div>
+    </div>
+
+    <!-- Résumé de la formation -->
+    <div class="card bg-light mb-3">
+      <div class="card-body">
+        <h6>Récapitulatif</h6>
+        <p class="mb-1"><strong>Formation:</strong> {{ formation?.titre }}</p>
+        <p class="mb-1"><strong>Durée:</strong> {{ formation?.dureeHeures }} heures</p>
+        <p class="mb-1"><strong>Prix:</strong> {{ formation?.prix | currency:'TND' }}</p>
+        <p class="mb-0"><strong>Places disponibles:</strong> 
+          <span [class.text-danger]="formation?.placesDisponibles < 5">
+            {{ formation?.placesDisponibles }}
+          </span>
+        </p>
+      </div>
+    </div>
+
+    <!-- Conditions -->
+    <div class="mb-3 form-check">
+      <input 
+        type="checkbox" 
+        class="form-check-input" 
+        id="acceptConditions"
+        formControlName="acceptConditions"
+        [class.is-invalid]="submitted && f['acceptConditions'].errors">
+      
+      <label class="form-check-label" for="acceptConditions">
+        J'accepte les conditions d'inscription
+      </label>
+      
+      <div class="invalid-feedback" *ngIf="submitted && f['acceptConditions'].errors">
+        Vous devez accepter les conditions
+      </div>
+    </div>
+
+    <!-- Boutons -->
+    <div class="d-flex justify-content-between">
+      <button type="button" class="btn btn-secondary" (click)="resetForm()">
+        <i class="fas fa-times me-2"></i>Annuler
+      </button>
+      <button type="submit" class="btn btn-success" [disabled]="loading">
+        <i class="fas" [ngClass]="loading ? 'fa-spinner fa-spin' : 'fa-check'"></i>
+        {{ loading ? 'Inscription en cours...' : "S'inscrire" }}
+      </button>
+    </div>
+  </form>
+
+  <!-- Lien vers connexion si non connecté -->
+  <div class="text-center mt-3" *ngIf="!authService.isLoggedIn() && !success">
+    <p class="text-muted">
+      Déjà un compte ? 
+      <a routerLink="/login" [queryParams]="{returnUrl: '/formation/' + formation?.id}">
+        Connectez-vous
+      </a>
+    </p>
+  </div>
+</div>

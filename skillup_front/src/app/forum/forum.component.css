@@ -1,0 +1,82 @@
+.forum-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    padding-bottom: 50px;
+}
+
+.forum-header h2 { font-size: 28px; color: var(--text-dark); margin-bottom: 5px; }
+.forum-header .highlight { color: var(--primary-blue); }
+.forum-header p { color: var(--text-gray); font-size: 14px; margin-bottom: 30px; }
+
+/* CREATE POST */
+.create-post-card {
+    background: white; padding: 25px; border-radius: 16px; border: 1px solid var(--card-border);
+    margin-bottom: 40px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+}
+.create-post-card h3 { font-size: 16px; margin-bottom: 15px; color: var(--text-dark); }
+
+.custom-input, .custom-textarea {
+    width: 100%; background: #f8fafc; border: 1px solid #e2e8f0;
+    border-radius: 10px; padding: 12px 15px; margin-bottom: 12px;
+    font-size: 14px; outline: none; transition: all 0.2s;
+}
+.custom-input:focus, .custom-textarea:focus { border-color: var(--primary-blue); background: white; }
+
+.action-bar { display: flex; justify-content: flex-end; }
+.btn-post {
+    background: var(--primary-blue); color: white; border: none;
+    padding: 10px 25px; border-radius: 8px; font-weight: 600; cursor: pointer;
+}
+
+/* POST CARDS */
+.native-post-card {
+    background: white; border-radius: 16px; border: 1px solid var(--card-border);
+    padding: 24px; margin-bottom: 25px; overflow: hidden;
+}
+.post-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; }
+.user-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--sidebar-bg); color: white;
+    display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 13px;
+}
+.user-name { font-weight: 700; font-size: 14px; color: var(--text-dark); }
+.post-date { font-size: 12px; color: var(--text-gray); display: block; }
+
+.post-body h4 { font-size: 18px; color: var(--text-dark); margin-bottom: 10px; }
+.post-body p { color: var(--text-gray); font-size: 15px; line-height: 1.5; margin-bottom: 20px; }
+
+.post-footer {
+    display: flex; justify-content: space-between;
+    padding-top: 15px; border-top: 1px solid #f1f5f9;
+}
+.footer-btn {
+    background: none; border: none; color: var(--text-gray);
+    font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;
+}
+.footer-btn.action { color: var(--primary-blue); }
+
+/* COMMENTS SECTION */
+.comments-section {
+    background: #f8fafc; margin: 15px -24px -24px -24px;
+    padding: 20px 24px; border-top: 1px solid #f1f5f9;
+}
+.comment-item { display: flex; gap: 10px; margin-bottom: 15px; }
+.comment-avatar {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: #94a3b8; color: white; font-size: 9px;
+    display: flex; align-items: center; justify-content: center; font-weight: bold;
+}
+.comment-author { font-weight: 700; font-size: 13px; color: var(--text-dark); }
+.comment-content p { font-size: 13px; margin: 2px 0; color: var(--text-gray); }
+.comment-date { font-size: 11px; color: #94a3b8; }
+
+.add-comment-box { display: flex; gap: 10px; margin-top: 15px; }
+.comment-input {
+    flex: 1; background: white; border: 1px solid #e2e8f0;
+    border-radius: 8px; padding: 8px 12px; font-size: 13px; outline: none;
+}
+.btn-send-comment {
+    background: var(--primary-blue); color: white; border: none;
+    padding: 0 15px; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer;
+}
