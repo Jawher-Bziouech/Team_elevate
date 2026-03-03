@@ -1,0 +1,60 @@
+/* Reuse the same pro-card and table styles from gestion-forum */
+.pro-card { background: white; padding: 40px; border-radius: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.02); }
+
+.custom-table { width: 100%; border-collapse: separate; border-spacing: 0 12px; }
+.custom-table thead th { border: none; color: #94a3b8; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; padding: 10px 20px; }
+.custom-table tbody tr { background: #f8fafc; border-radius: 16px; transition: 0.3s; }
+.custom-table tbody tr:hover { background: #f1f5f9; transform: scale(1.005); }
+.custom-table td { padding: 20px; border: none; vertical-align: middle; }
+.custom-table td:first-child { border-top-left-radius: 16px; border-bottom-left-radius: 16px; }
+.custom-table td:last-child { border-top-right-radius: 16px; border-bottom-right-radius: 16px; }
+
+.user-badge { background: #eff6ff; color: #2563eb; padding: 5px 12px; border-radius: 8px; font-weight: 700; font-size: 12px; }
+
+/* STATUS BADGES */
+.status-badge {
+  padding: 5px 14px; border-radius: 8px; font-size: 11px;
+  font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;
+}
+.s-pending { background: #fef3c7; color: #d97706; }
+.s-approved { background: #ecfdf5; color: #10b981; }
+.s-rejected { background: #fee2e2; color: #ef4444; }
+
+/* FILTER BUTTONS */
+.filter-group { display: flex; gap: 6px; }
+.filter-btn {
+  background: #f1f5f9; border: none; padding: 8px 16px; border-radius: 8px;
+  font-weight: 700; font-size: 12px; cursor: pointer; transition: 0.2s; color: #64748b;
+}
+.filter-btn:hover { background: #e2e8f0; }
+.filter-btn.active { background: #2563eb; color: white; }
+.filter-btn.pending.active { background: #f59e0b; color: white; }
+.filter-btn.approved.active { background: #10b981; color: white; }
+.filter-btn.rejected.active { background: #ef4444; color: white; }
+
+/* ACTION BUTTONS */
+.actions-cell { display: flex; gap: 6px; flex-wrap: wrap; }
+.btn-approve {
+  background: #ecfdf5; color: #10b981; border: none; padding: 8px 16px;
+  border-radius: 10px; font-weight: 700; font-size: 12px; cursor: pointer; transition: 0.2s;
+}
+.btn-approve:hover { background: #10b981; color: white; }
+
+.btn-reject {
+  background: #fef3c7; color: #d97706; border: none; padding: 8px 16px;
+  border-radius: 10px; font-weight: 700; font-size: 12px; cursor: pointer; transition: 0.2s;
+}
+.btn-reject:hover { background: #d97706; color: white; }
+
+.btn-delete-pro {
+  background: #fee2e2; color: #ef4444; border: none; padding: 8px 16px;
+  border-radius: 10px; font-weight: 700; font-size: 12px; cursor: pointer;
+}
+.btn-delete-pro:hover { background: #ef4444; color: white; }
+
+/* EMPTY STATE */
+.empty-state { text-align: center; padding: 60px; color: #94a3b8; }
+.empty-icon { font-size: 50px; margin-bottom: 20px; opacity: 0.5; }
+
+.animate-fade { animation: fadeIn 0.4s ease-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }

@@ -1,0 +1,61 @@
+/* signup.component.css */
+.auth-wrapper {
+    width: 100vw; 
+    min-height: 100vh;
+    background: #00152cf0; /* PROFESSIONAL NAVY BLUE */
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    padding: 20px;
+    font-family: 'Outfit', 'Inter', sans-serif;
+    margin: 0 !important;
+}
+
+.pro-signup-card {
+    width: 100%; max-width: 440px;
+    background: #ffffff;
+    padding: 50px 45px; border-radius: 32px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.pro-square-logo {
+    width: 55px; height: 55px; 
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    border-radius: 16px; margin: 0 auto 24px;
+    box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.4);
+}
+
+.input-group label { color: #475569; font-weight: 700; font-size: 13px; margin-bottom: 8px; display: block; }
+.input-group input {
+    width: 100%; background: #f8fafc; border: 2px solid #f1f5f9;
+    padding: 14px 20px; border-radius: 14px; outline: none; transition: 0.2s;
+}
+
+.input-group input:focus { border-color: #3b82f6; background: #ffffff; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); }
+
+.terms-row { background: #f8fafc; padding: 12px 18px; border-radius: 12px; margin-top: 20px; }
+.custom-checkbox { display: flex; align-items: center; gap: 12px; font-size: 12px; color: #64748b; font-weight: 600; }
+
+.btn-create-account {
+    width: 100%; border: none; padding: 16px; border-radius: 14px;
+    background: linear-gradient(135deg, #60a5fa 0%, #2563eb 100%);
+    color: white; font-weight: 800; font-size: 16px; cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-create-account:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2); }
+
+/* Increased Spacing for Signup */
+
+
+.input-group {
+    margin-bottom: 22px !important; 
+}
+
+
+
+.btn-create-account {
+    margin-top: 35px !important;     /* Space before Create Account button */
+}
+
+

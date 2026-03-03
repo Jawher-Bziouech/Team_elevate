@@ -1,4 +1,6 @@
 package tn.esprit.user;
-
-public class Role {
+public enum Role {
+    ADMIN,
+    TRAINER,
+    TRAINEE
 }

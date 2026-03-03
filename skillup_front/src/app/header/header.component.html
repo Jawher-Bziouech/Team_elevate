@@ -1,13 +1,60 @@
 <header class="top-bar">
-    <div class="page-title">SkillUp Dashboard</div>
+    <div class="page-title">SkillUp <span style="opacity: 0.6; font-weight: 400;">Connect</span></div>
+    
     <div class="top-actions">
-        <button class="icon-btn">
-            <span>🔔</span>
-            <span class="badge">3</span>
-        </button>
-        <div style="display: flex; align-items: center; gap: 8px;">
-            <img src="https://placehold.co/100x100/2563eb/white?text=User" style="width: 32px; height: 32px; border-radius: 50%;" alt="Profile">
-            <span style="font-size: 14px;">User v</span>
+        <!-- Notification -->
+        <div class="notif-container">
+            <button class="icon-btn" (click)="toggleNotifications()">
+                <span>🔔</span>
+                <span class="badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
+            </button>
+
+            <div class="notif-dropdown" *ngIf="showNotifications" (mouseleave)="showNotifications = false">
+                <div class="notif-header">
+                    <strong>Notifications</strong>
+                    <button class="mark-read-btn" *ngIf="unreadCount > 0" (click)="markAllRead()">Mark all read</button>
+                </div>
+                <div class="notif-list">
+                    <div *ngIf="notifications.length === 0" class="notif-empty">No notifications yet</div>
+                    <div *ngFor="let n of notifications" class="notif-item" 
+                         [class.unread]="!n.read"
+                         (click)="goToPost(n)" style="cursor:pointer">
+                        <span class="notif-icon">💬</span>
+                        <div class="notif-content">
+                            <p>{{ n.message }}</p>
+                            <small>{{ n.createdAt | date:'short' }}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Profile Dropdown -->
+        <div class="user-dropdown-container">
+            <div class="profile-trigger" (click)="toggleMenu()">
+                <div class="user-avatar-small">{{ authService.getUsername()?.charAt(0)?.toUpperCase() || 'U' }}</div>
+                <span class="username-display">{{ authService.getUsername() || 'Guest' }}</span>
+                <span class="arrow-icon">▼</span>
+            </div>
+
+            <div class="dropdown-menu" *ngIf="showMenu" (mouseleave)="showMenu = false">
+                <div class="menu-header">
+                    <strong>{{ authService.getUsername() }}</strong>
+                    <span class="role-tag">✨ {{ authService.getRole() }}</span>
+                </div>
+                <a class="menu-item" (click)="showMenu = false">
+                    <span style="font-size: 18px;">👤</span> My Profile
+                </a>
+                <a class="menu-item" (click)="showMenu = false">
+                    <span style="font-size: 18px;">🏆</span> Achievements
+                </a>
+                <a class="menu-item" (click)="showMenu = false">
+                    <span style="font-size: 18px;">⚙️</span> Account Settings
+                </a>
+                <a class="menu-item logout-item" (click)="logout()">
+                    <span style="font-size: 18px;">🚪</span> Sign Out
+                </a>
+            </div>
         </div>
     </div>
 </header>

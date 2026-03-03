@@ -2,35 +2,48 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
       <profile name="Maven default annotation processors profile" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="notification" />
         <module name="config-server" />
+        <module name="Certificat" />
         <module name="eureka" />
-        <module name="candidat" />
+        <module name="eventGestion" />
         <module name="ConfigServer" />
         <module name="Job" />
+        <module name="Course" />
+        <module name="Formation" />
+        <module name="job-offer" />
         <module name="gateway" />
       </profile>
+      <profile name="Annotation profile for backEnd-aggregator" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.32/lombok-1.18.32.jar" />
+        </processorPath>
+        <module name="forum" />
+        <module name="user" />
+      </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="condidature" target="1.5" />
-      <module name="meeting" target="1.5" />
-    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="ConfigServer" options="-parameters" />
-      <module name="Job" options="-parameters" />
-      <module name="candidat" options="-parameters" />
-      <module name="condidature" options="" />
+      <module name="Certificat" options="-parameters" />
+      <module name="Course" options="-parameters" />
+      <module name="Formation" options="-parameters" />
+      <module name="Quiz" options="-parameters" />
       <module name="config-server" options="-parameters" />
       <module name="eureka" options="-parameters" />
+      <module name="eventGestion" options="-parameters" />
+      <module name="forum" options="-parameters" />
       <module name="gateway" options="-parameters" />
-      <module name="meeting" options="" />
-      <module name="notification" options="-parameters" />
+      <module name="job-offer" options="-parameters" />
+      <module name="user" options="-parameters" />
     </option>
   </component>
 </project>

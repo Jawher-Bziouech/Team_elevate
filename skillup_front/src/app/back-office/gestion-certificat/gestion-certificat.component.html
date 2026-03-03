@@ -1,0 +1,63 @@
+<div class="management-view animate-fade">
+  <div class="pro-card">
+    <!-- HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h3 class="fw-bold m-0 text-dark">Certificate Management</h3>
+        <p class="text-secondary small m-0">
+          Review and manage certificate requests.
+          <span class="text-warning fw-bold" *ngIf="getPendingCount() > 0">
+            ⚠ {{ getPendingCount() }} pending request(s)
+          </span>
+        </p>
+      </div>
+      <!-- FILTER BUTTONS -->
+      <div class="filter-group">
+        <button class="filter-btn" [class.active]="filterStatus === 'ALL'" (click)="filterStatus = 'ALL'">All</button>
+        <button class="filter-btn pending" [class.active]="filterStatus === 'PENDING'" (click)="filterStatus = 'PENDING'">Pending</button>
+        <button class="filter-btn approved" [class.active]="filterStatus === 'APPROVED'" (click)="filterStatus = 'APPROVED'">Approved</button>
+        <button class="filter-btn rejected" [class.active]="filterStatus === 'REJECTED'" (click)="filterStatus = 'REJECTED'">Rejected</button>
+      </div>
+    </div>
+
+    <!-- EMPTY STATE -->
+    <div *ngIf="filteredCertificats.length === 0" class="empty-state">
+      <div class="empty-icon">📭</div>
+      <p>No certificates found for this filter.</p>
+    </div>
+
+    <!-- TABLE -->
+    <table class="table custom-table" *ngIf="filteredCertificats.length > 0">
+      <thead>
+        <tr>
+          <th>Certificate</th>
+          <th>User ID</th>
+          <th>Issuer</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let cert of filteredCertificats">
+          <td>
+            <strong>{{ cert.nom }}</strong>
+            <div class="small text-muted">{{ cert.description }}</div>
+          </td>
+          <td><span class="user-badge">{{ userNames[cert.userId] || 'Loading...' }}</span></td>
+          <td>{{ cert.issuer || 'N/A' }}</td>
+          <td>
+            <span class="status-badge"
+              [ngClass]="{'s-pending': cert.status === 'PENDING', 's-approved': cert.status === 'APPROVED', 's-rejected': cert.status === 'REJECTED'}">
+              {{ cert.status }}
+            </span>
+          </td>
+          <td class="actions-cell">
+            <button *ngIf="cert.status === 'PENDING'" class="btn-approve" (click)="approve(cert.id!)">✅ Approve</button>
+            <button *ngIf="cert.status === 'PENDING'" class="btn-reject" (click)="reject(cert.id!)">❌ Reject</button>
+            <button class="btn-delete-pro" (click)="deleteCert(cert.id!)">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

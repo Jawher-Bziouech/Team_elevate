@@ -1,0 +1,205 @@
+<div class="forum-container">
+    <div class="forum-header">
+        <h2>Community <span class="highlight">Discussion</span></h2>
+        <p>Share knowledge, ask questions, and connect with other students.</p>
+    </div>
+
+    <div class="search-container">
+        <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" placeholder="Search posts..."
+                   [(ngModel)]="searchTerm" (input)="onSearchInput()" (blur)="showSuggestions = false">
+            <button *ngIf="searchTerm" class="clear-btn" (click)="clearSearch()">✕</button>
+        </div>
+        <div class="suggestions-dropdown" *ngIf="showSuggestions && searchSuggestions.length > 0">
+            <div *ngFor="let s of searchSuggestions" class="suggestion-item" (mousedown)="selectSuggestion(s)">
+                <span class="suggestion-icon">📝</span>
+                <span>{{ s.title }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="topic-filter-bar">
+        <button class="topic-filter-btn" [class.active]="selectedTopic === 'All'"
+                (click)="selectedTopic = 'All'; currentPage = 1">All</button>
+        <button *ngFor="let t of topics" class="topic-filter-btn"
+                [class.active]="selectedTopic === t"
+                (click)="selectedTopic = t; currentPage = 1">{{ t }}</button>
+    </div>
+
+    <div class="create-post-card shadow-card">
+        <h3>Create a New Post</h3>
+        <input type="text" class="custom-input" placeholder="Give your post a title..." [(ngModel)]="newPost.title">
+        <textarea class="custom-textarea" rows="3" placeholder="What's on your mind?" [(ngModel)]="newPost.content"></textarea>
+        <select class="topic-select" [(ngModel)]="newPost.topic">
+            <option *ngFor="let t of topics" [value]="t">{{ t }}</option>
+        </select>
+        <div class="upload-area">
+            <label for="imageUpload" class="upload-label">
+                📎 {{ selectedFile ? selectedFile.name : 'Attach an image (optional)' }}
+            </label>
+            <input id="imageUpload" type="file" accept="image/*"
+                   (change)="onFileSelected($event)" style="display:none">
+        </div>
+        <div class="action-bar">
+            <button class="btn-post" [disabled]="isSubmitting" (click)="onCreatePost()">
+                {{ isSubmitting ? 'Posting...' : 'Share Post' }}
+            </button>
+        </div>
+    </div>
+
+    <div class="post-feed">
+        <div *ngIf="filteredPosts.length === 0" class="empty-state">
+            <p *ngIf="searchTerm">No posts found for "<strong>{{ searchTerm }}</strong>"</p>
+            <p *ngIf="!searchTerm && selectedTopic !== 'All'">No posts in <strong>{{ selectedTopic }}</strong> yet.</p>
+            <p *ngIf="!searchTerm && selectedTopic === 'All'">No discussions yet. Start the conversation!</p>
+        </div>
+
+        <!-- ✅ [id] added here for scroll navigation -->
+        <div *ngFor="let post of paginatedPosts" class="native-post-card" [id]="'post-' + post.id">
+            <div class="post-meta">
+                <div class="user-avatar">{{ (userNames[post.authorId] || '?').charAt(0) }}</div>
+                <div class="post-info">
+                    <span class="user-name">{{ userNames[post.authorId] || 'Loading...' }}</span>
+                    <span class="post-date">{{ post.createdAt | date:'medium' }}</span>
+                </div>
+                <span class="topic-badge" *ngIf="post.topic">{{ post.topic }}</span>
+            </div>
+
+           <div class="post-body">
+    <!-- VIEW MODE -->
+    <ng-container *ngIf="editingPostId !== post.id">
+        <h4>{{ post.title }}</h4>
+        <p>{{ post.content }}</p>
+        <img *ngIf="post.imageUrl" [src]="post.imageUrl" alt="Post image" class="post-image"
+             (click)="openLightbox(post.imageUrl!)">
+        <button *ngIf="post.authorId === authService.getUserId()"
+                class="btn-edit-inline" (click)="startEditPost(post)">✏️ Edit</button>
+    </ng-container>
+    <!-- EDIT MODE -->
+    <ng-container *ngIf="editingPostId === post.id">
+        <input class="custom-input" [(ngModel)]="editPostForm.title" placeholder="Title">
+        <textarea class="custom-textarea" rows="3" [(ngModel)]="editPostForm.content" placeholder="Content"></textarea>
+        <select class="topic-select" [(ngModel)]="editPostForm.topic">
+            <option *ngFor="let t of topics" [value]="t">{{ t }}</option>
+        </select>
+        <div class="edit-actions">
+            <button class="btn-save-edit" (click)="saveEditPost(post)">💾 Save</button>
+            <button class="btn-cancel-edit" (click)="editingPostId = null">✕ Cancel</button>
+        </div>
+    </ng-container>
+</div>
+
+
+            <div class="reaction-bar">
+                <div class="reaction-summary">
+                    <ng-container *ngFor="let emoji of emojis">
+                        <span *ngIf="getReactionCount(postReactions[post.id!], emoji) > 0" class="reaction-bubble">{{ emoji }}</span>
+                    </ng-container>
+                    <span class="reaction-total" *ngIf="(postReactions[post.id!]?.length || 0) > 0">
+                        {{ postReactions[post.id!]?.length }}
+                    </span>
+                </div>
+                <div class="react-btn-wrapper">
+                    <button class="react-btn"
+                            [class.reacted]="getUserReaction(postReactions[post.id!], authService.getUserId()!) !== null"
+                            (click)="toggleEmojiPicker('post_' + post.id)">
+                        {{ getUserReaction(postReactions[post.id!], authService.getUserId()!) || '👍' }}
+                        {{ getUserReaction(postReactions[post.id!], authService.getUserId()!) ? 'Reacted' : 'Like' }}
+                    </button>
+                    <div class="emoji-picker-popup" *ngIf="showEmojiPicker['post_' + post.id]">
+                        <span *ngFor="let emoji of emojis" class="emoji-option" (click)="reactToPost(post, emoji)">{{ emoji }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="post-footer">
+                <button class="footer-btn" (click)="toggleComments(post)">
+                    <span>💬</span> {{ post.comments?.length || 0 }} Comments
+                </button>
+                <button class="footer-btn action" (click)="toggleComments(post)">
+                    {{ expandedPosts[post.id!] ? 'Hide Section' : 'Join Discussion' }}
+                </button>
+            </div>
+
+            <div class="comments-section" *ngIf="expandedPosts[post.id!]">
+                <div class="comments-list" *ngIf="post.comments && post.comments.length > 0">
+                    <div *ngFor="let comment of post.comments" class="comment-item">
+                        <div class="comment-avatar">{{ (userNames[comment.authorId] || '?').charAt(0) }}</div>
+                       <div class="comment-content">
+    <span class="comment-author">{{ userNames[comment.authorId] || 'Loading...' }}</span>
+    <!-- VIEW MODE -->
+    <ng-container *ngIf="editingCommentId !== comment.id">
+        <p>{{ comment.content }}</p>
+        <img *ngIf="comment.imageUrl" [src]="comment.imageUrl"
+             alt="Comment image" class="comment-image"
+             (click)="openLightbox(comment.imageUrl)">
+        <button *ngIf="comment.authorId === authService.getUserId()"
+                class="btn-edit-inline" (click)="startEditComment(comment)">✏️ Edit</button>
+    </ng-container>
+    <!-- EDIT MODE -->
+    <ng-container *ngIf="editingCommentId === comment.id">
+        <input class="comment-input" [(ngModel)]="editCommentTexts[comment.id]" style="margin: 6px 0; width: 100%;">
+        <div class="edit-actions">
+            <button class="btn-save-edit" (click)="saveEditComment(comment)">💾 Save</button>
+            <button class="btn-cancel-edit" (click)="editingCommentId = null">✕ Cancel</button>
+        </div>
+    </ng-container>
+
+                            <div class="reaction-bar reaction-bar-sm">
+                                <div class="reaction-summary">
+                                    <ng-container *ngFor="let emoji of emojis">
+                                        <span *ngIf="getReactionCount(commentReactions[comment.id!], emoji) > 0" class="reaction-bubble">{{ emoji }}</span>
+                                    </ng-container>
+                                    <span class="reaction-total" *ngIf="(commentReactions[comment.id!]?.length || 0) > 0">
+                                        {{ commentReactions[comment.id!]?.length }}
+                                    </span>
+                                </div>
+                                <div class="react-btn-wrapper">
+                                    <button class="react-btn"
+                                            [class.reacted]="getUserReaction(commentReactions[comment.id!], authService.getUserId()!) !== null"
+                                            (click)="toggleEmojiPicker('comment_' + comment.id)">
+                                        {{ getUserReaction(commentReactions[comment.id!], authService.getUserId()!) || '👍' }}
+                                        {{ getUserReaction(commentReactions[comment.id!], authService.getUserId()!) ? 'Reacted' : 'Like' }}
+                                    </button>
+                                    <div class="emoji-picker-popup" *ngIf="showEmojiPicker['comment_' + comment.id]">
+                                        <span *ngFor="let emoji of emojis" class="emoji-option" (click)="reactToComment(comment, emoji)">{{ emoji }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <small class="comment-date">{{ comment.createdAt | date:'short' }}</small>
+                        </div>
+                    </div>
+                </div>
+                <div *ngIf="!post.comments || post.comments.length === 0" class="small text-muted mb-3">
+                    No comments yet.
+                </div>
+                <div class="add-comment-box">
+                    <input type="text" class="comment-input" placeholder="Write a comment..."
+                           [(ngModel)]="commentTexts[post.id!]" (keyup.enter)="onAddComment(post)">
+                    <label [for]="'commentImg_' + post.id" class="comment-img-btn" title="Attach image">
+                        📎
+                        <input [id]="'commentImg_' + post.id" type="file" accept="image/*"
+                               (change)="onCommentFileSelected($event, post.id!)" style="display:none">
+                    </label>
+                    <button class="btn-send-comment" (click)="onAddComment(post)">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="pagination" *ngIf="totalPages > 1">
+        <button class="page-btn" [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)">← Prev</button>
+        <button *ngFor="let p of pageNumbers" class="page-btn" [class.active]="p === currentPage" (click)="goToPage(p)">
+            {{ p }}
+        </button>
+        <button class="page-btn" [disabled]="currentPage === totalPages" (click)="goToPage(currentPage + 1)">Next →</button>
+    </div>
+
+    <div class="lightbox-overlay" *ngIf="lightboxImage" (click)="closeLightbox()">
+        <img [src]="lightboxImage" class="lightbox-img">
+        <button class="download-btn" (click)="downloadImage(lightboxImage!); $event.stopPropagation()">
+            ⬇️ Download
+        </button>
+    </div>
+</div>
