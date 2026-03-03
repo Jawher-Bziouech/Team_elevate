@@ -14,7 +14,7 @@
           <p>{{ q.description }}</p>
           <div class="quiz-meta">
             <span>⏱️ {{ q.duration }} mins</span>
-            <span>❓ {{ q.questions.length }} Questions</span> <!-- Fixed here! -->
+            <span>❓ {{ q.questions.length }} Questions</span>
           </div>
         </div>
         <button class="btn-start">Start Quiz</button>
@@ -26,7 +26,10 @@
   <div *ngIf="selectedQuiz && !showResults" class="quiz-player card shadow-lg p-5 border-0 rounded-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
       <h3 class="mb-0 fw-bold">{{ selectedQuiz.title }}</h3>
-      <span class="q-badge">Question {{ currentQuestionIndex + 1 }} of {{ selectedQuiz.questions.length }}</span>
+      <div class="d-flex align-items-center gap-3">
+        <span class="timer-badge">⏱️ {{ formattedTime }}</span>
+        <span class="q-badge">Question {{ currentQuestionIndex + 1 }} of {{ selectedQuiz.questions.length }}</span>
+      </div>
     </div>
 
     <!-- Progress Bar -->
@@ -36,10 +39,10 @@
 
     <div class="question-container py-3">
       <h4 class="fw-bold mb-4 text-dark">{{ selectedQuiz.questions[currentQuestionIndex].content }}</h4>
-      
+
       <div class="options-list">
-        <div *ngFor="let ans of selectedQuiz.questions[currentQuestionIndex].answers" 
-             class="option-card" 
+        <div *ngFor="let ans of selectedQuiz.questions[currentQuestionIndex].answers"
+             class="option-card"
              [class.active]="userAnswers[selectedQuiz.questions[currentQuestionIndex].id!] === ans.id"
              (click)="selectAnswer(selectedQuiz.questions[currentQuestionIndex].id!, ans.id!)">
           <div class="option-marker"></div>
@@ -50,35 +53,56 @@
 
     <div class="player-footer d-flex justify-content-between mt-5">
       <button class="btn btn-light px-4 fw-bold" (click)="prevQuestion()" [disabled]="currentQuestionIndex === 0">Previous</button>
-      
-      <button *ngIf="currentQuestionIndex < selectedQuiz.questions.length - 1" 
-              class="btn btn-primary px-5 fw-bold" 
+
+      <button *ngIf="currentQuestionIndex < selectedQuiz.questions.length - 1"
+              class="btn btn-primary px-5 fw-bold"
               (click)="nextQuestion()">Next</button>
-              
-      <button *ngIf="currentQuestionIndex === selectedQuiz.questions.length - 1" 
-              class="btn btn-success px-5 fw-bold" 
-              (click)="finishQuiz()">Finish Quiz</button>
+
+      <button *ngIf="currentQuestionIndex === selectedQuiz.questions.length - 1"
+              class="btn btn-success px-5 fw-bold"
+              (click)="finishQuiz()"
+              [disabled]="submitting">
+        {{ submitting ? 'Submitting...' : 'Finish Quiz' }}
+      </button>
     </div>
   </div>
 
-  <!-- 3. RESULTS VIEW -->
-  <div *ngIf="showResults" class="results-view card border-0 shadow-lg p-5 text-center rounded-4">
-    <div class="result-icon-wrapper mb-4">
-      <div class="result-icon pulse" [class.success]="score >= 50">
-        {{ score >= 50 ? '🎉' : '⏳' }}
+  <!-- 3. RESULTS VIEW (with gamification) -->
+  <div *ngIf="showResults && result" class="results-view card border-0 shadow-lg p-5 text-center rounded-4">
+    <div class="result-icon-wrapper mb-3">
+      <div class="result-icon pulse" [class.success]="result.passed">
+        {{ result.passed ? '🎉' : '⏳' }}
       </div>
     </div>
-    <h2 class="fw-bold mb-2">Quiz Completed!</h2>
-    <p class="lead mb-5 text-secondary">You scored <strong>{{ score }}%</strong> on your first attempt.</p>
-    
-    <div class="score-container mb-5">
-      <div class="score-progress" [style.background]="'conic-gradient(var(--primary-blue) ' + score + '%, #f1f5f9 0)'">
+    <h2 class="fw-bold mb-1">{{ result.passed ? 'Quiz Passed!' : 'Quiz Failed' }}</h2>
+    <p class="text-secondary mb-4">You scored <strong>{{ result.score | number:'1.0-0' }}%</strong> in {{ formattedTime }}</p>
+
+    <!-- Score ring -->
+    <div class="score-container mb-4">
+      <div class="score-progress" [style.background]="'conic-gradient(' + (result.passed ? '#22c55e' : '#ef4444') + ' ' + result.score + '%, #f1f5f9 0)'">
         <div class="inner-score">
-          <span class="score-number">{{ score }}%</span>
+          <span class="score-number">{{ result.score | number:'1.0-0' }}%</span>
         </div>
       </div>
     </div>
 
-    <button class="btn btn-primary btn-lg px-5 rounded-pill shadow-sm" (click)="reset()">Back to Quizzes</button>
+    <!-- Credits earned -->
+    <div class="credits-box mb-4" *ngIf="result.creditsEarned > 0">
+      <span class="credits-label">Credits Earned</span>
+      <span class="credits-value">+{{ result.creditsEarned }}</span>
+    </div>
+
+    <!-- New badges -->
+    <div *ngIf="result.newBadges && result.newBadges.length > 0" class="badges-earned mb-4">
+      <h5 class="fw-bold mb-3">New Badges Unlocked!</h5>
+      <div class="badge-list">
+        <div *ngFor="let badge of result.newBadges" class="badge-card">
+          <span class="badge-icon">{{ getBadgeIcon(badge) }}</span>
+          <span class="badge-name">{{ getBadgeLabel(badge) }}</span>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary btn-lg px-5 rounded-pill shadow-sm mt-3" (click)="reset()">Back to Quizzes</button>
   </div>
 </div>

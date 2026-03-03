@@ -16,6 +16,8 @@ import { GestionForumComponent } from './back-office/gestion-forum/gestion-forum
 import { GestionQuizComponent } from './back-office/gestion-quiz/gestion-quiz.component';
 import { CertificationsComponent } from './certifications/certifications.component';
 import { GestionCertificatComponent } from './back-office/gestion-certificat/gestion-certificat.component';
+import { GamificationComponent } from './gamification/gamification.component';
+
 
 @NgModule({
   declarations: [
@@ -31,7 +33,8 @@ import { GestionCertificatComponent } from './back-office/gestion-certificat/ges
     GestionForumComponent,
     GestionQuizComponent,
     CertificationsComponent,
-    GestionCertificatComponent
+    GestionCertificatComponent,
+    GamificationComponent
   ],
   imports: [
     BrowserModule,

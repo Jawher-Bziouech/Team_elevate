@@ -17,3 +17,55 @@ export interface Quiz {
   duration: number; // minutes
   questions: Question[];
 }
+
+// Gamification models
+export interface QuestionAnswerDTO {
+  questionId: number;
+  selectedAnswerId: number;
+}
+
+export interface QuizSubmissionRequest {
+  userId: number;
+  quizId: number;
+  timeTakenSeconds: number;
+  answers: QuestionAnswerDTO[];
+}
+
+export interface QuizResultResponse {
+  score: number;
+  passed: boolean;
+  creditsEarned: number;
+  newBadges: string[];
+  attemptId: number;
+}
+
+export interface QuizAttempt {
+  id: number;
+  userId: number;
+  quizId: number;
+  score: number;
+  timeTakenSeconds: number;
+  allowedTimeSeconds: number;
+  creditsEarned: number;
+  passed: boolean;
+  attemptDate: string;
+}
+
+export interface UserBadge {
+  id: number;
+  userId: number;
+  badgeType: string;
+  earnedDate: string;
+}
+
+export interface UserProgression {
+  id: number;
+  userId: number;
+  totalCredits: number;
+  totalAttempts: number;
+  totalPassed: number;
+  averageScore: number;
+  currentStreak: number;
+  bestStreak: number;
+  consecutivePassCount: number;
+}

@@ -7,6 +7,7 @@ import { BackOfficeComponent } from './back-office/back-office.component';
 import { ForumComponent } from './forum/forum.component';
 import { QuizComponent } from './quiz/quiz.component';
 import { CertificationsComponent } from './certifications/certifications.component';
+import { GamificationComponent } from './gamification/gamification.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -16,7 +17,10 @@ const routes: Routes = [
   { path: 'quiz', component: QuizComponent },
   { path: 'back-office', component: BackOfficeComponent },
   { path: 'certifications', component: CertificationsComponent },
+  { path: 'gamification', component: GamificationComponent },
   { path: '', redirectTo: '/home', pathMatch: 'full' } 
+  
+
 ];
 
 @NgModule({
