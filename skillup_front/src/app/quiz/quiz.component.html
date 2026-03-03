@@ -1,108 +1,283 @@
 <div class="quiz-container">
   <!-- 1. QUIZ LIST VIEW -->
   <div *ngIf="!selectedQuiz" class="quiz-list-view">
-    <div class="header-area mb-4">
+    <div class="header-area">
       <h2>Available <span class="highlight">Skill Quizzes</span></h2>
-      <p>Challenge yourself and earn badges by completing these tests.</p>
+      <p>Challenge yourself, earn industry-recognized badges, and validate your expertise. Complete these tests to boost
+        your profile visibility.</p>
     </div>
 
     <div class="quiz-grid">
-      <div *ngFor="let q of quizzes" class="quiz-card" (click)="startQuiz(q)">
-        <div class="quiz-icon">⚡</div>
+      <div *ngFor="let q of quizzes; let i = index" class="quiz-card animate-fade"
+        [style.animation-delay]="i * 0.1 + 's'">
+        <div class="quiz-card-header">
+          <div class="quiz-icon">
+            <ng-container [ngSwitch]="getQuizIcon(q)">
+              <!-- Code / Programming Icon -->
+              <svg *ngSwitchCase="'code'" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="16 18 22 12 16 6"></polyline>
+                <polyline points="8 6 2 12 8 18"></polyline>
+              </svg>
+              <!-- Database Icon -->
+              <svg *ngSwitchCase="'database'" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+                <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+                <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+              </svg>
+              <!-- Layout / Design Icon -->
+              <svg *ngSwitchCase="'layout'" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="3" y1="9" x2="21" y2="9"></line>
+                <line x1="9" y1="21" x2="9" y2="9"></line>
+              </svg>
+              <!-- Globe / Web Icon -->
+              <svg *ngSwitchCase="'globe'" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
+                </path>
+              </svg>
+              <!-- Default / Tech Icon (CPU) -->
+              <svg *ngSwitchDefault width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect>
+                <rect x="9" y="9" width="6" height="6"></rect>
+                <line x1="9" y1="1" x2="9" y2="4"></line>
+                <line x1="15" y1="1" x2="15" y2="4"></line>
+                <line x1="9" y1="20" x2="9" y2="23"></line>
+                <line x1="15" y1="20" x2="15" y2="23"></line>
+                <line x1="20" y1="9" x2="23" y2="9"></line>
+                <line x1="20" y1="15" x2="23" y2="15"></line>
+                <line x1="1" y1="9" x2="4" y2="9"></line>
+                <line x1="1" y1="15" x2="4" y2="15"></line>
+              </svg>
+            </ng-container>
+          </div>
+          <span class="difficulty-badge">{{ q.type || 'General' }}</span>
+        </div>
+
         <div class="quiz-info">
           <h3>{{ q.title }}</h3>
-          <p>{{ q.description }}</p>
+          <p>{{ q.description || 'Test your proficiency and master your skills through this comprehensive assessment.'
+            }}</p>
+
           <div class="quiz-meta">
-            <span>⏱️ {{ q.duration }} mins</span>
-            <span>❓ {{ q.questions.length }} Questions</span>
+            <div class="meta-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              {{ q.duration }} mins
+            </div>
+            <div class="meta-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+              {{ q.questions.length }} Questions
+            </div>
           </div>
         </div>
-        <button class="btn-start">Start Quiz</button>
+
+        <button class="btn-start-reveal" (click)="startQuiz(q)">
+          Start Quiz
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </button>
       </div>
     </div>
   </div>
 
   <!-- 2. ACTIVE QUIZ PLAYER -->
-  <div *ngIf="selectedQuiz && !showResults" class="quiz-player card shadow-lg p-5 border-0 rounded-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h3 class="mb-0 fw-bold">{{ selectedQuiz.title }}</h3>
-      <div class="d-flex align-items-center gap-3">
-        <span class="timer-badge">⏱️ {{ formattedTime }}</span>
-        <span class="q-badge">Question {{ currentQuestionIndex + 1 }} of {{ selectedQuiz.questions.length }}</span>
-      </div>
-    </div>
+  <div *ngIf="selectedQuiz && !showResults" class="active-quiz-layout animate-fade">
 
-    <!-- Progress Bar -->
-    <div class="progress mb-4 rounded-pill" style="height: 10px; background-color: #f1f5f9;">
-      <div class="progress-bar rounded-pill transition-fast" [style.width.%]="((currentQuestionIndex + 1) / selectedQuiz.questions.length) * 100"></div>
-    </div>
-
-    <div class="question-container py-3">
-      <h4 class="fw-bold mb-4 text-dark">{{ selectedQuiz.questions[currentQuestionIndex].content }}</h4>
-
-      <div class="options-list">
-        <div *ngFor="let ans of selectedQuiz.questions[currentQuestionIndex].answers"
-             class="option-card"
-             [class.active]="userAnswers[selectedQuiz.questions[currentQuestionIndex].id!] === ans.id"
-             (click)="selectAnswer(selectedQuiz.questions[currentQuestionIndex].id!, ans.id!)">
-          <div class="option-marker"></div>
-          <span class="option-text">{{ ans.text }}</span>
+    <!-- Main Content Area -->
+    <div class="quiz-main-card">
+      <div class="player-header">
+        <div class="q-indicator">
+          Question {{ currentQuestionIndex + 1 }} of {{ selectedQuiz.questions.length }}
         </div>
       </div>
+
+      <div class="quiz-progress-container">
+        <div class="progress-track">
+          <div class="progress-fill"
+            [style.width.%]="((currentQuestionIndex + 1) / selectedQuiz.questions.length) * 100"></div>
+        </div>
+      </div>
+
+      <div class="question-content">
+        <h4>{{ selectedQuiz.questions[currentQuestionIndex].content }}</h4>
+
+        <div class="options-grid">
+          <div *ngFor="let ans of selectedQuiz.questions[currentQuestionIndex].answers; let ai = index"
+            class="option-box"
+            [class.selected]="userAnswers[selectedQuiz.questions[currentQuestionIndex].id!] === ans.id"
+            (click)="selectAnswer(selectedQuiz.questions[currentQuestionIndex].id!, ans.id!)">
+            <div class="option-letter">{{ ['A','B','C','D','E'][ai] }}</div>
+            <span class="option-text">{{ stripOptionLetter(ans.text) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="player-actions">
+        <button class="btn-secondary-outline" (click)="prevQuestion()" [disabled]="currentQuestionIndex === 0">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          Previous
+        </button>
+
+        <button *ngIf="currentQuestionIndex < selectedQuiz.questions.length - 1" class="btn-primary-action"
+          (click)="nextQuestion()">
+          Next Question
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </button>
+
+        <button *ngIf="currentQuestionIndex === selectedQuiz.questions.length - 1" class="btn-primary-action success"
+          (click)="finishQuiz()" [disabled]="submitting">
+          {{ submitting ? 'Submitting...' : 'Complete Assessment' }}
+          <svg *ngIf="!submitting" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+        </button>
+      </div>
     </div>
 
-    <div class="player-footer d-flex justify-content-between mt-5">
-      <button class="btn btn-light px-4 fw-bold" (click)="prevQuestion()" [disabled]="currentQuestionIndex === 0">Previous</button>
+    <!-- Sidebar / Question Map -->
+    <div class="quiz-sidebar">
+      <!-- Question Map Widget -->
+      <div class="sidebar-widget">
+        <div class="widget-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+          Question Map
+        </div>
 
-      <button *ngIf="currentQuestionIndex < selectedQuiz.questions.length - 1"
-              class="btn btn-primary px-5 fw-bold"
-              (click)="nextQuestion()">Next</button>
+        <div class="question-map-grid">
+          <div *ngFor="let q of selectedQuiz.questions; let i = index" class="map-item"
+            [class.current]="currentQuestionIndex === i" [class.answered]="isAnswered(q.id!)"
+            [class.marked]="isMarked(q.id!)" (click)="goToQuestion(i)">
+            {{ i + 1 }}
+          </div>
+        </div>
 
-      <button *ngIf="currentQuestionIndex === selectedQuiz.questions.length - 1"
-              class="btn btn-success px-5 fw-bold"
-              (click)="finishQuiz()"
-              [disabled]="submitting">
-        {{ submitting ? 'Submitting...' : 'Finish Quiz' }}
-      </button>
+        <div class="map-legend">
+          <div class="legend-item">
+            <div class="dot blue"></div> Current
+          </div>
+          <div class="legend-item">
+            <div class="dot green"></div> Answered
+          </div>
+          <div class="legend-item">
+            <div class="dot orange"></div> Marked for Review
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions Widget -->
+      <div class="sidebar-widget">
+        <div class="widget-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          Time Remaining
+        </div>
+        <div style="font-size: 32px; font-weight: 800; color: #1e293b; margin-bottom: 24px;">
+          {{ formattedTime }}
+        </div>
+
+        <button class="btn-mark-review" [class.active]="isMarked(selectedQuiz.questions[currentQuestionIndex].id!)"
+          (click)="toggleMarkForReview(selectedQuiz.questions[currentQuestionIndex].id!)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
+            <line x1="4" y1="22" x2="4" y2="15"></line>
+          </svg>
+          {{ isMarked(selectedQuiz.questions[currentQuestionIndex].id!) ? 'Unmark Review' : 'Mark for Review' }}
+        </button>
+      </div>
+
+      <!-- Help CTA -->
+      <div class="sidebar-widget"
+        style="background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; border: none;">
+        <h4 style="font-weight: 800; margin-bottom: 12px;">Need Help?</h4>
+        <p style="font-size: 13px; opacity: 0.9; margin-bottom: 20px;">Stuck on this question? You can check the
+          documentation or use a hint (uses -5 points).</p>
+        <button
+          style="width: 100%; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: white; padding: 10px; border-radius: 12px; font-weight: 700; cursor: pointer;">Get
+          Hint</button>
+      </div>
     </div>
   </div>
 
-  <!-- 3. RESULTS VIEW (with gamification) -->
-  <div *ngIf="showResults && result" class="results-view card border-0 shadow-lg p-5 text-center rounded-4">
-    <div class="result-icon-wrapper mb-3">
-      <div class="result-icon pulse" [class.success]="result.passed">
-        {{ result.passed ? '🎉' : '⏳' }}
-      </div>
-    </div>
-    <h2 class="fw-bold mb-1">{{ result.passed ? 'Quiz Passed!' : 'Quiz Failed' }}</h2>
-    <p class="text-secondary mb-4">You scored <strong>{{ result.score | number:'1.0-0' }}%</strong> in {{ formattedTime }}</p>
-
-    <!-- Score ring -->
-    <div class="score-container mb-4">
-      <div class="score-progress" [style.background]="'conic-gradient(' + (result.passed ? '#22c55e' : '#ef4444') + ' ' + result.score + '%, #f1f5f9 0)'">
-        <div class="inner-score">
-          <span class="score-number">{{ result.score | number:'1.0-0' }}%</span>
+  <!-- 3. RESULTS VIEW -->
+  <div *ngIf="showResults && result" class="results-view animate-fade">
+    <div class="results-card">
+      <div class="result-icon-wrapper mb-3">
+        <div class="result-icon pulse">
+          {{ result.passed ? '🎉' : '⏳' }}
         </div>
       </div>
-    </div>
+      <h2 class="result-title">{{ result.passed ? 'Quiz Passed!' : 'Quiz Failed' }}</h2>
+      <p class="result-text">You scored <strong>{{ result.score |
+          number:'1.0-0' }}%</strong> in {{ formattedTime }}</p>
 
-    <!-- Credits earned -->
-    <div class="credits-box mb-4" *ngIf="result.creditsEarned > 0">
-      <span class="credits-label">Credits Earned</span>
-      <span class="credits-value">+{{ result.creditsEarned }}</span>
-    </div>
-
-    <!-- New badges -->
-    <div *ngIf="result.newBadges && result.newBadges.length > 0" class="badges-earned mb-4">
-      <h5 class="fw-bold mb-3">New Badges Unlocked!</h5>
-      <div class="badge-list">
-        <div *ngFor="let badge of result.newBadges" class="badge-card">
-          <span class="badge-icon">{{ getBadgeIcon(badge) }}</span>
-          <span class="badge-name">{{ getBadgeLabel(badge) }}</span>
+      <!-- Score ring -->
+      <div class="score-container mb-4">
+        <div class="score-progress"
+          [style.background]="'conic-gradient(' + (result.passed ? '#10b981' : '#ef4444') + ' ' + result.score + '%, #f1f5f9 0)'">
+          <div class="inner-score">
+            <span class="score-number">{{ result.score |
+              number:'1.0-0' }}%</span>
+          </div>
         </div>
       </div>
-    </div>
 
-    <button class="btn btn-primary btn-lg px-5 rounded-pill shadow-sm mt-3" (click)="reset()">Back to Quizzes</button>
+      <div class="result-details mb-4">
+        <!-- Credits earned -->
+        <div class="credits-box" *ngIf="result.creditsEarned > 0">
+          <span class="credits-label">Credits Earned</span>
+          <span class="credits-value">+{{ result.creditsEarned }}</span>
+        </div>
+      </div>
+
+      <!-- New badges -->
+      <div *ngIf="result.newBadges && result.newBadges.length > 0" class="badges-earned mb-4">
+        <h5 class="badges-title">New Badges Unlocked!</h5>
+        <div class="badge-list">
+          <div *ngFor="let badge of result.newBadges" class="badge-card">
+            <span class="badge-icon">{{ getBadgeIcon(badge) }}</span>
+            <span class="badge-name">{{ getBadgeLabel(badge) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-primary-action center" (click)="reset()">Back to Quizzes</button>
+    </div>
   </div>
 </div>

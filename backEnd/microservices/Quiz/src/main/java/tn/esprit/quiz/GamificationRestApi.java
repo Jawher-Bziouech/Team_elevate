@@ -39,7 +39,7 @@ public class GamificationRestApi {
     }
 
     @GetMapping("/leaderboard")
-    public List<UserProgression> getLeaderboard() {
+    public List<LeaderboardEntry> getLeaderboard() {
         return gamificationService.getLeaderboard();
     }
 }

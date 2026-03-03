@@ -24,6 +24,10 @@ export class QuizService {
     return this.http.post<Quiz>(this.apiUrl, quiz);
   }
 
+  updateQuiz(id: number, quiz: Quiz): Observable<Quiz> {
+    return this.http.put<Quiz>(`${this.apiUrl}/${id}`, quiz);
+  }
+
   deleteQuiz(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
@@ -44,7 +48,11 @@ export class QuizService {
     return this.http.get<UserBadge[]>(`${this.gamificationUrl}/badges/${userId}`);
   }
 
-  getLeaderboard(): Observable<UserProgression[]> {
-    return this.http.get<UserProgression[]>(`${this.gamificationUrl}/leaderboard`);
+  getUserQuizAttempts(userId: number, quizId: number): Observable<QuizAttempt[]> {
+    return this.http.get<QuizAttempt[]>(`${this.gamificationUrl}/attempts/user/${userId}/quiz/${quizId}`);
+  }
+
+  getLeaderboard(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.gamificationUrl}/leaderboard`);
   }
 }

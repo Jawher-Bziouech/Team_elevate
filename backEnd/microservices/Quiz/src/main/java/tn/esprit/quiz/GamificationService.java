@@ -15,15 +15,18 @@ public class GamificationService {
     private final QuizAttemptRepository quizAttemptRepository;
     private final UserBadgeRepository userBadgeRepository;
     private final UserProgressionRepository userProgressionRepository;
+    private final UserClient userClient;
 
     public GamificationService(QuizRepository quizRepository,
                                QuizAttemptRepository quizAttemptRepository,
                                UserBadgeRepository userBadgeRepository,
-                               UserProgressionRepository userProgressionRepository) {
+                               UserProgressionRepository userProgressionRepository,
+                               UserClient userClient) {
         this.quizRepository = quizRepository;
         this.quizAttemptRepository = quizAttemptRepository;
         this.userBadgeRepository = userBadgeRepository;
         this.userProgressionRepository = userProgressionRepository;
+        this.userClient = userClient;
     }
 
     @Transactional
@@ -229,7 +232,29 @@ public class GamificationService {
         return userBadgeRepository.findByUserId(userId);
     }
 
-    public List<UserProgression> getLeaderboard() {
-        return userProgressionRepository.findAllByOrderByTotalCreditsDesc();
+    public List<LeaderboardEntry> getLeaderboard() {
+        List<UserProgression> progressions = userProgressionRepository.findAllByOrderByTotalCreditsDesc();
+        return progressions.stream().map(progression -> {
+            LeaderboardEntry entry = new LeaderboardEntry();
+            entry.setUserId(progression.getUserId());
+            entry.setTotalCredits(progression.getTotalCredits());
+            entry.setTotalAttempts(progression.getTotalAttempts());
+            entry.setTotalPassed(progression.getTotalPassed());
+            entry.setAverageScore(progression.getAverageScore());
+            entry.setCurrentStreak(progression.getCurrentStreak());
+            entry.setBestStreak(progression.getBestStreak());
+            
+            try {
+                UserDTO user = userClient.getUserById(progression.getUserId());
+                if (user != null && user.getUsername() != null) {
+                    entry.setUsername(user.getUsername());
+                } else {
+                    entry.setUsername("Unknown");
+                }
+            } catch (Exception e) {
+                entry.setUsername("Unknown");
+            }
+            return entry;
+        }).collect(Collectors.toList());
     }
 }

@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { QuizService } from '../quiz.service';
 import { AuthService } from '../auth.service';
 import { Quiz, QuizResultResponse } from '../models/quiz.model';
+import { BADGE_CONFIG } from '../models/badge.model';
 
 @Component({
   selector: 'app-quiz',
@@ -16,7 +17,9 @@ export class QuizComponent implements OnInit, OnDestroy {
   showResults = false;
   result: QuizResultResponse | null = null;
   submitting = false;
+  markedQuestions = new Set<number>();
 
+  // Timer
   timerSeconds = 0;
   timerInterval: any = null;
 
@@ -36,6 +39,7 @@ export class QuizComponent implements OnInit, OnDestroy {
     this.selectedQuiz = quiz;
     this.currentQuestionIndex = 0;
     this.userAnswers = {};
+    this.markedQuestions.clear();
     this.showResults = false;
     this.result = null;
     this.timerSeconds = 0;
@@ -76,6 +80,28 @@ export class QuizComponent implements OnInit, OnDestroy {
     }
   }
 
+  goToQuestion(index: number): void {
+    if (this.selectedQuiz && index >= 0 && index < this.selectedQuiz.questions.length) {
+      this.currentQuestionIndex = index;
+    }
+  }
+
+  toggleMarkForReview(questionId: number): void {
+    if (this.markedQuestions.has(questionId)) {
+      this.markedQuestions.delete(questionId);
+    } else {
+      this.markedQuestions.add(questionId);
+    }
+  }
+
+  isMarked(questionId: number): boolean {
+    return this.markedQuestions.has(questionId);
+  }
+
+  isAnswered(questionId: number): boolean {
+    return !!this.userAnswers[questionId];
+  }
+
   finishQuiz(): void {
     if (!this.selectedQuiz) return;
     this.stopTimer();
@@ -106,31 +132,34 @@ export class QuizComponent implements OnInit, OnDestroy {
   }
 
   getBadgeLabel(badge: string): string {
-    const labels: { [key: string]: string } = {
-      'FIRST_STEP': 'First Step', 'QUIZ_ENTHUSIAST': 'Quiz Enthusiast',
-      'QUIZ_MASTER': 'Quiz Master', 'PERFECT_SCORE': 'Perfect Score',
-      'SHARP_MIND': 'Sharp Mind', 'CONSISTENT': 'Consistent',
-      'SPEED_DEMON': 'Speed Demon', 'QUICK_THINKER': 'Quick Thinker',
-      'CREDIT_STARTER': 'Credit Starter', 'CREDIT_COLLECTOR': 'Credit Collector',
-      'CREDIT_CHAMPION': 'Credit Champion', 'THREE_DAY_STREAK': '3-Day Streak',
-      'SEVEN_DAY_STREAK': '7-Day Streak'
-    };
-    return labels[badge] || badge;
+    return BADGE_CONFIG[badge]?.label || BADGE_CONFIG['DEFAULT'].label;
   }
 
   getBadgeIcon(badge: string): string {
-    const icons: { [key: string]: string } = {
-      'FIRST_STEP': '🚀', 'QUIZ_ENTHUSIAST': '📚', 'QUIZ_MASTER': '👑',
-      'PERFECT_SCORE': '💯', 'SHARP_MIND': '🧠', 'CONSISTENT': '🔥',
-      'SPEED_DEMON': '⚡', 'QUICK_THINKER': '💡',
-      'CREDIT_STARTER': '🪙', 'CREDIT_COLLECTOR': '💰', 'CREDIT_CHAMPION': '🏆',
-      'THREE_DAY_STREAK': '📅', 'SEVEN_DAY_STREAK': '🗓️'
-    };
-    return icons[badge] || '🏅';
+    return BADGE_CONFIG[badge]?.icon || BADGE_CONFIG['DEFAULT'].icon;
+  }
+
+  stripOptionLetter(text: string): string {
+    if (!text) return '';
+    // Removes "A. ", "A - ", "A) " etc.
+    return text.replace(/^[A-E][.\s\)-]+/, '').trim();
+  }
+
+  getQuizIcon(quiz: Quiz): string {
+    const t = (quiz.type || '').toLowerCase();
+    const title = (quiz.title || '').toLowerCase();
+    const combined = `${t} ${title}`;
+
+    if (combined.includes('javascript') || combined.includes('react') || combined.includes('angular') || combined.includes('web') || combined.includes('html') || combined.includes('css')) return 'globe';
+    if (combined.includes('java') || combined.includes('python') || combined.includes('prog') || combined.includes('code')) return 'code';
+    if (combined.includes('db') || combined.includes('data') || combined.includes('sql')) return 'database';
+    if (combined.includes('design') || combined.includes('ui') || combined.includes('ux')) return 'layout';
+    return 'cpu'; // Default techy icon
   }
 
   reset(): void {
     this.selectedQuiz = null;
     this.result = null;
+    this.showResults = false;
   }
 }

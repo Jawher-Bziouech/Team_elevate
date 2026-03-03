@@ -7,6 +7,7 @@ export interface Answer {
 export interface Question {
   id?: number;
   content: string;
+  difficulty?: 'EASY' | 'MEDIUM' | 'HARD';
   answers: Answer[];
 }
 
@@ -15,6 +16,8 @@ export interface Quiz {
   title: string;
   description: string;
   duration: number; // minutes
+  type?: string;    // Used as category
+  difficulty?: 'EASY' | 'MEDIUM' | 'HARD';
   questions: Question[];
 }
 
@@ -68,4 +71,15 @@ export interface UserProgression {
   currentStreak: number;
   bestStreak: number;
   consecutivePassCount: number;
+}
+
+export interface LeaderboardEntry {
+  userId: number;
+  username: string;
+  totalCredits: number;
+  totalAttempts: number;
+  totalPassed: number;
+  averageScore: number;
+  currentStreak: number;
+  bestStreak: number;
 }

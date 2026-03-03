@@ -19,6 +19,7 @@
         <module>microservices/job-offer</module>
         <module>microservices/user</module>
         <module>microservices/forum</module>
+        <module>microservices/Quiz</module>
 
 
     </modules>

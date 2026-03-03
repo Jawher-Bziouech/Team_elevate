@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { QuizService } from '../quiz.service';
 import { AuthService } from '../auth.service';
-import { UserProgression, UserBadge, QuizAttempt } from '../models/quiz.model';
+import { UserProgression, UserBadge, QuizAttempt, LeaderboardEntry } from '../models/quiz.model';
 
 @Component({
   selector: 'app-gamification',
@@ -15,7 +15,7 @@ export class GamificationComponent implements OnInit {
   progression: UserProgression | null = null;
   badges: UserBadge[] = [];
   attempts: QuizAttempt[] = [];
-  leaderboard: UserProgression[] = [];
+  leaderboard: LeaderboardEntry[] = [];
 
   allBadges = [
     { type: 'FIRST_STEP', label: 'First Step', icon: '🚀', desc: 'Complete 1 quiz', category: 'Volume' },
@@ -41,10 +41,22 @@ export class GamificationComponent implements OnInit {
   }
 
   loadData(): void {
-    this.quizService.getUserProgression(this.userId).subscribe(p => this.progression = p);
-    this.quizService.getUserBadges(this.userId).subscribe(b => this.badges = b);
-    this.quizService.getUserAttempts(this.userId).subscribe(a => this.attempts = a);
-    this.quizService.getLeaderboard().subscribe(l => this.leaderboard = l);
+    this.quizService.getUserProgression(this.userId).subscribe({
+      next: p => this.progression = p,
+      error: err => console.error('Failed to load progression:', err)
+    });
+    this.quizService.getUserBadges(this.userId).subscribe({
+      next: b => this.badges = b,
+      error: err => console.error('Failed to load badges:', err)
+    });
+    this.quizService.getUserAttempts(this.userId).subscribe({
+      next: a => this.attempts = a,
+      error: err => console.error('Failed to load attempts:', err)
+    });
+    this.quizService.getLeaderboard().subscribe({
+      next: l => this.leaderboard = l,
+      error: err => console.error('Failed to load leaderboard:', err)
+    });
   }
 
   hasBadge(type: string): boolean {
