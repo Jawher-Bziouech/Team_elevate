@@ -53,7 +53,7 @@ SkillUp is a full-stack microservices web application that enables teams to mana
 | Jawher Bziouech | Full-stack Developer |
 | wassim hamouda | Full-stack Developer |
 | rania regai | Full-stack Developer |
-| hadir ghallabi Full-stack Developer |
+| hadir ghallabi | Full-stack Developer |
 | malek maaroufi | Full-stack Developer |
 | mehdi chebbi | Full-stack Developers |
 
