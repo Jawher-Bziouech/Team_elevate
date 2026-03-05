@@ -1,37 +1,87 @@
-# Job Aboard - Microservices Training Project
+# SkillUp – Learning Management Platform
 
-## 📌 About the Project
-**Job Aboard** is an **academic project** designed to help students **master microservices architecture** through a **30-hour hands-on training program**. The project focuses on building a **job listing management system** using a microservices approach.
-## 📌Project Architecture
-![](https://github.com/badi3a/JobBoard_Microservice/blob/main/documentation/diag/microservices-global-architecture.drawio%20(2).png)
+## Overview
+This project was developed as part of the PIDEV – 3rd Year Engineering Program at **Esprit School of Engineering** (Academic Year 2025–2026).
 
-## 🎯 Main Goal
-The primary objective of this project is to provide students with:  
-✅ A **practical understanding** of microservices concepts.  
-✅ Experience in **service decomposition, inter-service communication, and scalability**.  
-✅ Hands-on training with **modern tools and frameworks** used in microservices development.
+SkillUp is a full-stack microservices web application that enables teams to manage formations, quizzes, events, payments, job offers, ticketing, forum discussions, and gamification.
 
-## 🛠️ Technologies & Concepts
-Throughout the training, students will work with:
-- **Spring Boot / Node.js** (for microservices implementation)
-- **API Gateway & Service Discovery**
-- **Message Brokers (Kafka, RabbitMQ, etc.)**
-- **Containerization (Docker, Kubernetes)**
-- **Database Management (SQL/NoSQL)**
-- **Security with Keycloak (Authentication & Authorization)**
-- **Frontend with Angular Framework**
+## Features
+- 🎓 Formation & Course management
+- 📝 Quiz & Certification system
+- 🗓️ Event management with calendar
+- 💳 Payment processing
+- 💼 Job offers & applications
+- 💬 Forum & community discussion
+- 🏆 Gamification & badge system
+- 🎫 Support ticket system
+- 📊 Admin back-office dashboard
 
-## 📅 Training Duration
-**30 hours** of guided learning and project development.
+## Tech Stack
 
-## 🚀 Learning Outcome
-By the end of this training, students will be able to **design, develop, and deploy scalable and secure microservices applications**, preparing them for real-world software architecture challenges.
+### Frontend
+- Angular 18
+- Bootstrap 5
+- Tailwind CSS
+- ng-bootstrap / Chart.js
 
----  
----  
-## 🎓 Acknowledgment
-This project is part of the academic training provided by **ESPRIT School of Engineering**, aiming to equip students with industry-relevant skills in modern software development.
-## 👨‍🏫 Contact
-Connect with me on LinkedIn: [My LinkedIn Profile](https://www.linkedin.com/in/badiabouhdid/)
+### Backend
+- Spring Boot 4 (Microservices Architecture)
+- Spring Cloud (Eureka, API Gateway, Config Server)
+- MySQL / JPA / Hibernate
+- Lombok
 
+## Architecture
 
+| Service | Port | Description |
+|---------|------|-------------|
+| `eureka-server` | 8761 | Service discovery |
+| `gateway` | 8222 | API Gateway |
+| `config-server` | 8888 | Centralized config |
+| `user` | 8089 | Authentication & users |
+| `eventGestion` | 8082 | Event management |
+| `Payment` | 8075 | Payment processing |
+| `Course` | - | Course management |
+| `Formation` | - | Formation management |
+| `Quiz` | - | Quiz & certifications |
+| `Ticket` | - | Support tickets |
+| `forum` | - | Forum discussions |
+| `job-offer` | - | Job offers |
+
+## Contributors
+| Name | Role |
+|------|------|
+| Jawher Bziouech | Full-stack Developer |
+| wassim hamouda | Full-stack Developer |
+| rania regai | Full-stack Developer |
+| hadir ghallabi Full-stack Developer |
+| malek maaroufi | Full-stack Developer |
+| mehdi chebbi | Full-stack Developers |
+
+## Academic Context
+Developed at **Esprit School of Engineering** – Tunisia
+PIDEV – 4sae11 | 2025–2026
+
+## Getting Started
+
+### Prerequisites
+- Java 17+, Node.js 18+, MySQL 8+, Maven
+
+### Backend
+```bash
+# Start in this order:
+cd backEnd/microservices/eureka-server && mvn spring-boot:run
+cd backEnd/microservices/config-server && mvn spring-boot:run
+cd backEnd/microservices/gateway && mvn spring-boot:run
+# Then start other microservices
+```
+
+### Frontend
+```bash
+cd skillup_front
+npm install
+ng serve
+# Open http://localhost:4200
+```
+
+## Acknowledgments
+**Esprit School of Engineering** – PIDEV 2025–2026
