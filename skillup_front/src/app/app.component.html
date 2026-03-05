@@ -1,0 +1,20 @@
+<!-- 1. ADMIN WORLD -->
+<div *ngIf="isAdminPage()">
+  <router-outlet></router-outlet>
+</div>
+
+<!-- 2. USER WORLD -->
+<div class="main-layout" *ngIf="!isAdminPage() && !isAuthPage()">
+  <app-sidebar></app-sidebar> 
+  <div class="main-content">
+    <app-header></app-header>
+    <div class="content-wrapper">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>
+
+<!-- 3. LOGIN/SIGNUP WORLD -->
+<div *ngIf="isAuthPage() && !isAdminPage()">
+  <router-outlet></router-outlet>
+</div>

@@ -1,0 +1,233 @@
+<div class="admin-dashboard-container animate-fade">
+    <!-- 1. LEFT SIDEBAR (Dark Theme) -->
+    <aside class="admin-sidebar">
+        <div class="sidebar-top">
+            <div class="admin-logo">
+                <div class="logo-circle">S</div>
+                <span>SkillUp</span>
+            </div>
+            <nav class="admin-nav">
+                <div class="nav-group">
+                    <p class="nav-label">Main Menu</p>
+                    <a class="admin-nav-item" [class.active]="currentView === 'dashboard'"
+                        (click)="showView('dashboard')">
+                        <span>📊</span> Dashboard
+                    </a>
+                    <a class="admin-nav-item" [class.active]="currentView === 'forum'" (click)="showView('forum')">
+                        <span>💬</span> Gestion Forum
+                    </a>
+                    <a class="admin-nav-item" [class.active]="currentView === 'quiz'" (click)="showView('quiz')">
+                        <span>📝</span> Gestion Quizzes
+                    </a>
+                    <a class="admin-nav-item" [class.active]="currentView === 'certificats'"
+                        (click)="showView('certificats')">
+                        <span>🏆</span> Gestion Certificats
+                    </a>
+                    <a class="admin-nav-item" [class.active]="currentView === 'formations'"
+                        (click)="showView('formations')">
+                        <span>🎓</span> Gestion Formations
+                    </a>
+                    <a class="admin-nav-item" [class.active]="currentView === 'inscriptions'"
+                        (click)="showView('inscriptions')">
+                        <span>📋</span> Gestion Inscriptions
+                    </a>
+                    <a class="admin-nav-item" [class.active]="currentView === 'statistiques'"
+                        (click)="showView('statistiques')">
+                        <span>📊</span> Statistiques
+                    </a>
+                    <a class="admin-nav-item" [class.active]="currentView === 'predictions'"
+                        (click)="showView('predictions')">
+                        <span>🔮</span> Predictions
+                    </a>
+                    <a class="admin-nav-item" [class.active]="currentView === 'admin-tickets'"
+                        (click)="showView('admin-tickets')">
+                        <span>🎫</span> Tickets
+                    </a>
+                    <a class="admin-nav-item" [class.active]="currentView === 'analytics'"
+                        (click)="showView('analytics')">
+                        <span>📊</span> Analytics
+                    </a>
+                    <a class="admin-nav-item" [class.active]="currentView === 'badges'" (click)="showView('badges')">
+                        <span>🏅</span> Badges
+                    </a>
+                    <a class="admin-nav-item" [class.active]="currentView === 'jobOffers'"
+                        (click)="showView('jobOffers')">
+                        <span>💼</span> Gestion Job Offers
+                    </a>
+                    <a class="admin-nav-item" [class.active]="currentView === 'applications'"
+                        (click)="showView('applications')">
+                        <span>📩</span> Applications
+                    </a>
+                    <a class="admin-nav-item" [class.active]="currentView === 'events'" (click)="showView('events')">
+                        <span>🗓️</span> Gestion Événements
+                    </a>
+                    <a class="admin-nav-item" [class.active]="currentView === 'payments'"
+                        (click)="showView('payments')">
+                        <span>💳</span> Gestion Paiements
+                    </a>
+                    <a class="admin-nav-item" [class.active]="currentView === 'event-form'"
+                        (click)="showView('event-form')">
+                        <span>➕</span> Créer Événement
+                    </a>
+
+
+                </div>
+
+                <div class="nav-group mt-4">
+                    <p class="nav-label">System</p>
+                    <a class="admin-nav-item disabled-link">
+                        <span>⚙️</span> Settings
+                    </a>
+                </div>
+            </nav>
+        </div>
+
+        <div class="sidebar-bottom">
+            <div class="admin-profile-box">
+                <div class="admin-avatar">{{ authService.getUsername()?.charAt(0)?.toUpperCase() }}</div>
+                <div class="admin-user-details">
+                    <span class="aname">{{ authService.getUsername() }}</span>
+                    <span class="arole">{{ authService.getRole() }}</span>
+                </div>
+            </div>
+            <button class="admin-logout-btn" (click)="onLogout()">🚪 Logout</button>
+        </div>
+    </aside>
+
+    <!-- 2. MAIN AREA -->
+    <main class="admin-main">
+        <header class="admin-header">
+            <div class="header-breadcrumb">
+                <h2>Admin Area / <span style="opacity: 0.5; font-weight: 400">{{ currentView | titlecase }}</span></h2>
+            </div>
+            <div class="admin-search">
+                <input type="text" placeholder="Global search...">
+            </div>
+        </header>
+
+        <div class="admin-content-scroll">
+
+            <!-- A. DASHBOARD VIEW (Statistics & Quick Access) -->
+            <div *ngIf="currentView === 'dashboard'" class="dashboard-content animate-fade">
+                <div class="stats-grid mb-5">
+                    <div class="stats-card">
+                        <div class="s-icon">👥</div>
+                        <div class="s-info">
+                            <h4>1,280</h4>
+                            <p>Total Students</p>
+                        </div>
+                    </div>
+                    <div class="stats-card">
+                        <div class="s-icon" style="background: #ecfdf5; color: #10b981;">💬</div>
+                        <div class="s-info">
+                            <h4>{{ allPosts.length }}</h4>
+                            <p>Forum Activity</p>
+                        </div>
+                    </div>
+                    <div class="stats-card">
+                        <div class="s-icon" style="background: #fff7ed; color: #f97316;">🎓</div>
+                        <div class="s-info">
+                            <h4>42</h4>
+                            <p>Active Courses</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Job Offers by Industry Card (New Integration) -->
+                <div class="stats-card industry-stats mt-4 mb-5" *ngIf="industryStats.length > 0">
+                    <h3 class="industry-card-title">
+                        <span class="title-icon">📊</span>
+                        <span class="title-text">Job Offers by Industry</span>
+                        <span class="title-separator"></span>
+                        <div class="header-stats">
+                            <div class="header-stat-item">
+                                <span class="header-stat-label">Total</span>
+                                <span class="header-stat-value">{{ getTotalCount() }}</span>
+                            </div>
+                            <div class="header-stat-item">
+                                <span class="header-stat-label">Industries</span>
+                                <span class="header-stat-value">{{ industryStats.length }}</span>
+                            </div>
+                        </div>
+                    </h3>
+
+                    <div class="industry-list">
+                        <div class="industry-row" *ngFor="let stat of industryStats; let i = index"
+                            [attr.data-color]="i">
+                            <div class="row-content">
+                                <div class="industry-left">
+                                    <span class="industry-icon-badge">{{ getIndustryIcon(stat.industry) }}</span>
+                                    <div class="industry-details">
+                                        <div class="industry-name">{{ stat.industry }}</div>
+                                        <div class="industry-meta">
+                                            <span class="meta-item">{{ getPercentage(stat.count) | number:'1.0-0' }}% of
+                                                total</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="industry-right">
+                                    <span class="count-badge" [style.background]="getIndustryColor(i)">{{ stat.count
+                                        }}</span>
+                                </div>
+                            </div>
+                            <div class="progress-bar-mini">
+                                <div class="progress-fill-mini" [style.width.%]="getPercentage(stat.count)"
+                                    [style.background]="getIndustryColor(i)"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="fw-bold mb-4 text-dark">Quick Management</h3>
+                <div class="admin-course-grid">
+                    <div class="admin-card">
+                        <div class="card-thumb">Python AI</div>
+                        <div class="card-content">
+                            <h4>Machine Learning Basics</h4>
+                            <button class="btn-manage disabled">Manage Details</button>
+                        </div>
+                    </div>
+                    <div class="admin-card">
+                        <div class="card-thumb" style="background: linear-gradient(135deg, #7c3aed, #4f46e5);">Angular
+                            Pro</div>
+                        <div class="card-content">
+                            <h4>Advanced Architecture</h4>
+                            <button class="btn-manage disabled">Manage Details</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- B. MODULAR GESTION COMPONENTS -->
+            <app-admin-tickets *ngIf="currentView === 'admin-tickets'"></app-admin-tickets>
+            <app-analytics-dashboard *ngIf="currentView === 'analytics'"></app-analytics-dashboard>
+
+            <app-gestion-forum *ngIf="currentView === 'forum'"></app-gestion-forum>
+            <app-gestion-quiz *ngIf="currentView === 'quiz'"></app-gestion-quiz>
+            <app-gestion-certificat *ngIf="currentView === 'certificats'"></app-gestion-certificat>
+
+            <app-gestion-formations *ngIf="currentView === 'formations'"></app-gestion-formations>
+            <app-gestion-inscriptions *ngIf="currentView === 'inscriptions'"></app-gestion-inscriptions>
+            <app-stats *ngIf="currentView === 'statistiques'"></app-stats>
+            <app-test-predictions *ngIf="currentView === 'predictions'"></app-test-predictions>
+            <app-badge-simple *ngIf="currentView === 'badges'"></app-badge-simple>
+            <app-event-form *ngIf="currentView === 'event-form'"></app-event-form>
+
+
+            <!-- Job Offer Components -->
+            <app-job-offer-list *ngIf="currentView === 'jobOffers'" (addNew)="showForm()"
+                (edit)="editOffer($event)"></app-job-offer-list>
+            <app-job-offer-form *ngIf="currentView === 'jobOffersForm'" [offerId]="editId" (saved)="showList()"
+                (cancelled)="showList()"></app-job-offer-form>
+            <app-gestion-applications *ngIf="currentView === 'applications'"></app-gestion-applications>
+            <app-event-dashboard *ngIf="currentView === 'events'"></app-event-dashboard>
+            <app-payment-list *ngIf="currentView === 'payments'"></app-payment-list>
+            <app-payment-detail *ngIf="currentView === 'payment-detail'"
+                [inputPaymentId]="selectedPaymentId"></app-payment-detail>
+            <app-payment-form *ngIf="currentView === 'payment-form'"
+                [inputPaymentId]="selectedPaymentId"></app-payment-form>
+
+
+        </div>
+    </main>
+</div>

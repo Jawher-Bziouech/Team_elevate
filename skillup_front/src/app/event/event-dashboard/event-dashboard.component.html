@@ -1,0 +1,414 @@
+<div class="min-h-screen bg-gray-50">
+  <!-- En-tête avec actions -->
+  <div class="bg-white shadow-sm border-b">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div class="flex justify-between items-center">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900">Event Management</h1>
+          <p class="text-gray-600 text-sm mt-1">Gérez vos événements en temps réel</p>
+        </div>
+        <div class="flex gap-3 relative">
+          <!-- Menu déroulant Export amélioré -->
+          <div class="relative" #exportMenu>
+            <button (click)="toggleExportMenu()"
+                    class="btn-primary bg-green-600 hover:bg-green-700 flex items-center gap-2 px-4 py-2 rounded-lg transition-all">
+              <span class="material-icons">download</span>
+              Exporter
+              <span class="material-icons" [class.rotate-180]="showExportMenu">arrow_drop_down</span>
+            </button>
+
+            <!-- Menu déroulant avec animations -->
+            <div *ngIf="showExportMenu"
+                 class="absolute right-0 mt-2 w-72 bg-white rounded-xl shadow-2xl border z-50 overflow-hidden"
+                 @menuAnimation>
+
+              <!-- En-tête du menu -->
+              <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-3">
+                <h3 class="font-semibold">Options d'export</h3>
+                <p class="text-xs opacity-90">{{ events.length }} événements disponibles</p>
+              </div>
+
+              <!-- Liste des options -->
+              <div class="p-2">
+                <!-- Section PDF -->
+                <div class="mb-2">
+                  <p class="text-xs font-semibold text-gray-500 px-3 mb-1">FORMAT PDF</p>
+                  <button (click)="exportEvent('pdf', 'all'); showExportMenu = false"
+                          class="w-full text-left px-4 py-3 hover:bg-gray-50 flex items-center gap-3 rounded-lg transition-all">
+                    <div class="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center text-red-600">
+                      <span class="material-icons">picture_as_pdf</span>
+                    </div>
+                    <div class="flex-1">
+                      <p class="font-medium">PDF standard</p>
+                      <p class="text-xs text-gray-500">Tous les événements</p>
+                    </div>
+                    <span class="text-xs text-gray-400">{{ events.length }} évts</span>
+                  </button>
+
+                  <button (click)="exportEvent('pdf', 'filtered'); showExportMenu = false"
+                          class="w-full text-left px-4 py-3 hover:bg-gray-50 flex items-center gap-3 rounded-lg transition-all"
+                          [class.opacity-50]="getFilteredCount() === 0">
+                    <div class="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center text-red-600">
+                      <span class="material-icons">filter_alt</span>
+                    </div>
+                    <div class="flex-1">
+                      <p class="font-medium">PDF filtré</p>
+                      <p class="text-xs text-gray-500">Selon les filtres actuels</p>
+                    </div>
+                    <span class="text-xs text-gray-400">{{ getFilteredCount() }} évts</span>
+                  </button>
+                </div>
+
+                <!-- Séparateur -->
+                <div class="border-t border-gray-100 my-2"></div>
+
+                <!-- Section Excel -->
+                <div class="mb-2">
+                  <p class="text-xs font-semibold text-gray-500 px-3 mb-1">FORMAT EXCEL</p>
+                  <button (click)="exportEvent('excel', 'all'); showExportMenu = false"
+                          class="w-full text-left px-4 py-3 hover:bg-gray-50 flex items-center gap-3 rounded-lg transition-all">
+                    <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center text-green-600">
+                      <span class="material-icons">table_chart</span>
+                    </div>
+                    <div class="flex-1">
+                      <p class="font-medium">Excel standard</p>
+                      <p class="text-xs text-gray-500">Tous les événements</p>
+                    </div>
+                    <span class="text-xs text-gray-400">{{ events.length }} évts</span>
+                  </button>
+
+                  <button (click)="exportEvent('excel', 'filtered'); showExportMenu = false"
+                          class="w-full text-left px-4 py-3 hover:bg-gray-50 flex items-center gap-3 rounded-lg transition-all"
+                          [class.opacity-50]="getFilteredCount() === 0">
+                    <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center text-green-600">
+                      <span class="material-icons">filter_alt</span>
+                    </div>
+                    <div class="flex-1">
+                      <p class="font-medium">Excel filtré</p>
+                      <p class="text-xs text-gray-500">Selon les filtres actuels</p>
+                    </div>
+                    <span class="text-xs text-gray-400">{{ getFilteredCount() }} évts</span>
+                  </button>
+                </div>
+
+                <!-- Séparateur -->
+                <div class="border-t border-gray-100 my-2"></div>
+
+                <!-- Options avancées -->
+                <div>
+                  <p class="text-xs font-semibold text-gray-500 px-3 mb-1">AUTRES FORMATS</p>
+                  <button (click)="exportEvent('csv', 'all'); showExportMenu = false"
+                          class="w-full text-left px-4 py-3 hover:bg-gray-50 flex items-center gap-3 rounded-lg transition-all">
+                    <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center text-purple-600">
+                      <span class="material-icons">text_snippet</span>
+                    </div>
+                    <div class="flex-1">
+                      <p class="font-medium">CSV</p>
+                      <p class="text-xs text-gray-500">Format universel</p>
+                    </div>
+                    <span class="text-xs text-gray-400">{{ events.length }} évts</span>
+                  </button>
+
+                  <button (click)="exportEvent('print', 'all'); showExportMenu = false"
+                          class="w-full text-left px-4 py-3 hover:bg-gray-50 flex items-center gap-3 rounded-lg transition-all">
+                    <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center text-orange-600">
+                      <span class="material-icons">print</span>
+                    </div>
+                    <div class="flex-1">
+                      <p class="font-medium">Imprimer</p>
+                      <p class="text-xs text-gray-500">Version imprimable</p>
+                    </div>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Pied du menu -->
+              <div class="bg-gray-50 px-4 py-2 text-xs text-gray-500 border-t flex justify-between">
+                <span>Dernière mise à jour</span>
+                <span>{{ lastUpdate | date:'dd/MM/yyyy HH:mm' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bouton Nouvel Événement -->
+<button (click)="navigateToCreate()"
+                  class="btn-primary bg-blue-600 hover:bg-blue-700 flex items-center gap-2 px-4 py-2 rounded-lg transition-all">
+            <span class="material-icons">add</span>
+            Nouvel Événement
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Statistiques -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <!-- Carte 1: Événements totaux -->
+      <div class="stat-card border-l-4 border-blue-500">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-gray-600 text-sm">Événements totaux</p>
+            <p class="text-3xl font-bold text-gray-900 mt-2">{{ stats.totalEvents || 0 }}</p>
+          </div>
+          <div class="p-3 bg-blue-100 rounded-xl text-blue-600">
+            <span class="material-icons text-2xl">event</span>
+          </div>
+        </div>
+        <p class="text-sm text-gray-600 mt-4">
+          <span class="font-semibold text-blue-600">{{ stats.upcomingEvents || 0 }}</span> à venir
+        </p>
+      </div>
+
+      <!-- Carte 2: Participants -->
+      <div class="stat-card border-l-4 border-green-500">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-gray-600 text-sm">Participants</p>
+            <p class="text-3xl font-bold text-gray-900 mt-2">{{ stats.totalParticipants || 0 }}</p>
+          </div>
+          <div class="p-3 bg-green-100 rounded-xl text-green-600">
+            <span class="material-icons text-2xl">people</span>
+          </div>
+        </div>
+        <p class="text-sm text-gray-600 mt-4">
+          Taux: {{ participationRate.toFixed(1) || 0 }}%
+        </p>
+      </div>
+
+      <!-- Carte 3: Revenus -->
+      <div class="stat-card border-l-4 border-purple-500">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-gray-600 text-sm">Revenus</p>
+            <p class="text-3xl font-bold text-gray-900 mt-2">{{ totalRevenue | currency:'TND' }}</p>
+          </div>
+          <div class="p-3 bg-purple-100 rounded-xl text-purple-600">
+            <span class="material-icons text-2xl">payments</span>
+          </div>
+        </div>
+        <p class="text-sm text-gray-600 mt-4">
+          Moy: {{ (totalRevenue / (stats.totalEvents || 1)) | currency:'TND' }}
+        </p>
+      </div>
+
+      <!-- Carte 4: Note moyenne -->
+      <div class="stat-card border-l-4 border-orange-500">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-gray-600 text-sm">Note moyenne</p>
+            <p class="text-3xl font-bold text-gray-900 mt-2">{{ stats.averageRating || 0 }}/5</p>
+          </div>
+          <div class="p-3 bg-orange-100 rounded-xl text-orange-600">
+            <span class="material-icons text-2xl">star</span>
+          </div>
+        </div>
+        <p class="text-sm text-gray-600 mt-4">
+          Basé sur {{ stats.reviews || 0 }} avis
+        </p>
+      </div>
+    </div>
+
+    <!-- Filtres et vue -->
+    <div class="bg-white rounded-xl shadow-sm p-4 mt-6 flex flex-wrap gap-4 items-center justify-between">
+      <div class="flex gap-2">
+        <button (click)="setViewMode('grid')"
+                [class]="viewMode === 'grid' ? 'bg-blue-600 text-white' : 'border hover:bg-gray-50'"
+                class="px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
+          <span class="material-icons">grid_view</span> Grille
+        </button>
+        <button (click)="setViewMode('calendar')"
+                [class]="viewMode === 'calendar' ? 'bg-blue-600 text-white' : 'border hover:bg-gray-50'"
+                class="px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
+          <span class="material-icons">calendar_month</span> Calendrier
+        </button>
+        <button (click)="setViewMode('list')"
+                [class]="viewMode === 'list' ? 'bg-blue-600 text-white' : 'border hover:bg-gray-50'"
+                class="px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
+          <span class="material-icons">list</span> Liste
+        </button>
+      </div>
+      <div class="flex gap-3">
+        <select [(ngModel)]="selectedStatus" (change)="applyFilters()"
+                class="px-4 py-2 border rounded-lg bg-white focus:ring-2 focus:ring-blue-500">
+          <option value="">Tous les statuts</option>
+          <option *ngFor="let status of statusOptions" [value]="status">{{ status }}</option>
+        </select>
+
+        <select [(ngModel)]="selectedCategory" (change)="applyFilters()"
+                class="px-4 py-2 border rounded-lg bg-white focus:ring-2 focus:ring-blue-500">
+          <option value="">Toutes catégories</option>
+          <option *ngFor="let cat of categoryOptions" [value]="cat">{{ cat }}</option>
+        </select>
+
+        <button (click)="loadData()" class="px-4 py-2 border rounded-lg hover:bg-gray-50 flex items-center gap-2">
+          <span class="material-icons">refresh</span> Rafraîchir
+        </button>
+      </div>
+    </div>
+
+    <!-- SECTION DES ÉVÉNEMENTS (MANQUANTE DANS VOTRE CODE) -->
+
+    <!-- Loader -->
+    <div *ngIf="isLoading" class="flex justify-center py-12">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+    </div>
+
+    <!-- Message si aucun événement -->
+    <div *ngIf="!isLoading && events.length === 0" class="text-center py-12 bg-white rounded-xl shadow-sm mt-6">
+      <span class="material-icons text-6xl text-gray-300">event_busy</span>
+      <p class="text-gray-500 mt-4 text-lg">Aucun événement trouvé</p>
+      <p class="text-gray-400 mt-2">Créez votre premier événement en cliquant sur "Nouvel Événement"</p>
+<button (click)="navigateToCreate()" class="mt-4 btn-primary inline-flex items-center gap-2">
+        <span class="material-icons">add</span> Créer un événement
+      </button>
+    </div>
+
+    <!-- GRILLE DES ÉVÉNEMENTS (Vue grille) -->
+    <div *ngIf="!isLoading && events.length > 0 && viewMode === 'grid'"
+         class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+
+      <div *ngFor="let event of events"
+           class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+
+        <!-- En-tête avec image -->
+        <div class="h-40 bg-gradient-to-r from-blue-500 to-purple-600 relative">
+          <div class="absolute top-3 right-3 flex gap-2">
+            <span class="px-2 py-1 bg-white/90 rounded-full text-xs font-semibold"
+                  [ngClass]="{
+                    'text-blue-600': event.status === 'UPCOMING',
+                    'text-green-600': event.status === 'ONGOING',
+                    'text-gray-600': event.status === 'COMPLETED',
+                    'text-red-600': event.status === 'CANCELLED'
+                  }">
+              {{ event.status }}
+            </span>
+            <span *ngIf="event.priority === 'HIGH'"
+                  class="px-2 py-1 bg-red-100 text-red-600 rounded-full text-xs font-semibold">
+              Haute priorité
+            </span>
+          </div>
+          <div class="absolute bottom-3 left-3 text-white">
+            <p class="text-sm font-medium">{{ event.startDate | date:'dd MMM yyyy' }}</p>
+          </div>
+        </div>
+
+        <!-- Contenu -->
+        <div class="p-5">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="text-xs font-semibold text-blue-600 bg-blue-100 px-2 py-1 rounded-full">
+              {{ event.category || event.type }}
+            </span>
+            <span class="text-xs text-gray-500 flex items-center gap-1">
+              <span class="material-icons text-sm">location_on</span>
+              {{ event.location }}
+            </span>
+          </div>
+
+          <h3 class="font-bold text-lg mb-2">{{ event.title }}</h3>
+          <p class="text-gray-600 text-sm mb-4 line-clamp-2">{{ event.description }}</p>
+
+          <!-- Tags -->
+          <div class="flex flex-wrap gap-2 mb-4">
+            <span *ngFor="let tag of event.tags?.slice(0,3)"
+                  class="text-xs bg-gray-100 px-2 py-1 rounded-full">
+              #{{ tag }}
+            </span>
+          </div>
+
+          <!-- Organisateur et prix -->
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                {{ event.organizer?.name?.charAt(0) || 'O' }}
+              </div>
+              <span class="text-sm font-medium">{{ event.organizer?.name || 'Organisateur' }}</span>
+            </div>
+            <div class="flex items-center gap-1">
+              <span class="material-icons text-yellow-500 text-sm">star</span>
+              <span class="text-sm font-semibold">{{ event.rating || 'Nouveau' }}</span>
+            </div>
+          </div>
+
+          <!-- Barre de progression -->
+          <div class="mb-4">
+            <div class="flex justify-between text-xs mb-1">
+              <span>Places disponibles</span>
+              <span class="font-semibold">{{ event.registeredCount || 0 }}/{{ event.capacity }}</span>
+            </div>
+            <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+              <div class="h-full bg-gradient-to-r from-blue-500 to-green-500 rounded-full"
+                   [style.width.%] = "((event.registeredCount || 0) / event.capacity * 100) || 0">
+              </div>
+            </div>
+          </div>
+
+          <!-- Prix et actions -->
+          <div class="flex items-center justify-between pt-4 border-t border-gray-200">
+            <div>
+              <span class="text-2xl font-bold text-blue-600">{{ event.price | currency:'TND' }}</span>
+              <span class="text-sm text-gray-500 ml-1">/personne</span>
+            </div>
+            <div class="flex gap-2">
+              <button (click)="editEvent(event.eventId!)"
+                      class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                      title="Modifier">
+                <span class="material-icons">edit</span>
+              </button>
+              <button (click)="viewEventDetails(event.eventId!)"
+                      class="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                      title="Voir détails">
+                <span class="material-icons">visibility</span>
+              </button>
+              <button (click)="shareEvent(event.eventId!)"
+                      class="p-2 text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
+                      title="Partager">
+                <span class="material-icons">share</span>
+              </button>
+              <button (click)="deleteEvent(event.eventId!)"
+                      class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                      title="Supprimer">
+                <span class="material-icons">delete</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VUE LISTE -->
+    <div *ngIf="!isLoading && events.length > 0 && viewMode === 'list'"
+         class="mt-6 space-y-4">
+      <div *ngFor="let event of events"
+           class="bg-white rounded-xl shadow-lg p-4 flex items-center gap-4 hover:shadow-xl transition-all">
+        <!-- Image miniature -->
+        <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex-shrink-0"></div>
+
+        <!-- Infos -->
+        <div class="flex-1">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="px-2 py-1 bg-blue-100 text-blue-600 text-xs rounded-full">{{ event.status }}</span>
+            <span class="text-sm text-gray-500">{{ event.startDate | date:'dd/MM/yyyy' }}</span>
+          </div>
+          <h3 class="font-bold text-lg">{{ event.title }}</h3>
+          <p class="text-gray-600 text-sm">{{ event.location }}</p>
+        </div>
+
+        <!-- Prix et actions -->
+        <div class="text-right">
+          <p class="text-2xl font-bold text-blue-600">{{ event.price | currency:'TND' }}</p>
+          <p class="text-sm text-gray-500">{{ event.registeredCount || 0 }}/{{ event.capacity }} places</p>
+          <div class="flex gap-2 mt-2">
+            <button (click)="editEvent(event.eventId!)" class="text-blue-600 hover:text-blue-800">Modifier</button>
+            <button (click)="deleteEvent(event.eventId!)" class="text-red-600 hover:text-red-800">Supprimer</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VUE CALENDRIER (placeholder) -->
+    <div *ngIf="!isLoading && viewMode === 'calendar'" class="mt-6">
+      <app-event-calendar [events]="events"></app-event-calendar>
+    </div>
+  </div>
+</div>

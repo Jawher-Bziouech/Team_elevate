@@ -1,0 +1,243 @@
+<!--<div class="container-fluid p-4">
+  <div class="row mb-4">
+    <div class="col-12">
+      <h2>Ajouter des cours à la formation</h2>
+      <p class="text-muted">
+        Formation: <strong>{{ formationName }}</strong> (ID: {{ formationId }})
+      </p>
+    </div>
+  </div>
+
+  <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
+
+  <div class="card">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">Ajouter {{ coursesArray.length }} cours</h5>
+      <button 
+        class="btn btn-sm btn-success" 
+        (click)="addCourse()" 
+        [disabled]="loading">
+        <i class="fas fa-plus"></i> Ajouter un cours
+      </button>
+    </div>
+
+    <div class="card-body">
+      <form [formGroup]="bulkForm" (ngSubmit)="onSubmit()">
+        <div formArrayName="courses">
+          <div *ngFor="let course of coursesArray.controls; let i = index"
+               [formGroupName]="i"
+               class="border p-3 mb-3 rounded">
+            
+            <div class="d-flex justify-content-between mb-2">
+              <h6>Cours #{{ i + 1 }}</h6>
+              <button *ngIf="coursesArray.length > 1"
+                      type="button"
+                      class="btn btn-sm btn-danger"
+                      (click)="removeCourse(i)">
+                <i class="fas fa-times"></i> Supprimer
+              </button>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-2">
+                <label class="form-label">Titre *</label>
+                <input type="text" class="form-control" formControlName="title">
+                <div *ngIf="course.get('title')?.invalid && course.get('title')?.touched" 
+                     class="text-danger small">
+                  Titre requis (min 3 caractères)
+                </div>
+              </div>
+
+              <div class="col-md-6 mb-2">
+                <label class="form-label">Catégorie *</label>
+                <select class="form-control" formControlName="category">
+                  <option value="">Choisir</option>
+                  <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="mb-2">
+              <label class="form-label">Description *</label>
+              <textarea class="form-control" rows="2" formControlName="description"></textarea>
+            </div>
+
+            <div class="row">
+              <div class="col-md-3 mb-2">
+                <label class="form-label">Niveau *</label>
+                <select class="form-control" formControlName="level">
+                  <option value="">Choisir</option>
+                  <option *ngFor="let level of levels" [value]="level">{{ level }}</option>
+                </select>
+              </div>
+
+              <div class="col-md-3 mb-2">
+                <label class="form-label">Durée (h) *</label>
+                <input type="number" class="form-control" formControlName="durationHours">
+              </div>
+
+              <div class="col-md-3 mb-2">
+                <label class="form-label">Langue *</label>
+                <select class="form-control" formControlName="language">
+                  <option value="">Choisir</option>
+                  <option *ngFor="let lang of languages" [value]="lang">{{ lang }}</option>
+                </select>
+              </div>
+
+              <div class="col-md-3 mb-2">
+                <label class="form-label">Prix (€) *</label>
+                <input type="number" class="form-control" formControlName="price">
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-4 mb-2">
+                <label class="form-label">Statut</label>
+                <select class="form-control" formControlName="status">
+                  <option *ngFor="let status of statuses" [value]="status">{{ status }}</option>
+                </select>
+              </div>
+
+              <div class="col-md-4 mb-2">
+                <label class="form-label">ID Formateur</label>
+                <input type="number" class="form-control" formControlName="trainerId">
+              </div>
+
+              <div class="col-md-4 mb-2">
+                <label class="form-label">Nom Formateur</label>
+                <input type="text" class="form-control" formControlName="trainerName">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2 mt-3">
+          <button type="button" class="btn btn-light" (click)="cancel()" [disabled]="loading">
+            Annuler
+          </button>
+          <button type="submit" class="btn btn-primary" [disabled]="bulkForm.invalid || loading">
+            {{ loading ? 'Ajout en cours...' : 'Ajouter les cours' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>  -->
+
+<div class="container mt-4">
+  <button class="btn btn-link p-0 mb-3" (click)="cancel()">
+    <i class="fas fa-arrow-left"></i> Retour
+  </button>
+
+  <h2 class="mb-4">Ajouter des cours</h2>
+
+  <div *ngIf="successMessage" class="alert alert-success">
+    {{ successMessage }}
+  </div>
+  <div *ngIf="errorMessage" class="alert alert-danger">
+    {{ errorMessage }}
+  </div>
+
+  <form [formGroup]="bulkForm" (ngSubmit)="onSubmit()" class="card p-4">
+    <!-- Formation ID 
+    <div class="mb-3">
+      <label class="form-label fw-bold">ID Formation *</label>
+      <input type="number" class="form-control" formControlName="formationId">
+    </div>-->
+
+    <!-- Formation Name (optionnel) -->
+    <div class="mb-3">
+      <label class="form-label">Nom Formation</label>
+      <input type="text" class="form-control" formControlName="formationName">
+    </div>
+
+    <hr>
+
+    <!-- Cours -->
+    <div formArrayName="courses">
+      <div *ngFor="let course of coursesArray.controls; let i = index" 
+           [formGroupName]="i" 
+           class="border p-3 mb-3 rounded">
+        
+        <div class="d-flex justify-content-between mb-2">
+          <h5>Cours #{{ i + 1 }}</h5>
+          <button type="button" class="btn btn-danger btn-sm" (click)="removeCourse(i)">
+            Supprimer
+          </button>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-2">
+            <label class="form-label">Titre</label>
+            <input type="text" class="form-control" formControlName="title">
+          </div>
+          <div class="col-md-6 mb-2">
+            <label class="form-label">Catégorie</label>
+            <select class="form-control" formControlName="category">
+              <option value="">Choisir</option>
+              <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-4 mb-2">
+            <label class="form-label">Niveau</label>
+            <select class="form-control" formControlName="level">
+              <option value="">Choisir</option>
+              <option *ngFor="let level of levels" [value]="level">{{ level }}</option>
+            </select>
+          </div>
+          <div class="col-md-4 mb-2">
+            <label class="form-label">Durée (h)</label>
+            <input type="number" class="form-control" formControlName="durationHours">
+          </div>
+          <div class="col-md-4 mb-2">
+            <label class="form-label">Langue</label>
+            <select class="form-control" formControlName="language">
+              <option value="">Choisir</option>
+              <option *ngFor="let lang of languages" [value]="lang">{{ lang }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-4 mb-2">
+            <label class="form-label">Prix (€)</label>
+            <input type="number" class="form-control" formControlName="price">
+          </div>
+          <div class="col-md-4 mb-2">
+            <label class="form-label">Statut</label>
+            <select class="form-control" formControlName="status">
+              <option value="ACTIF">Actif</option>
+              <option value="INACTIF">Inactif</option>
+              <option value="EN_PREPARATION">En préparation</option>
+            </select>
+          </div>
+          <div class="col-md-4 mb-2">
+            <label class="form-label">ID Formateur</label>
+            <input type="number" class="form-control" formControlName="trainerId">
+          </div>
+        </div>
+
+        <div class="mb-2">
+          <label class="form-label">Nom Formateur</label>
+          <input type="text" class="form-control" formControlName="trainerName">
+        </div>
+      </div>
+    </div>
+
+    <button type="button" class="btn btn-outline-primary mb-3" (click)="addCourse()">
+      <i class="fas fa-plus"></i> Ajouter un cours
+    </button>
+
+    <hr>
+
+    <div class="d-flex justify-content-end gap-2">
+      <button type="button" class="btn btn-secondary" (click)="cancel()">Annuler</button>
+      <button type="submit" class="btn btn-primary" [disabled]="bulkForm.invalid || loading">
+        {{ loading ? 'Ajout...' : 'Ajouter les cours' }}
+      </button>
+    </div>
+  </form>
+</div>

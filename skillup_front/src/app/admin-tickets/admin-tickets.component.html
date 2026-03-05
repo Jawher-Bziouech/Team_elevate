@@ -1,0 +1,517 @@
+<!--<div class="admin-tickets-container">
+  <h2>Gestion des Tickets</h2>
+  
+  
+  <div class="filters-card">
+    <h3>Filtres de recherche</h3>
+    <div class="filters-grid">
+      <div class="filter-item">
+        <label>Date début</label>
+        <input type="date" [(ngModel)]="filters.startDate" class="form-control">
+      </div>
+      <div class="filter-item">
+        <label>Date fin</label>
+        <input type="date" [(ngModel)]="filters.endDate" class="form-control">
+      </div>
+      <div class="filter-item">
+        <label>ID Ticket</label>
+        <input type="number" [(ngModel)]="filters.ticketId" class="form-control" placeholder="ID du ticket">
+      </div>
+      <div class="filter-item">
+        <label>Nom du créateur</label>
+        <input type="text" [(ngModel)]="filters.trainerName" class="form-control" placeholder="Nom du TRAINER">
+      </div>
+      <div class="filter-item">
+        <label>Statut</label>
+        <select [(ngModel)]="filters.status" class="form-control">
+          <option value="">Tous</option>
+          <option *ngFor="let status of statusOptions" [value]="status">{{status}}</option>
+        </select>
+      </div>
+      <div class="filter-actions">
+        <button class="btn-apply" (click)="applyFilters()">🔍 Appliquer</button>
+        <button class="btn-reset" (click)="resetFilters()">⟲ Réinitialiser</button>
+      </div>
+    </div>
+  </div>
+
+  
+  <div class="stats-card">
+    <p>Total des tickets: <strong>{{ totalElements }}</strong></p>
+  </div>
+
+  
+  <div class="tickets-list">
+    <div class="ticket-card" *ngFor="let ticket of tickets">
+      <div class="ticket-header">
+        <div class="ticket-info">
+          <h4>#{{ ticket.ticketId }} - {{ ticket.createdByName }}</h4>
+          <span class="badge" [ngClass]="{
+            'badge-open': ticket.status === 'OPEN',
+            'badge-progress': ticket.status === 'IN_PROGRESS',
+            'badge-resolved': ticket.status === 'RESOLVED',
+            'badge-closed': ticket.status === 'CLOSED'
+          }">{{ ticket.status }}</span>
+        </div>
+        <small>Créé le: {{ ticket.createdAt | date:'dd/MM/yyyy HH:mm' }}</small>
+      </div>
+      
+      <div class="ticket-body">
+        <p><strong>Catégorie:</strong> {{ ticket.category }}</p>
+        <p><strong>Description:</strong> {{ ticket.description }}</p>
+      </div>
+
+      
+      <div class="ticket-response">
+        <div *ngIf="!ticket.adminResponse" class="response-form">
+          <textarea [(ngModel)]="responseText[ticket.ticketId!]" 
+                    placeholder="Votre réponse..." 
+                    rows="3"></textarea>
+          <button class="btn-send" (click)="respond(ticket.ticketId!)">Envoyer la réponse</button>
+        </div>
+
+        <div *ngIf="ticket.adminResponse" class="response-box">
+          <div class="response-header">
+            <strong>Réponse de {{ ticket.adminName }}:</strong>
+            <small>le {{ ticket.responseDate | date:'dd/MM/yyyy HH:mm' }}</small>
+            <span *ngIf="ticket.responseEditable" class="editable-badge">Modifiable</span>
+          </div>
+          <p>{{ ticket.adminResponse }}</p>
+          
+          <div class="response-actions">
+            <button *ngIf="ticket.responseEditable" 
+                    class="btn-edit" 
+                    (click)="editResponse(ticket)">
+              ✏️ Modifier
+            </button>
+            <button class="btn-resolve" 
+                    *ngIf="ticket.status !== 'RESOLVED' && ticket.status !== 'CLOSED'"
+                    (click)="resolveTicket(ticket)">
+              ✅ Résoudre
+            </button>
+            <button class="btn-close" 
+                    *ngIf="ticket.status !== 'CLOSED'"
+                    (click)="closeTicket(ticket.ticketId!)">
+              🔒 Fermer
+            </button>
+          </div>
+        </div>
+
+        
+        <div *ngIf="ticket.resolutionDescription" class="resolution-box">
+          <strong>Résolution:</strong>
+          <p>{{ ticket.resolutionDescription }}</p>
+          <small>le {{ ticket.resolutionDate | date:'dd/MM/yyyy HH:mm' }}</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+  <div class="pagination-controls" *ngIf="totalPages > 0">
+    <div class="pagination-info">
+      Affichage {{ currentPage * pageSize + 1 }} - 
+      {{ Math.min((currentPage + 1) * pageSize, totalElements) }} 
+      sur {{ totalElements }} tickets
+    </div>
+    
+    <div class="page-size-selector">
+      <label>Afficher:</label>
+      <select (change)="onPageSizeChange($event)" [value]="pageSize">
+        <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
+      </select>
+    </div>
+
+    <div class="pagination">
+      <button [disabled]="currentPage === 0" (click)="onPageChange(currentPage - 1)">◀ Précédent</button>
+      
+      <button *ngFor="let page of getPageNumbers()" 
+              [class.active]="page === currentPage"
+              (click)="onPageChange(page)">
+        {{ page + 1 }}
+      </button>
+      
+      <button [disabled]="currentPage === totalPages - 1" 
+              (click)="onPageChange(currentPage + 1)">Suivant ▶</button>
+    </div>
+  </div>
+</div>
+-->
+
+<div class="admin-container">
+  <!-- En-tête avec titre et actions -->
+  <div class="admin-header">
+    <div class="header-left">
+      <h1>
+        <span class="header-icon">🎫</span>
+        Gestion des Tickets
+      </h1>
+      <p class="header-subtitle">Administration et suivi des demandes d'assistance</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn-refresh" (click)="loadTickets()" [class.rotating]="isRefreshing">
+        <span class="btn-icon">↻</span>
+        Actualiser
+      </button>
+      <div class="date-display">
+        <span class="date-icon">📅</span>
+        {{ currentDate | date:'EEEE d MMMM yyyy' }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Statistiques globales -->
+  <div class="stats-grid">
+    <div class="stat-card primary" (click)="filterByStatus('ALL')">
+      <div class="stat-icon">📊</div>
+      <div class="stat-content">
+        <span class="stat-value">{{ totalTickets }}</span>
+        <span class="stat-label">Total tickets</span>
+      </div>
+    </div>
+    <div class="stat-card open" (click)="filterByStatus('OPEN')">
+      <div class="stat-icon">📋</div>
+      <div class="stat-content">
+        <span class="stat-value">{{ ticketsByStatus['OPEN'] || 0 }}</span>
+        <span class="stat-label">Ouverts</span>
+      </div>
+    </div>
+    <div class="stat-card progress" (click)="filterByStatus('IN_PROGRESS')">
+      <div class="stat-icon">⏳</div>
+      <div class="stat-content">
+        <span class="stat-value">{{ ticketsByStatus['IN_PROGRESS'] || 0 }}</span>
+        <span class="stat-label">En cours</span>
+      </div>
+    </div>
+    <div class="stat-card resolved" (click)="filterByStatus('RESOLVED')">
+      <div class="stat-icon">✅</div>
+      <div class="stat-content">
+        <span class="stat-value">{{ ticketsByStatus['RESOLVED'] || 0 }}</span>
+        <span class="stat-label">Résolus</span>
+      </div>
+    </div>
+    <div class="stat-card closed" (click)="filterByStatus('CLOSED')">
+      <div class="stat-icon">🔒</div>
+      <div class="stat-content">
+        <span class="stat-value">{{ ticketsByStatus['CLOSED'] || 0 }}</span>
+        <span class="stat-label">Fermés</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filtres avancés -->
+  <div class="filters-card">
+    <div class="filters-header" (click)="showFilters = !showFilters">
+      <div class="filters-title">
+        <span class="filters-icon">🔍</span>
+        <h3>Filtres de recherche avancée</h3>
+      </div>
+      <span class="filters-toggle">{{ showFilters ? '−' : '+' }}</span>
+    </div>
+
+    <div class="filters-content" *ngIf="showFilters">
+      <div class="filters-grid">
+        <!-- Date début -->
+        <div class="filter-group">
+          <label>
+            <span class="label-icon">📅</span>
+            Date début
+          </label>
+          <input 
+            type="date" 
+            [(ngModel)]="filters.startDate" 
+            class="filter-input"
+            [max]="filters.endDate">
+        </div>
+
+        <!-- Date fin -->
+        <div class="filter-group">
+          <label>
+            <span class="label-icon">📅</span>
+            Date fin
+          </label>
+          <input 
+            type="date" 
+            [(ngModel)]="filters.endDate" 
+            class="filter-input"
+            [min]="filters.startDate">
+        </div>
+
+        <!-- ID Ticket 
+        <div class="filter-group">
+          <label>
+            <span class="label-icon">#</span>
+            ID Ticket
+          </label>
+          <input 
+            type="number" 
+            [(ngModel)]="filters.ticketId" 
+            class="filter-input" 
+            placeholder="Ex: 123">
+        </div> -->
+
+        <!-- Nom du créateur -->
+        <div class="filter-group">
+          <label>
+            <span class="label-icon">👤</span>
+            Nom du créateur
+          </label>
+          <input 
+            type="text" 
+            [(ngModel)]="filters.trainerName" 
+            class="filter-input" 
+            placeholder="Rechercher...">
+        </div>
+
+        <!-- Statut -->
+        <div class="filter-group">
+          <label>
+            <span class="label-icon">📌</span>
+            Statut
+          </label>
+          <select [(ngModel)]="filters.status" class="filter-select">
+            <option value="">Tous les statuts</option>
+            <option value="OPEN">Ouvert</option>
+            <option value="IN_PROGRESS">En cours</option>
+            <option value="RESOLVED">Résolu</option>
+            <option value="CLOSED">Fermé</option>
+          </select>
+        </div>
+
+        <!-- Actions -->
+        <div class="filter-actions">
+          <button class="btn-apply" (click)="applyFilters()">
+            <span class="btn-icon">✓</span>
+            Appliquer
+          </button>
+          <button class="btn-reset" (click)="resetFilters()">
+            <span class="btn-icon">↺</span>
+            Réinitialiser
+          </button>
+        </div>
+      </div>
+
+      <!-- Filtres actifs -->
+      <div class="active-filters" *ngIf="hasActiveFilters">
+        <span class="active-label">Filtres actifs :</span>
+        <div class="filter-tags">
+          <span class="filter-tag" *ngIf="filters.startDate">
+            Du {{ filters.startDate | date:'dd/MM/yyyy' }}
+            <span class="tag-remove" (click)="filters.startDate = ''; applyFilters()">✕</span>
+          </span>
+          <span class="filter-tag" *ngIf="filters.endDate">
+            Au {{ filters.endDate | date:'dd/MM/yyyy' }}
+            <span class="tag-remove" (click)="filters.endDate = ''; applyFilters()">✕</span>
+          </span>
+          <span class="filter-tag" *ngIf="filters.ticketId">
+            ID #{{ filters.ticketId }}
+            <span class="tag-remove" (click)="filters.ticketId = null; applyFilters()">✕</span>
+          </span>
+          <span class="filter-tag" *ngIf="filters.trainerName">
+            Créateur: {{ filters.trainerName }}
+            <span class="tag-remove" (click)="filters.trainerName = ''; applyFilters()">✕</span>
+          </span>
+          <span class="filter-tag" *ngIf="filters.status">
+            Statut: {{ getStatusLabel(filters.status) }}
+            <span class="tag-remove" (click)="filters.status = ''; applyFilters()">✕</span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- États de chargement -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Chargement des tickets...</p>
+  </div>
+
+  <!-- Message d'erreur -->
+  <div *ngIf="error" class="error-state">
+    <div class="error-icon">⚠️</div>
+    <h3>Erreur de chargement</h3>
+    <p>{{ error }}</p>
+    <button class="btn-retry" (click)="loadTickets()">Réessayer</button>
+  </div>
+
+  <!-- Résultats et pagination -->
+  <div *ngIf="!loading && !error && tickets.length > 0" class="results-header">
+    <div class="results-info">
+      <span class="results-count">{{ totalElements }} ticket(s) trouvé(s)</span>
+      <span class="results-page" *ngIf="totalPages > 0">
+        Page {{ currentPage + 1 }} / {{ totalPages }}
+      </span>
+    </div>
+    <div class="results-per-page">
+      <label>Afficher :</label>
+      <select (change)="onPageSizeChange($event)" [value]="pageSize">
+        <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Liste des tickets -->
+  <div class="tickets-grid" *ngIf="!loading && !error && tickets.length > 0">
+    <div class="ticket-card" *ngFor="let ticket of tickets">
+      <!-- En-tête du ticket avec statut -->
+      <div class="card-header">
+        <div class="header-top">
+          <div class="ticket-id-badge">#{{ ticket.ticketId }}</div>
+          <span class="status-badge" [ngClass]="getStatusClass(ticket.status!)">
+            {{ getStatusLabel(ticket.status!) }}
+          </span>
+        </div>
+        <div class="ticket-meta">
+          <span class="meta-item">
+            <span class="meta-icon">👤</span>
+            {{ ticket.createdByName }}
+          </span>
+          <span class="meta-item">
+            <span class="meta-icon">📅</span>
+            {{ ticket.createdAt | date:'dd/MM/yyyy HH:mm' }}
+          </span>
+          <span class="meta-item" *ngIf="ticket.category">
+            <span class="meta-icon">📌</span>
+            {{ ticket.category }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Contenu du ticket -->
+      <div class="card-body">
+        <div class="description">
+          <p>{{ ticket.description }}</p>
+        </div>
+
+        <!-- Section admin (si réponse) -->
+        <div *ngIf="ticket.adminResponse" class="admin-section">
+          <div class="admin-header">
+            <div class="admin-info">
+              <span class="admin-avatar">👤</span>
+              <strong>{{ ticket.adminName || 'Administrateur' }}</strong>
+            </div>
+            <span class="response-date">{{ ticket.responseDate | date:'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+          <div class="admin-response">
+            {{ ticket.adminResponse }}
+          </div>
+          <div *ngIf="ticket.responseEditable" class="admin-badge">
+            Modifiable (30 min)
+          </div>
+        </div>
+
+        <!-- Résolution (si présente) -->
+        <div *ngIf="ticket.resolutionDescription" class="resolution-section">
+          <div class="resolution-header">
+            <span class="resolution-icon">🔧</span>
+            <strong>Résolution</strong>
+          </div>
+          <p>{{ ticket.resolutionDescription }}</p>
+          <small>{{ ticket.resolutionDate | date:'dd/MM/yyyy HH:mm' }}</small>
+        </div>
+
+        <!-- Évaluation (si présente) -->
+        <div *ngIf="ticket.rating" class="rating-display">
+          <div class="rating-stars">
+            <span *ngFor="let star of [1,2,3,4,5]" 
+                  class="star" 
+                  [class.filled]="star <= ticket.rating">★</span>
+            <span class="rating-value">{{ ticket.rating }}/5</span>
+          </div>
+          <p *ngIf="ticket.ratingComment" class="rating-comment">
+            "{{ ticket.ratingComment }}"
+          </p>
+        </div>
+      </div>
+
+      <!-- Actions du ticket -->
+      <div class="card-actions">
+        <!-- Formulaire de réponse (si pas de réponse) -->
+        <div *ngIf="!ticket.adminResponse" class="response-form">
+          <textarea 
+            [(ngModel)]="responseText[ticket.ticketId!]" 
+            placeholder="Écrire une réponse..."
+            rows="2"
+            class="response-input"></textarea>
+          <button 
+            class="btn-response" 
+            (click)="respond(ticket.ticketId!)"
+            [disabled]="!responseText[ticket.ticketId!]?.trim()">
+            <span class="btn-icon">✉️</span>
+            Envoyer
+          </button>
+        </div>
+
+        <!-- Actions pour tickets avec réponse -->
+        <div *ngIf="ticket.adminResponse" class="action-buttons">
+          <button 
+            *ngIf="ticket.responseEditable" 
+            class="btn-edit" 
+            (click)="editResponse(ticket)"
+            title="Modifier la réponse">
+            <span class="btn-icon">✏️</span>
+            Modifier
+          </button>
+          <button 
+            *ngIf="ticket.status !== 'RESOLVED' && ticket.status !== 'CLOSED'" 
+            class="btn-resolve" 
+            (click)="resolveTicket(ticket)"
+            title="Résoudre le ticket">
+            <span class="btn-icon">✅</span>
+            Résoudre
+          </button>
+          <button 
+            *ngIf="ticket.status !== 'CLOSED'" 
+            class="btn-close" 
+            (click)="closeTicket(ticket.ticketId!)"
+            title="Fermer le ticket">
+            <span class="btn-icon">🔒</span>
+            Fermer
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination-container" *ngIf="!loading && !error && totalPages > 1">
+    <div class="pagination">
+      <button 
+        class="page-btn prev" 
+        [disabled]="currentPage === 0"
+        (click)="onPageChange(currentPage - 1)">
+        <span class="btn-icon">←</span>
+        Précédent
+      </button>
+
+      <div class="page-numbers">
+        <button 
+          *ngFor="let page of getPageNumbers()" 
+          class="page-btn number" 
+          [class.active]="page === currentPage"
+          (click)="onPageChange(page)">
+          {{ page + 1 }}
+        </button>
+      </div>
+
+      <button 
+        class="page-btn next" 
+        [disabled]="currentPage === totalPages - 1"
+        (click)="onPageChange(currentPage + 1)">
+        Suivant
+        <span class="btn-icon">→</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- État vide -->
+  <div *ngIf="!loading && !error && tickets.length === 0" class="empty-state">
+    <div class="empty-icon">📭</div>
+    <h3>Aucun ticket trouvé</h3>
+    <p *ngIf="hasActiveFilters">Aucun ticket ne correspond aux filtres sélectionnés</p>
+    <p *ngIf="!hasActiveFilters">Il n'y a pas encore de tickets dans le système</p>
+    <button *ngIf="hasActiveFilters" class="btn-reset-empty" (click)="resetFilters()">
+      Réinitialiser les filtres
+    </button>
+  </div>
+</div>

@@ -1,0 +1,181 @@
+<div class="container py-4">
+  
+  <!-- En-tête -->
+  <div class="d-flex align-items-center mb-4">
+    <button class="btn btn-link text-decoration-none p-0 me-3" (click)="onCancel()">
+      <i class="fas fa-arrow-left fa-lg"></i>
+    </button>
+    <h2 class="mb-0">
+      <i class="fas" 
+         [class.fa-edit]="isEditMode" 
+         [class.fa-plus-circle]="!isEditMode"
+         class="me-2 text-primary">
+      </i>
+      {{ isEditMode ? 'Modifier le Paiement' : 'Nouveau Paiement' }}
+    </h2>
+  </div>
+
+  <!-- Loading spinner -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Chargement...</span>
+    </div>
+    <p class="text-muted mt-2">Chargement du formulaire...</p>
+  </div>
+
+  <!-- Formulaire -->
+  <div class="row justify-content-center" *ngIf="!loading">
+    <div class="col-md-8">
+      <div class="card shadow">
+        <div class="card-body p-4">
+          
+          <form [formGroup]="paymentForm" (ngSubmit)="onSubmit()">
+            
+            <!-- Section Formation -->
+            <h5 class="border-bottom pb-2 mb-3">
+              <i class="fas fa-graduation-cap me-2 text-primary"></i>
+              Informations de la Formation
+            </h5>
+            
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label class="form-label fw-bold">
+                  ID Formation <span class="text-danger">*</span>
+                </label>
+                <input 
+                  type="number" 
+                  class="form-control" 
+                  formControlName="formationId"
+                  [class.is-invalid]="paymentForm.get('formationId')?.invalid && paymentForm.get('formationId')?.touched"
+                  [readonly]="formationId">
+                <div class="invalid-feedback">{{ formationIdError }}</div>
+              </div>
+              
+              <div class="col-md-6">
+                <label class="form-label fw-bold">
+                  Nom Formation <span class="text-danger">*</span>
+                </label>
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  formControlName="formationName"
+                  [class.is-invalid]="paymentForm.get('formationName')?.invalid && paymentForm.get('formationName')?.touched">
+                <div class="invalid-feedback">{{ formationNameError }}</div>
+              </div>
+            </div>
+
+            <!-- Section Utilisateur -->
+            <h5 class="border-bottom pb-2 mb-3 mt-4">
+              <i class="fas fa-user me-2 text-primary"></i>
+              Informations de l'Utilisateur
+            </h5>
+            
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label class="form-label fw-bold">
+                  ID Utilisateur <span class="text-danger">*</span>
+                </label>
+                <input 
+                  type="number" 
+                  class="form-control" 
+                  formControlName="userId"
+                  [class.is-invalid]="paymentForm.get('userId')?.invalid && paymentForm.get('userId')?.touched">
+              </div>
+              
+              <div class="col-md-6">
+                <label class="form-label fw-bold">
+                  Nom Utilisateur <span class="text-danger">*</span>
+                </label>
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  formControlName="userName"
+                  [class.is-invalid]="paymentForm.get('userName')?.invalid && paymentForm.get('userName')?.touched">
+                <div class="invalid-feedback">{{ userNameError }}</div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-bold">
+                Email <span class="text-danger">*</span>
+              </label>
+              <input 
+                type="email" 
+                class="form-control" 
+                formControlName="userEmail"
+                [class.is-invalid]="paymentForm.get('userEmail')?.invalid && paymentForm.get('userEmail')?.touched">
+              <div class="invalid-feedback">{{ userEmailError }}</div>
+            </div>
+
+            <!-- Section Paiement -->
+            <h5 class="border-bottom pb-2 mb-3 mt-4">
+              <i class="fas fa-credit-card me-2 text-primary"></i>
+              Détails du Paiement
+            </h5>
+            
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label class="form-label fw-bold">
+                  Montant <span class="text-danger">*</span>
+                </label>
+                <div class="input-group">
+                  <span class="input-group-text">€</span>
+                  <input 
+                    type="number" 
+                    class="form-control" 
+                    formControlName="amount" 
+                    step="0.01"
+                    (blur)="formatAmountOnBlur()"
+                    [class.is-invalid]="paymentForm.get('amount')?.invalid && paymentForm.get('amount')?.touched">
+                  <div class="invalid-feedback">{{ amountError }}</div>
+                </div>
+              </div>
+              
+              <div class="col-md-6">
+                <label class="form-label fw-bold">
+                  Méthode de Paiement <span class="text-danger">*</span>
+                </label>
+                <select 
+                  class="form-select" 
+                  formControlName="paymentMethod"
+                  [class.is-invalid]="paymentForm.get('paymentMethod')?.invalid && paymentForm.get('paymentMethod')?.touched">
+                  <option value="">Sélectionner une méthode</option>
+                  <option *ngFor="let method of paymentMethods" [value]="method.value">
+                    <i class="fas" [class]="method.icon"></i>
+                    {{ method.label }}
+                  </option>
+                </select>
+                <div class="invalid-feedback">{{ paymentMethodError }}</div>
+              </div>
+            </div>
+
+            <!-- Message pour le mode édition -->
+            <div *ngIf="isEditMode" class="alert alert-info mt-3">
+              <i class="fas fa-info-circle me-2"></i>
+              Mode édition : Vous ne pouvez modifier que le statut du paiement.
+            </div>
+
+            <!-- Boutons d'action -->
+            <div class="d-flex justify-content-end gap-2 mt-4">
+              <button 
+                type="button" 
+                class="btn btn-secondary" 
+                (click)="onCancel()"
+                [disabled]="submitting">
+                Annuler
+              </button>
+              <button 
+                type="submit" 
+                class="btn btn-primary" 
+                [disabled]="paymentForm.invalid || submitting">
+                <span *ngIf="submitting" class="spinner-border spinner-border-sm me-2"></span>
+                <i class="fas" [class.fa-save]="!isEditMode" [class.fa-edit]="isEditMode" class="me-2"></i>
+                {{ isEditMode ? 'Mettre à jour' : 'Créer le paiement' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

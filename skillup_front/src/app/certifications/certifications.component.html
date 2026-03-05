@@ -1,0 +1,97 @@
+<div class="cert-container">
+  <div class="cert-header">
+    <h2>My <span class="highlight">Certifications</span></h2>
+    <p>View your earned certificates and request new ones.</p>
+  </div>
+
+  <!-- TAB NAVIGATION -->
+  <div class="tab-bar">
+    <button class="tab-btn" [class.active]="currentTab === 'my-certs'" (click)="switchTab('my-certs')">
+      🏆 My Certificates
+    </button>
+    <button class="tab-btn" [class.active]="currentTab === 'request'" (click)="switchTab('request')">
+      📝 Request Certificate
+    </button>
+    <button class="tab-btn" [class.active]="currentTab === 'my-requests'" (click)="switchTab('my-requests')">
+      ⏳ My Requests
+      <span class="req-badge" *ngIf="myRequests.length > 0">{{ myRequests.length }}</span>
+    </button>
+  </div>
+
+  <!-- TAB 1: MY CERTIFICATES (APPROVED) -->
+  <div *ngIf="currentTab === 'my-certs'" class="tab-content animate-fade">
+    <div *ngIf="myCertificats.length === 0" class="empty-state">
+      <div class="empty-icon">🎓</div>
+      <p>No certificates yet. Request one to get started!</p>
+    </div>
+
+    <div class="cert-grid">
+      <div *ngFor="let cert of myCertificats" class="cert-card">
+        <div class="cert-card-badge">✅ Approved</div>
+        <div class="cert-card-icon">🏅</div>
+        <h4>{{ cert.nom }}</h4>
+        <p class="cert-issuer">Issued by: {{ cert.issuer }}</p>
+        <p class="cert-desc">{{ cert.description }}</p>
+        <div class="cert-card-footer">
+          <span class="cert-date">📅 {{ cert.date }}</span>
+          <a *ngIf="cert.certificateUrl" [href]="cert.certificateUrl" target="_blank" class="cert-link">View Certificate →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 2: REQUEST FORM -->
+  <div *ngIf="currentTab === 'request'" class="tab-content animate-fade">
+    <div class="request-form-card">
+      <h3>📋 Request a New Certificate</h3>
+      <p class="form-subtitle">Fill in the details below. Your request will be reviewed by an admin.</p>
+
+      <div class="form-group">
+        <label>Certificate Name *</label>
+        <input type="text" class="custom-input" placeholder="e.g. Angular Advanced Certification" [(ngModel)]="newRequest.nom">
+      </div>
+      <div class="form-group">
+        <label>Issuing Organization</label>
+        <input type="text" class="custom-input" placeholder="e.g. SkillUp Academy" [(ngModel)]="newRequest.issuer">
+      </div>
+      <div class="form-group">
+        <label>Date</label>
+        <input type="date" class="custom-input" [(ngModel)]="newRequest.date">
+      </div>
+      <div class="form-group">
+        <label>Description *</label>
+        <textarea class="custom-textarea" rows="3" placeholder="Why are you requesting this certificate?" [(ngModel)]="newRequest.description"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Certificate URL (optional)</label>
+        <input type="text" class="custom-input" placeholder="https://..." [(ngModel)]="newRequest.certificateUrl">
+      </div>
+
+      <div class="form-actions">
+        <button class="btn-submit" [disabled]="isSubmitting" (click)="onSubmitRequest()">
+          {{ isSubmitting ? 'Submitting...' : '🚀 Submit Request' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 3: MY REQUESTS (PENDING / REJECTED) -->
+  <div *ngIf="currentTab === 'my-requests'" class="tab-content animate-fade">
+    <div *ngIf="myRequests.length === 0" class="empty-state">
+      <div class="empty-icon">📭</div>
+      <p>You have no pending requests.</p>
+    </div>
+
+    <div *ngFor="let req of myRequests" class="request-item">
+      <div class="req-status-dot" [ngClass]="{'pending': req.status === 'PENDING', 'rejected': req.status === 'REJECTED'}"></div>
+      <div class="req-info">
+        <h4>{{ req.nom }}</h4>
+        <p>{{ req.description }}</p>
+        <small>Issued by: {{ req.issuer || 'N/A' }} · {{ req.date || 'No date' }}</small>
+      </div>
+      <div class="req-status-badge" [ngClass]="{'badge-pending': req.status === 'PENDING', 'badge-rejected': req.status === 'REJECTED'}">
+        {{ req.status }}
+      </div>
+    </div>
+  </div>
+</div>

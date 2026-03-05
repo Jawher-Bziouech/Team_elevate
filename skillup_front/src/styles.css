@@ -1,0 +1,54 @@
+/* 1. Remove browser margins and fix height */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  /* Stops double scrollbars */
+}
+
+/* 2. Tell Angular to let the layout flow through its tags */
+app-root,
+app-sidebar,
+app-header {
+  display: contents;
+}
+
+/* 3. Ensure the Sidebar doesn't stretch weirdly */
+.sidebar {
+  height: 100vh !important;
+  position: sticky;
+  top: 0;
+}
+
+/* 4. ANGULAR MATERIAL THEME & FIXES */
+/* The theme is now centrally managed in angular.json */
+
+/* Fix for Material Labels overlapping with Bootstrap */
+.mat-mdc-form-field-label-wrapper {
+  top: -1.5em !important;
+  padding-top: 1.5em !important;
+}
+
+.mat-mdc-form-field-appearance-outline .mdc-notched-outline__notch {
+  border-right: none !important;
+}
+
+/* Premium Global Utilities */
+.animate-fade {
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

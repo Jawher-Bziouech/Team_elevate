@@ -1,0 +1,110 @@
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-2xl mx-auto px-4">
+    <div class="flex items-center gap-4 mb-6">
+<button routerLink="/back-office" [queryParams]="{view: 'events'}" class="p-2 hover:bg-gray-200 rounded-lg">
+        ← Retour
+      </button>
+      <h1 class="text-2xl font-bold">Créer un événement</h1>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <form #eventForm="ngForm" (ngSubmit)="onSubmit(eventForm)">
+
+        <!-- Titre -->
+        <div class="mb-4">
+          <label class="block text-sm font-medium mb-2">Titre *</label>
+          <input type="text"
+                 [(ngModel)]="event.title"
+                 name="title"
+                 required
+                 class="w-full px-3 py-2 border rounded-lg">
+        </div>
+
+        <!-- Description -->
+        <div class="mb-4">
+          <label class="block text-sm font-medium mb-2">Description *</label>
+          <textarea [(ngModel)]="event.description"
+                    name="description"
+                    required
+                    rows="3"
+                    class="w-full px-3 py-2 border rounded-lg"></textarea>
+        </div>
+
+        <!-- Lieu -->
+        <div class="mb-4">
+          <label class="block text-sm font-medium mb-2">Lieu *</label>
+          <input type="text"
+                 [(ngModel)]="event.location"
+                 name="location"
+                 required
+                 class="w-full px-3 py-2 border rounded-lg">
+        </div>
+
+        <!-- Dates -->
+        <div class="grid grid-cols-2 gap-4 mb-4">
+          <div>
+            <label class="block text-sm font-medium mb-2">Début *</label>
+            <input type="datetime-local"
+                   [ngModel]="formatDateForInput(event.startDate)"
+                   (ngModelChange)="event.startDate = $event"
+                   name="startDate"
+                   required
+                   class="w-full px-3 py-2 border rounded-lg">
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-2">Fin *</label>
+            <input type="datetime-local"
+                   [ngModel]="formatDateForInput(event.endDate)"
+                   (ngModelChange)="event.endDate = $event"
+                   name="endDate"
+                   required
+                   class="w-full px-3 py-2 border rounded-lg">
+          </div><!-- Capacité (OBLIGATOIRE) -->
+          <div class="mb-4">
+            <label class="block text-sm font-medium mb-2">Capacité (nombre de places) *</label>
+            <input type="number"
+                   [(ngModel)]="event.capacity"
+                   name="capacity"
+                   required
+                   min="1"
+                   class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                   placeholder="Ex: 50">
+            <p class="text-xs text-gray-500 mt-1">Nombre maximum de participants</p>
+          </div>
+          <!-- Type - VÉRIFIEZ QUE CETTE SECTION EXISTE -->
+          <div class="mb-4">
+            <label class="block text-sm font-medium mb-2">Type *</label>
+            <select [(ngModel)]="event.type"
+                    name="type"
+                    required
+                    class="w-full px-3 py-2 border rounded-lg">
+              <option value="">Sélectionnez un type</option>
+              <option value="Conférence">Conférence</option>
+              <option value="Workshop">Workshop</option>
+              <option value="Séminaire">Séminaire</option>
+              <option value="Formation">Formation</option>
+              <option value="Webinaire">Webinaire</option>
+              <option value="Meeting">Meeting</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Boutons -->
+        <div class="flex justify-end gap-3">
+        <button type="button"
+        routerLink="/back-office"
+        [queryParams]="{view: 'events'}"
+        class="px-4 py-2 border rounded-lg">
+  Annuler
+</button>
+
+          <button type="submit"
+                  [disabled]="eventForm.invalid || isLoading"
+                  class="px-4 py-2 bg-blue-600 text-white rounded-lg disabled:opacity-50">
+            {{ isLoading ? 'Création...' : 'Créer' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
