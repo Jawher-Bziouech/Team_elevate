@@ -7,7 +7,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication
 @EnableDiscoveryClient
-@EnableFeignClients
+@EnableFeignClients(basePackages = "tn.esprit.quiz.Configuration")
 public class QuizApplication {
 
     public static void main(String[] args) {
