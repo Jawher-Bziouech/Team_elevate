@@ -405,7 +405,6 @@ public class GamificationService {
         checkAndAward(userId, BadgeType.CONSISTENT,
             progression.getConsecutivePassCount() >= 10,
             newBadges);
-
         // ========== STEP 4: CHECK SPEED BADGES (FAST THINKING) ==========
         // SPEED_DEMON: Calculate time ratio for current quiz
         // If user finishes in less than 25% of allowed time → fast enough for badge

@@ -433,8 +433,8 @@
             placeholder="Écrire une réponse..."
             rows="2"
             class="response-input"></textarea>
-          <button 
-            class="btn-response" 
+          <button
+            class="btn-response"
             (click)="respond(ticket.ticketId!)"
             [disabled]="!responseText[ticket.ticketId!]?.trim()">
             <span class="btn-icon">✉️</span>
