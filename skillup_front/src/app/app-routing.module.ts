@@ -31,6 +31,7 @@ import { EventListComponent } from './event/event-list/event-list.component';
 import { EventDashboardComponent } from './event/event-dashboard/event-dashboard.component';
 import { UserDashboardComponent } from './event/user-dashboard/user-dashboard.component';
 import { EventFormComponent } from './event/event-form/event-form.component';
+import { EntreprisesComponent } from './entreprises/entreprises.component';
 
 
 
@@ -74,6 +75,7 @@ const routes: Routes = [
 { path: 'events/edit/:id', component: EventFormComponent },
 { path: 'events-dashboard', component: EventDashboardComponent },
 { path: 'user-dashboard', component: UserDashboardComponent },
+{ path: 'entreprises', component: EntreprisesComponent },
 ];
 
 @NgModule({

@@ -43,8 +43,6 @@ import { ChatbotService } from './chatbot.service';
 import { BadgeSimpleComponent } from './badge-simple/badge-simple.component';
 import { CourseListComponent } from './course-list/course-list.component';
 import { CourseEditComponent } from './course-edit/course-edit.component';
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { authInterceptor } from './auth.interceptor';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { JobOffersComponent } from './job-offers/job-offers.component';
 import { ApplicationModalComponent } from './job-offers/application-modal/application-modal.component';
@@ -59,11 +57,8 @@ import { EventDashboardComponent } from './event/event-dashboard/event-dashboard
 import { EventCalendarComponent } from './event/event-calendar/event-calendar.component';
 import { UserDashboardComponent } from './event/user-dashboard/user-dashboard.component';
 import { EventFormComponent } from './event/event-form/event-form.component';
-
-
-
-
-
+import { EntreprisesComponent } from './entreprises/entreprises.component';
+import { GestionEntreprisesComponent } from './back-office/gestion-entreprises/gestion-entreprises.component';
 
 @NgModule({
   declarations: [
@@ -81,14 +76,14 @@ import { EventFormComponent } from './event/event-form/event-form.component';
     CertificationsComponent,
     GestionCertificatComponent,
     GestionFormationsComponent,
-FormationModalComponent,
-GestionInscriptionsComponent,
-StatsComponent,
-TestPredictionsComponent,
-InscriptionsFormationComponent,
-FormationsComponent,
-FormationDetailComponent,
-InscriptionFormationComponent,
+    FormationModalComponent,
+    GestionInscriptionsComponent,
+    StatsComponent,
+    TestPredictionsComponent,
+    InscriptionsFormationComponent,
+    FormationsComponent,
+    FormationDetailComponent,
+    InscriptionFormationComponent,
     GamificationComponent,
     UserTicketsComponent,
     AdminTicketsComponent,
@@ -105,16 +100,16 @@ InscriptionFormationComponent,
     GestionApplicationsComponent,
     SalaryPipe,
     PaymentListComponent,
-PaymentFormComponent,
-PaymentDetailComponent,
-EventListComponent,
-EventDashboardComponent,
-UserDashboardComponent,
-
-
+    PaymentFormComponent,
+    PaymentDetailComponent,
+    EventListComponent,
+    EventDashboardComponent,
+    UserDashboardComponent,
+    EntreprisesComponent,
+    GestionEntreprisesComponent,
   ],
   imports: [
-        BrowserModule,
+    BrowserModule,
     AppRoutingModule,
     HttpClientModule,
     FormsModule,
@@ -129,12 +124,8 @@ UserDashboardComponent,
     JobOfferModule,
     EventCalendarComponent,
     EventFormComponent,
-
-
-
-    
   ],
-providers: [
+  providers: [
     ChatbotService
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

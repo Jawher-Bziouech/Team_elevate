@@ -96,8 +96,8 @@
                     <ng-container *ngFor="let emoji of emojis">
                         <span *ngIf="getReactionCount(postReactions[post.id!], emoji) > 0" class="reaction-bubble">{{ emoji }}</span>
                     </ng-container>
-                    <span class="reaction-total" *ngIf="(postReactions[post.id!]?.length || 0) > 0">
-                        {{ postReactions[post.id!]?.length }}
+                    <span class="reaction-total" *ngIf="(postReactions[post.id!].length || 0) > 0">
+                        {{ postReactions[post.id!].length }}
                     </span>
                 </div>
                 <div class="react-btn-wrapper">
@@ -151,8 +151,8 @@
                                     <ng-container *ngFor="let emoji of emojis">
                                         <span *ngIf="getReactionCount(commentReactions[comment.id!], emoji) > 0" class="reaction-bubble">{{ emoji }}</span>
                                     </ng-container>
-                                    <span class="reaction-total" *ngIf="(commentReactions[comment.id!]?.length || 0) > 0">
-                                        {{ commentReactions[comment.id!]?.length }}
+                                    <span class="reaction-total" *ngIf="(commentReactions[comment.id!].length || 0) > 0">
+                                        {{ commentReactions[comment.id!].length }}
                                     </span>
                                 </div>
                                 <div class="react-btn-wrapper">

@@ -67,7 +67,7 @@
         <div class="card-top">
           <div class="company-logo" [style.background]="getIndustryColor(offer.industry).bg">
             <span class="logo-text" [style.color]="getIndustryColor(offer.industry).text">
-              {{ getCompanyInitials(offer.firm?.nom) }}
+              {{ getCompanyInitials(offer.firm.nom) }}
             </span>
           </div>
           <div class="card-info">
@@ -78,7 +78,7 @@
                 <path
                   d="M3 21h18M9 8h1M9 12h1M9 16h1M14 8h1M14 12h1M14 16h1M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16" />
               </svg>
-              {{ offer.firm?.nom }}
+              {{ offer.firm.nom }}
             </span>
           </div>
         </div>

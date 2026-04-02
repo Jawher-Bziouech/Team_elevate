@@ -50,7 +50,7 @@
           <tr *ngFor="let q of pagedQuizzes" class="table-row">
             <td><strong>{{ q.title }}</strong></td>
             <td><span class="course-badge">{{ q.description || 'General' }}</span></td>
-            <td><span class="count-badge">{{ q.questions?.length || q.questions }} Q</span></td>
+            <td><span class="count-badge">{{ q.questions.length || q.questions }} Q</span></td>
             <td>{{ q.duration }} min</td>
             <td>75%</td>
             <td>

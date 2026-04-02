@@ -436,7 +436,7 @@
           <button
             class="btn-response"
             (click)="respond(ticket.ticketId!)"
-            [disabled]="!responseText[ticket.ticketId!]?.trim()">
+            [disabled]="!responseText[ticket.ticketId!].trim()">
             <span class="btn-icon">✉️</span>
             Envoyer
           </button>
