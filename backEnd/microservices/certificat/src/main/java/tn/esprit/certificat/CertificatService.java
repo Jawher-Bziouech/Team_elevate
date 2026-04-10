@@ -8,11 +8,14 @@ import java.util.Optional;
 public class CertificatService {
 
     private final CertificatRepository repository;
-    private final UserClient userClient;   // NEW: Feign client
+    private final UserClient userClient;
+    private final ForumClient forumClient;
+// NEW: Feign client
 
-    public CertificatService(CertificatRepository repository, UserClient userClient) {
+    public CertificatService(CertificatRepository repository, UserClient userClient, ForumClient forumClient) {
         this.repository = repository;
         this.userClient = userClient;      // NEW: injected via constructor
+        this.forumClient = forumClient;
     }
 
     public List<Certificat> getAllCertificats() {
@@ -50,6 +53,7 @@ public class CertificatService {
         return repository.save(cert);
     }
 
+
     public Certificat rejectCertificat(Long id) {
         Certificat cert = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Certificat not found with id: " + id));
@@ -58,7 +62,40 @@ public class CertificatService {
     }
 
     // NEW: Get user info via OpenFeign
+    // NEW: Get certificate by credential ID for public verification
+    // ORIGINAL METHOD: Get user info via OpenFeign (Needed for Emails & API)
     public UserDTO getUserForCertificat(Long userId) {
         return userClient.getUserById(userId);
     }
+    // NEW METHOD: Get certificate by credential ID (Needed for QR Code)
+    public Optional<Certificat> getCertificatByCredentialId(String credentialId) {
+        return repository.findByCredentialId(credentialId);
+    }
+    public void shareToForum(Long certificatId, Long userId) {
+        Certificat cert = repository.findById(certificatId)
+                .orElseThrow(() -> new RuntimeException("Certificate not found"));
+
+        PostDTO postPayload = new PostDTO();
+        postPayload.setTitle("🏆 I just earned a new Certification!");
+        String verificationUrl = "http://localhost:4200/verify?id=" + cert.getCredentialId();
+        postPayload.setContent(
+                "I am thrilled to announce that I successfully earned my **" + cert.getNom() + "** certification from " + cert.getIssuer() + "! 🎓🎉<br><br>" +
+                        "<a href='" + verificationUrl + "' target='_blank' style='color: #0d6efd; font-weight: bold; text-decoration: underline;'>🔍 check it out !</a>"
+        );        postPayload.setAuthorId(userId);
+        postPayload.setTopic("Achievements");
+
+        try {
+            // NEW: Manually convert the Object into a JSON String!
+            com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+            String jsonString = mapper.writeValueAsString(postPayload);
+
+            // Send the raw JSON String!
+            forumClient.createForumPost(jsonString);
+
+        } catch (Exception e) {
+            System.err.println("Failed to serialize or send post: " + e.getMessage());
+        }
+    }
+
+
 }

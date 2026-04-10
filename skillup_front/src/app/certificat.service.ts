@@ -49,4 +49,11 @@ export class CertificatService {
   getUserInfo(userId: number): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/user-info/${userId}`);
   }
+    verifyCertificate(credentialId: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/verify/${credentialId}`);
+  }
+  shareToForum(certId: number, userId: number): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/${certId}/shareToForum?userId=${userId}`, {});
+  } 
+
 }

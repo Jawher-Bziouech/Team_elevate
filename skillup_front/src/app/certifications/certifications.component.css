@@ -38,12 +38,25 @@
 .empty-icon { font-size: 50px; margin-bottom: 15px; opacity: 0.5; }
 
 /* CERTIFICATE CARDS GRID */
-.cert-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-.cert-card {
-  background: white; border-radius: 16px; border: 1px solid #e2e8f0;
-  padding: 25px; position: relative; transition: all 0.3s;
+.cert-grid { 
+  display: grid; 
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); 
+  gap: 24px; 
 }
-.cert-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.06); }
+.cert-card {
+  background: white; 
+  border-radius: 20px; 
+  border: 1px solid #eef2f6;
+  padding: 30px; 
+  position: relative; 
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.cert-card:hover { 
+  transform: translateY(-8px); 
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); 
+}
 .cert-card-badge {
   position: absolute; top: 15px; right: 15px;
   background: #ecfdf5; color: #10b981; font-size: 11px; font-weight: 800;
@@ -54,10 +67,21 @@
 .cert-issuer { font-size: 13px; color: var(--primary-blue); font-weight: 600; margin-bottom: 8px; }
 .cert-desc { font-size: 13px; color: var(--text-gray); line-height: 1.5; margin-bottom: 15px; }
 .cert-card-footer {
-  display: flex; justify-content: space-between; align-items: center;
-  border-top: 1px solid #f1f5f9; padding-top: 12px; font-size: 12px;
+  display: flex; 
+  flex-direction: column; /* Stack vertically: Date on top, Buttons below */
+  gap: 15px;
+  border-top: 1px solid #f1f5f9; 
+  padding-top: 18px; 
+  margin-top: auto;
 }
-.cert-date { color: #94a3b8; font-weight: 600; }
+.cert-date { 
+  color: #64748b; 
+  font-weight: 500; 
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
 .cert-link { color: var(--primary-blue); font-weight: 700; text-decoration: none; }
 .cert-link:hover { text-decoration: underline; }
 
@@ -113,3 +137,101 @@
 }
 .badge-pending { background: #fef3c7; color: #d97706; }
 .badge-rejected { background: #fee2e2; color: #ef4444; }
+/* NEW: Dynamic Badges for Certificates */
+.cert-card-badge {
+  /* Override the default background/color so we can control it dynamically */
+  background: transparent;
+  color: inherit;
+}
+
+.badge-approved {
+  background: #ecfdf5; 
+  color: #10b981;
+}
+
+.badge-expiring {
+  background: #fffbeb; 
+  color: #f59e0b;
+}
+
+.badge-expired {
+  background: #fef2f2; 
+  color: #ef4444;
+}
+
+/* NEW: Warning Box Styles */
+.cert-warning-box {
+  margin-bottom: 15px;
+  padding: 10px;
+  border-radius: 8px;
+  border-left: 4px solid transparent;
+}
+
+.warning-urgent {
+  background-color: #fffbeb;
+  border-left-color: #f59e0b;
+  color: #b45309;
+}
+
+.warning-critical {
+  background-color: #fef2f2;
+  border-left-color: #ef4444;
+  color: #991b1b;
+}
+/* NEW: Download PDF Button */
+.btn-download-pdf {
+  background-color: #f1f5f9;
+  color: var(--primary-blue);
+  border: 1px solid #cbd5e1;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-download-pdf:hover {
+  background-color: var(--primary-blue);
+  color: white;
+  border-color: var(--primary-blue);
+}
+/* NEW: LinkedIn Button */
+.btn-linkedin {
+  background-color: #0a66c2; /* Official LinkedIn Blue */
+  color: white;
+  border: 1px solid #0a66c2;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.btn-linkedin:hover {
+  background-color: #004182; /* Darker blue on hover */
+}
+.cert-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.btn-forum {
+  background-color: #f0f7ff;
+  color: #0061ff;
+  border: 1px solid #d0e4ff;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+.btn-forum:hover {
+  background-color: #0061ff;
+  color: white;
+}

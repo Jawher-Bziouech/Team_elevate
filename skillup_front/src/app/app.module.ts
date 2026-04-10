@@ -59,6 +59,7 @@ import { EventDashboardComponent } from './event/event-dashboard/event-dashboard
 import { EventCalendarComponent } from './event/event-calendar/event-calendar.component';
 import { UserDashboardComponent } from './event/user-dashboard/user-dashboard.component';
 import { EventFormComponent } from './event/event-form/event-form.component';
+import { VerifyCertificatComponent } from './verify-certificat/verify-certificat.component';
 
 
 
@@ -110,6 +111,7 @@ PaymentDetailComponent,
 EventListComponent,
 EventDashboardComponent,
 UserDashboardComponent,
+VerifyCertificatComponent,
 
 
   ],

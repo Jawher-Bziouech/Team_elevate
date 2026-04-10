@@ -1,5 +1,6 @@
 export interface Certificat {
   id?: number;
+   credentialId?: string;
   nom: string;
   issuer: string;
   date: string;

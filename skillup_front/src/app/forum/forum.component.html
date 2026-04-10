@@ -70,7 +70,7 @@
     <!-- VIEW MODE -->
     <ng-container *ngIf="editingPostId !== post.id">
         <h4>{{ post.title }}</h4>
-        <p>{{ post.content }}</p>
+<p [innerHTML]="post.content"></p>
         <img *ngIf="post.imageUrl" [src]="post.imageUrl" alt="Post image" class="post-image"
              (click)="openLightbox(post.imageUrl!)">
         <button *ngIf="post.authorId === authService.getUserId()"
