@@ -57,7 +57,7 @@ export interface DashboardObsolescence {
 })
 export class PredictionService {
   
-  private apiUrl = 'http://localhost:8084/api';
+  private apiUrl = 'http://localhost:9090/api';
 
   constructor(private http: HttpClient) { }
 

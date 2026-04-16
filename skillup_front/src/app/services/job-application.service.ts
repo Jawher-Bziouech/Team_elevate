@@ -7,7 +7,7 @@ import { JobApplication } from '../models/job-application.model';
     providedIn: 'root'
 })
 export class JobApplicationService {
-    private apiUrl = 'http://localhost:8083/api/applications';
+    private apiUrl = 'http://localhost:9090/api/applications';
 
     constructor(private http: HttpClient) { }
 

@@ -10,7 +10,7 @@ export interface Firm {
 
 @Injectable({ providedIn: 'root' })
 export class FirmService {
-  private apiUrl = 'http://localhost:8083/api/firms';
+  private apiUrl = 'http://localhost:9090/api/firms';
 
   constructor(private http: HttpClient) { }
 

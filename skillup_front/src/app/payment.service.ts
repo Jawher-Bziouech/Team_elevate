@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Payment, PaymentRequest, PaymentStats, PageResponse } from './models/payment.model';
+import { Payment, PaymentRequest, PaymentStats, PageResponse, Formation } from './models/payment.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PaymentService {
   
-  private apiUrl = 'http://localhost:8075/api/payments'; // URL de votre backend
+  private apiUrl = 'http://localhost:9090/api/payments'; // URL de votre backend
 
   constructor(private http: HttpClient) {}
 
@@ -68,6 +68,9 @@ export class PaymentService {
     return this.http.get<PaymentStats>(`${this.apiUrl}/stats`);
   }
 
+  getFormations(): Observable<Formation[]> {
+  return this.http.get<Formation[]>(`${this.apiUrl}/formations`);
+}
   // 9. Test de connexion
   ping(): Observable<string> {
     return this.http.get(`${this.apiUrl}/ping`, { responseType: 'text' });

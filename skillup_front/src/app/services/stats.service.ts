@@ -26,7 +26,7 @@ export interface InscriptionsJournalieres {
   providedIn: 'root'
 })
 export class StatsService {
-  private apiUrl = 'http://localhost:8084/api/stats';
+  private apiUrl = 'http://localhost:9090/api/stats';
 
   constructor(private http: HttpClient) { }
 

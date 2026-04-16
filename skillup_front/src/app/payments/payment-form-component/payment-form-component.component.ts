@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Formation } from '../../models/payment.model';
 
 import { PaymentService } from '../../payment.service';
 @Component({
@@ -11,6 +12,7 @@ import { PaymentService } from '../../payment.service';
 export class PaymentFormComponent implements OnInit {
 
   paymentForm!: FormGroup;
+  formations: Formation[] = [];
   isEditMode = false;
   paymentId?: number;
   @Input() inputPaymentId: number = 0;
@@ -37,6 +39,7 @@ export class PaymentFormComponent implements OnInit {
   ngOnInit(): void {
     this.initForm();
     this.checkRouteParams();
+     this.loadFormations();
   }
 
   // Initialiser le formulaire
@@ -74,6 +77,18 @@ export class PaymentFormComponent implements OnInit {
     }
   }
 
+  onFormationChange(event: any): void {
+  const selectedTitre = event.target.value;
+  const formation = this.formations.find(f => f.titre === selectedTitre);
+  
+  if (formation) {
+    this.paymentForm.patchValue({
+      formationId: formation.id,
+      amount: formation.prix
+    });
+  }}
+  
+
   // Charger un paiement existant (mode édition)
   loadPayment(id: number): void {
     this.loading = true;
@@ -99,6 +114,12 @@ export class PaymentFormComponent implements OnInit {
     });
   }
 
+  loadFormations(): void {
+  this.paymentService.getFormations().subscribe({
+    next: (data) => this.formations = data,
+    error: (err) => console.error('Erreur formations', err)
+  });
+}
   // Soumettre le formulaire
   onSubmit(): void {
     if (this.paymentForm.invalid) {

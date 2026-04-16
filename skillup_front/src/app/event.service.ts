@@ -7,7 +7,7 @@ import { appEvent, EventStats } from './models/event.model';
   providedIn: 'root'
 })
 export class EventService {
-  private apiUrl = 'http://localhost:8082/events';
+  private apiUrl = 'http://localhost:9090/events';
 
   // BehaviorSubject pour les filtres en temps réel
   private filtersSubject = new BehaviorSubject<any>({});
