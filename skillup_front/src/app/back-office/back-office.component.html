@@ -69,6 +69,10 @@
                         (click)="showView('event-form')">
                         <span>➕</span> Créer Événement
                     </a>
+                    <a class="admin-nav-item" [class.active]="currentView === 'entreprises'"
+                        (click)="showView('entreprises')">
+                        <span>🏢</span> Gestion Entreprises
+                    </a>
 
 
                 </div>
@@ -226,6 +230,7 @@
                 [inputPaymentId]="selectedPaymentId"></app-payment-detail>
             <app-payment-form *ngIf="currentView === 'payment-form'"
                 [inputPaymentId]="selectedPaymentId"></app-payment-form>
+            <app-gestion-entreprises *ngIf="currentView === 'entreprises'"></app-gestion-entreprises>
 
 
         </div>

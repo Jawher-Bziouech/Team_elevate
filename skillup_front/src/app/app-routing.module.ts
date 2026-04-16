@@ -37,6 +37,9 @@ import { EventListComponent } from './event/event-list/event-list.component';
 import { EventDashboardComponent } from './event/event-dashboard/event-dashboard.component';
 import { UserDashboardComponent } from './event/user-dashboard/user-dashboard.component';
 import { EventFormComponent } from './event/event-form/event-form.component';
+import { EntreprisesComponent } from './entreprises/entreprises.component';
+
+
 import { VerifyCertificatComponent } from './verify-certificat/verify-certificat.component';
 
 const routes: Routes = [
@@ -85,6 +88,26 @@ const routes: Routes = [
       { path: 'statistiques', component: StatsComponent },
       { path: '', redirectTo: 'formations', pathMatch: 'full' }
     ]
+  },
+  { path: 'my-tickets', component: UserTicketsComponent },
+  { path: 'admin-tickets', component: AdminTicketsComponent },
+  { path: 'courses/:formationId', component: FormationCoursesComponent },
+  { path: 'bulk', component: BulkCourseFormComponent },
+  { path: 'create-ticket', component: CreateTicketComponent },
+  { path: 'analytics', component: AnalyticsDashboardComponent },
+  { path: 'badge', component: BadgeSimpleComponent },
+  { path: 'courses/edit/:id', component: CourseEditComponent },
+  { path: 'courses', component: CourseListComponent },
+  { path: 'job-offers', component: JobOffersComponent },
+  { path: 'payments', component: PaymentListComponent },
+{ path: 'payments/new', component: PaymentFormComponent },
+{ path: 'payments/:id', component: PaymentDetailComponent },
+{ path: 'events', component: EventListComponent },
+{ path: 'events/new', component: EventFormComponent },
+{ path: 'events/edit/:id', component: EventFormComponent },
+{ path: 'events-dashboard', component: EventDashboardComponent },
+{ path: 'user-dashboard', component: UserDashboardComponent },
+{ path: 'entreprises', component: EntreprisesComponent },
   }
 ];
 

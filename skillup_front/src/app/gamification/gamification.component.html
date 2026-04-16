@@ -145,7 +145,7 @@
         <!-- 2nd Place -->
         <div class="podium-card silver" *ngIf="leaderboard.length >= 2" [class.me]="leaderboard[1].userId === userId">
           <div class="podium-medal">🥈</div>
-          <div class="podium-avatar">{{ leaderboard[1].username?.charAt(0)?.toUpperCase() || '?' }}</div>
+          <div class="podium-avatar">{{ leaderboard[1].username.charAt(0).toUpperCase() || '?' }}</div>
           <div class="podium-name">{{ leaderboard[1].username || 'Unknown' }}</div>
           <div class="podium-credits">{{ leaderboard[1].totalCredits }} Credits</div>
           <div class="podium-bar silver-bar"></div>
@@ -155,7 +155,7 @@
         <div class="podium-card gold" [class.me]="leaderboard[0].userId === userId">
           <div class="podium-crown">👑</div>
           <div class="podium-medal">🥇</div>
-          <div class="podium-avatar gold-avatar">{{ leaderboard[0].username?.charAt(0)?.toUpperCase() || '?' }}</div>
+          <div class="podium-avatar gold-avatar">{{ leaderboard[0].username.charAt(0).toUpperCase() || '?' }}</div>
           <div class="podium-name">{{ leaderboard[0].username || 'Unknown' }}</div>
           <div class="podium-credits">{{ leaderboard[0].totalCredits }} Credits</div>
           <div class="podium-bar gold-bar"></div>
@@ -164,7 +164,7 @@
         <!-- 3rd Place -->
         <div class="podium-card bronze" *ngIf="leaderboard.length >= 3" [class.me]="leaderboard[2].userId === userId">
           <div class="podium-medal">🥉</div>
-          <div class="podium-avatar">{{ leaderboard[2].username?.charAt(0)?.toUpperCase() || '?' }}</div>
+          <div class="podium-avatar">{{ leaderboard[2].username.charAt(0).toUpperCase() || '?' }}</div>
           <div class="podium-name">{{ leaderboard[2].username || 'Unknown' }}</div>
           <div class="podium-credits">{{ leaderboard[2].totalCredits }} Credits</div>
           <div class="podium-bar bronze-bar"></div>
@@ -207,7 +207,7 @@
 
           <div class="col-user">
             <div class="user-avatar-sm">
-              {{ entry.username?.charAt(0)?.toUpperCase() || '?' }}
+              {{ entry.username.charAt(0).toUpperCase() || '?' }}
             </div>
             <div class="user-info">
               <span class="user-name">{{ entry.username || 'Unknown' }}</span>

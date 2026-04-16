@@ -24,6 +24,7 @@
         <module>microservices/Quiz</module>
         <module>microservices/Ticket</module>
         <module>microservices/Payment</module>
+        <module>microservices/entreprise</module>
 
     </modules>
 </project>
