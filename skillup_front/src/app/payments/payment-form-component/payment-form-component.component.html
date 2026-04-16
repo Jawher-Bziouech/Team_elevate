@@ -55,12 +55,19 @@
                 <label class="form-label fw-bold">
                   Nom Formation <span class="text-danger">*</span>
                 </label>
-                <input 
-                  type="text" 
-                  class="form-control" 
-                  formControlName="formationName"
-                  [class.is-invalid]="paymentForm.get('formationName')?.invalid && paymentForm.get('formationName')?.touched">
-                <div class="invalid-feedback">{{ formationNameError }}</div>
+                  <select 
+    class="form-control" 
+    formControlName="formationName"
+    (change)="onFormationChange($event)"
+    [class.is-invalid]="paymentForm.get('formationName')?.invalid && paymentForm.get('formationName')?.touched">
+    <option value="">-- Sélectionner une formation --</option>
+    <option *ngFor="let f of formations" [value]="f.titre">
+      {{ f.titre }} ({{ f.prix }}€)
+    </option>
+  </select>
+  <div class="invalid-feedback">{{ formationNameError }}</div>
+
+          
               </div>
             </div>
 

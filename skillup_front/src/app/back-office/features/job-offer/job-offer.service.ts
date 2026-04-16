@@ -5,7 +5,7 @@ import { JobOffer, JobOfferRequest, IndustryCount } from '../../../models/job-of
 
 @Injectable({ providedIn: 'root' })
 export class JobOfferService {
-  private apiUrl = 'http://localhost:8083/api/joboffers'; // Direct to your microservice
+  private apiUrl = 'http://localhost:9090/api/joboffers'; // Direct to your microservice
 
   constructor(private http: HttpClient) { }
 

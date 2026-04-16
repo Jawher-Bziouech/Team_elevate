@@ -25,7 +25,7 @@ export interface Formation {
 })
 export class FormationService {
   
-  private apiUrl = 'http://localhost:8084/api/formations';
+  private apiUrl = 'http://localhost:9090/api/formations';
 
   constructor(private http: HttpClient) { }
 

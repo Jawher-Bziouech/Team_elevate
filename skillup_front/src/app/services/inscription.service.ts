@@ -18,7 +18,7 @@ export interface Inscription {
   providedIn: 'root'
 })
 export class InscriptionService {
-  private apiUrl = 'http://localhost:8084/api';
+  private apiUrl = 'http://localhost:9090/api';
 
   constructor(private http: HttpClient) { }
 

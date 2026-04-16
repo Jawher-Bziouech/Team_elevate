@@ -1,7 +1,13 @@
 package tn.esprit.certificat;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 @RefreshScope
@@ -105,4 +111,57 @@ public class CertificatRestApi {
     public String welcome() {
         return welcomeMessage;
     }
+    @GetMapping("/verify/{credentialId}")
+    public ResponseEntity<?> verifyCertificate(@PathVariable String credentialId) {
+        Optional<Certificat> certOpt = service.getCertificatByCredentialId(credentialId);
+        if (certOpt.isPresent() && "APPROVED".equals(certOpt.get().getStatus())) {
+            Certificat cert = certOpt.get();
+            String holderName = "Student #" + cert.getUserId(); // Default fallback
+
+            // Fetch the real username across the microservice!
+            try {
+                UserDTO user = service.getUserForCertificat(cert.getUserId());
+                if (user != null && user.getUsername() != null) {
+                    holderName = user.getUsername();
+                }
+            } catch (Exception e) {
+                // Ignore microservice timeout/errors and just send the default ID
+            }
+            // Pack the certificate and the name together
+            Map<String, Object> responseData = new HashMap<>();
+            responseData.put("certificate", cert);
+            responseData.put("holderName", holderName);
+            return ResponseEntity.ok(responseData);
+        }
+        return ResponseEntity.status(404).body("Invalid or Expired Certificate");
+    }
+    @PostMapping("/{id}/shareToForum")
+    public void shareCertificateToForum(@PathVariable Long id, @RequestParam Long userId) {
+        service.shareToForum(id, userId);
+    }
+    @PostMapping("/test-scheduler-data")
+    public String createTestData() {
+        // 1. Target for EXPIRING_SOON (Issued approx 710 days ago)
+        Certificat soon = new Certificat();
+        soon.setNom("Azure Cloud Expert");
+        soon.setIssuer("Microsoft");
+        soon.setDate(java.time.LocalDate.now().minusDays(710).toString());
+        soon.setStatus("APPROVED");
+        soon.setUserId(2L); // Targeted to User 2
+        soon.setCredentialId(java.util.UUID.randomUUID().toString());
+        service.saveCertificat(soon);
+
+        // 2. Target for AUTO-EXPIRE (Issued 3 years ago)
+        Certificat old = new Certificat();
+        old.setNom("Legacy Java 8");
+        old.setIssuer("Oracle");
+        old.setDate(java.time.LocalDate.now().minusYears(3).toString());
+        old.setStatus("APPROVED");
+        old.setUserId(2L); // Targeted to User 2
+        old.setCredentialId(java.util.UUID.randomUUID().toString());
+        service.saveCertificat(old);
+
+        return "Test data created for User 2! Watch your console logs for the scheduler.";
+    }
+
 }

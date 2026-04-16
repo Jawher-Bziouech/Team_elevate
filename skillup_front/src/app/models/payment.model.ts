@@ -43,3 +43,9 @@ export interface PageResponse<T> {
   size: number;
   number: number;
 }
+
+export interface Formation {
+  id: number;
+  titre: string;
+  prix: number;
+}

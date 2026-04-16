@@ -235,7 +235,7 @@ public class TicketServiceImpl implements TicketService {
 
     private final TicketRepository ticketRepository;
     // SUPPRIMEZ EmailService - PAS BESOIN
-
+    private final UserClient userClient;
     private static final long EDIT_TIME_LIMIT = 30 * 60 * 1000;
 
     @Override

@@ -59,6 +59,12 @@ import { UserDashboardComponent } from './event/user-dashboard/user-dashboard.co
 import { EventFormComponent } from './event/event-form/event-form.component';
 import { EntreprisesComponent } from './entreprises/entreprises.component';
 import { GestionEntreprisesComponent } from './back-office/gestion-entreprises/gestion-entreprises.component';
+import { VerifyCertificatComponent } from './verify-certificat/verify-certificat.component';
+
+
+
+
+
 
 @NgModule({
   declarations: [
@@ -107,6 +113,14 @@ import { GestionEntreprisesComponent } from './back-office/gestion-entreprises/g
     UserDashboardComponent,
     EntreprisesComponent,
     GestionEntreprisesComponent,
+PaymentFormComponent,
+PaymentDetailComponent,
+EventListComponent,
+EventDashboardComponent,
+UserDashboardComponent,
+VerifyCertificatComponent,
+
+
   ],
   imports: [
     BrowserModule,

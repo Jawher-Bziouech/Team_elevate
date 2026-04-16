@@ -1,5 +1,7 @@
 package esprit.tn.payment.Controller;
 
+import esprit.tn.payment.Client.FormationClient;
+import esprit.tn.payment.DTO.FormationDTO;
 import esprit.tn.payment.DTO.PaymentRequestDTO;
 import esprit.tn.payment.DTO.PaymentResponseDTO;
 import esprit.tn.payment.Service.PaymentService;
@@ -12,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -21,6 +24,8 @@ import java.util.Map;
 public class PaymentController {
 
     private final PaymentService paymentService;
+    private final FormationClient formationClient;
+
 
     // 1. Créer un paiement
     @PostMapping
@@ -98,5 +103,10 @@ public class PaymentController {
     @GetMapping("/ping")
     public ResponseEntity<String> ping() {
         return ResponseEntity.ok("Payment service is running!");
+    }
+
+    @GetMapping("/formations")
+    public ResponseEntity<List<FormationDTO>> getFormations() {
+        return ResponseEntity.ok(formationClient.getAllFormations());
     }
 }
