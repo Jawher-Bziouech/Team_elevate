@@ -1,0 +1,216 @@
+<div class="analytics-container">
+  <!-- En-tête -->
+  <div class="analytics-header">
+    <div>
+      <h1>
+        <span class="header-icon">📈</span>
+        Analyse des performances
+      </h1>
+      <p class="header-subtitle">Statistiques détaillées et indicateurs de qualité</p>
+    </div>
+    <div class="header-actions">
+      <select class="period-select" [(ngModel)]="selectedPeriod" (change)="onPeriodChange()">
+        <option value="week">Cette semaine</option>
+        <option value="month">Ce mois</option>
+        <option value="quarter">Ce trimestre</option>
+        <option value="year">Cette année</option>
+        <option value="all">Tout l'historique</option>
+      </select>
+      <button class="btn-refresh" (click)="loadData()" [class.rotating]="loading">
+        <span class="btn-icon">↻</span>
+        Actualiser
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Chargement des données analytiques...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error" class="error-state">
+    <div class="error-icon">⚠️</div>
+    <h3>Erreur de chargement</h3>
+    <p>{{ error }}</p>
+    <button class="btn-retry" (click)="loadData()">Réessayer</button>
+  </div>
+
+  <!-- Contenu -->
+  <div *ngIf="!loading && !error" class="analytics-content">
+    <!-- KPIs -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-icon blue">📊</div>
+        <div class="kpi-content">
+          <span class="kpi-value">{{ totalTickets }}</span>
+          <span class="kpi-label">Total tickets</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon green">✅</div>
+        <div class="kpi-content">
+          <span class="kpi-value">{{ resolvedTickets }}</span>
+          <span class="kpi-label">Tickets résolus</span>
+        </div>
+        <div class="kpi-trend">{{ getResolutionRate() }}%</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon purple">⏱️</div>
+        <div class="kpi-content">
+          <span class="kpi-value">{{ formatHours(avgResponseTime) }}</span>
+          <span class="kpi-label">Temps réponse moyen</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon orange">🔧</div>
+        <div class="kpi-content">
+          <span class="kpi-value">{{ formatHours(avgResolutionTime) }}</span>
+          <span class="kpi-label">Temps résolution moyen</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon yellow">⭐</div>
+        <div class="kpi-content">
+          <span class="kpi-value">{{ satisfactionRate.toFixed(1) }}%</span>
+          <span class="kpi-label">Satisfaction client</span>
+        </div>
+        <div class="kpi-badge" [class.good]="satisfactionRate >= 70" [class.bad]="satisfactionRate < 50">
+          {{ getSatisfactionLabel() }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Graphiques -->
+    <div class="charts-grid">
+      <!-- Temps de réponse -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3>⏱️ Temps de réponse par jour</h3>
+          <span class="chart-info">Moyenne sur la période</span>
+        </div>
+        <div class="chart-container">
+          <canvas id="responseTimeChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Distribution des notes -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3>⭐ Satisfaction client</h3>
+          <!-- CORRECTION ICI -->
+          <span class="chart-info">{{ getTotalRatings() }} avis</span>
+        </div>
+        <div class="chart-container small">
+          <canvas id="ratingChart"></canvas>
+        </div>
+        <div class="rating-stats">
+          <div class="rating-item" *ngFor="let rating of [5,4,3,2,1]; let i = index">
+            <span class="rating-label">{{ rating }} étoile{{ rating > 1 ? 's' : '' }}</span>
+            <div class="rating-bar-container">
+              <div class="rating-bar" 
+                   [style.width.%]="getRatingPercentage(rating)"
+                   [style.background]="rating === 5 ? '#10b981' : rating === 4 ? '#34d399' : rating === 3 ? '#fbbf24' : rating === 2 ? '#f97316' : '#ef4444'">
+              </div>
+            </div>
+            <span class="rating-count">{{ getRatingCount(rating) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Performance hebdomadaire -->
+      <div class="chart-card full-width">
+        <div class="chart-header">
+          <h3>📊 Activité hebdomadaire</h3>
+          <span class="chart-info">7 derniers jours</span>
+        </div>
+        <div class="chart-container">
+          <canvas id="weeklyPerformanceChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Performance des équipes -->
+    <div class="team-performance">
+      <div class="section-header">
+        <h3>👥 Performance par administrateur</h3>
+        <span class="section-info">Classement par temps de réponse et satisfaction</span>
+      </div>
+
+      <div class="team-grid">
+        <div class="team-card" *ngFor="let admin of adminPerformance; let i = index">
+          <div class="team-rank" [class.gold]="i === 0" [class.silver]="i === 1" [class.bronze]="i === 2">
+            #{{ i + 1 }}
+          </div>
+          <div class="team-avatar">{{ admin.name.charAt(0) }}</div>
+          <div class="team-info">
+            <h4>{{ admin.name }}</h4>
+            <div class="team-stats">
+              <div class="stat">
+                <span class="stat-label">Tickets</span>
+                <span class="stat-value">{{ admin.ticketsHandled }}</span>
+              </div>
+              <div class="stat">
+                <span class="stat-label">Temps réponse</span>
+                <span class="stat-value" [class]="getRatingLevel(24 / (admin.avgResponseTime || 1))">
+                  {{ formatHours(admin.avgResponseTime) }}
+                </span>
+              </div>
+              <div class="stat">
+                <span class="stat-label">Note</span>
+                <div class="rating-small">
+                  <span class="stars">
+                    <span *ngFor="let star of [1,2,3,4,5]" 
+                          class="star-small" 
+                          [class.filled]="star <= admin.avgRating">★</span>
+                  </span>
+                  <span class="rating-value">{{ admin.avgRating.toFixed(1) }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Insights -->
+    <div class="insights-grid">
+      <div class="insight-card" *ngIf="avgResponseTime > 48">
+        <div class="insight-icon warning">⚠️</div>
+        <div class="insight-content">
+          <h4>Attention : Temps de réponse élevé</h4>
+          <p>Le temps de réponse moyen ({{ formatHours(avgResponseTime) }}) dépasse l'objectif de 24h.</p>
+        </div>
+      </div>
+
+      <div class="insight-card" *ngIf="satisfactionRate < 60">
+        <div class="insight-icon warning">📉</div>
+        <div class="insight-content">
+          <h4>Satisfaction client en baisse</h4>
+          <p>Taux de satisfaction de {{ satisfactionRate.toFixed(1) }}% - Objectif : > 70%</p>
+        </div>
+      </div>
+
+      <div class="insight-card" *ngIf="getLowRatingsCount() > getHighRatingsCount() * 2">
+        <div class="insight-icon warning">⚠️</div>
+        <div class="insight-content">
+          <h4>Points d'amélioration identifiés</h4>
+          <p>Les notes négatives (1-2⭐) sont deux fois plus nombreuses que les notes excellentes (5⭐).</p>
+        </div>
+      </div>
+
+      <div class="insight-card success" *ngIf="avgResponseTime <= 24 && satisfactionRate >= 80">
+        <div class="insight-icon success">🏆</div>
+        <div class="insight-content">
+          <h4>Performance exceptionnelle !</h4>
+          <p>Tous les objectifs sont atteints. Félicitations à l'équipe !</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,131 @@
+<div class="user-dashboard">
+  <!-- En-tête de bienvenue -->
+  <div class="welcome-header">
+    <div class="welcome-content">
+      <h1>Bonjour, {{ username || 'Utilisateur' }} ! 👋</h1>
+      <p>Prêt à apprendre de nouvelles choses aujourd'hui ?</p>
+    </div>
+    <div class="user-avatar-large">
+      {{ username?.charAt(0) || 'U' }}
+    </div>
+  </div>
+
+  <!-- Statistiques rapides -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <span class="material-icons">event</span>
+      <div class="stat-info">
+        <h3>{{ stats.totalEvents }}</h3>
+        <p>Événements total</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <span class="material-icons">upcoming</span>
+      <div class="stat-info">
+        <h3>{{ stats.upcomingCount }}</h3>
+        <p>À venir</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <span class="material-icons">check_circle</span>
+      <div class="stat-info">
+        <h3>{{ stats.completedCount }}</h3>
+        <p>Terminés</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <span class="material-icons">star</span>
+      <div class="stat-info">
+        <h3>0</h3>
+        <p>Mes inscriptions</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Actions rapides -->
+  <div class="quick-actions">
+    <h2>Actions rapides</h2>
+    <div class="actions-grid">
+      <button routerLink="/events" class="action-btn">
+        <span class="material-icons">explore</span>
+        Découvrir des événements
+      </button>
+      <button routerLink="/user/profile" class="action-btn">
+        <span class="material-icons">person</span>
+        Mon profil
+      </button>
+      <button (click)="authService.logout()" class="action-btn">
+        <span class="material-icons">logout</span>
+        Déconnexion
+      </button>
+    </div>
+  </div>
+
+  <!-- Prochains événements -->
+  <div class="upcoming-events">
+    <div class="section-header">
+      <h2>Événements à venir</h2>
+      <a routerLink="/events" class="view-all">Voir tout →</a>
+    </div>
+
+    <div class="events-grid">
+      <div *ngFor="let event of upcomingEvents" class="event-card">
+        <div class="event-date">
+          <span class="day">{{ getDay(event.startDate) }}</span>
+          <span class="month">{{ getMonth(event.startDate) }}</span>
+        </div>
+        <div class="event-info">
+          <h3>{{ event.title }}</h3>
+          <p class="event-location">
+            <span class="material-icons">location_on</span>
+            {{ event.location }}
+          </p>
+          <div class="event-meta">
+            <span class="event-type">{{ event.type }}</span>
+            <span class="event-price">{{ event.price | currency:'TND' }}</span>
+          </div>
+        </div>
+        <button [routerLink]="['/events', event.eventId]"
+                class="view-btn">
+          Voir
+        </button>
+      </div>
+
+      <div *ngIf="upcomingEvents.length === 0" class="empty-state">
+        <span class="material-icons">event_busy</span>
+        <p>Aucun événement à venir</p>
+        <button routerLink="/events" class="browse-btn">Parcourir les événements</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recommandations -->
+  <div class="recommendations" *ngIf="recommendedEvents.length > 0">
+    <div class="section-header">
+      <h2>Recommandé pour vous</h2>
+      <a routerLink="/events" class="view-all">Voir tout →</a>
+    </div>
+
+    <div class="recommendations-grid">
+      <div *ngFor="let event of recommendedEvents" class="recommendation-card">
+        <div class="card-image" [style.background]="'linear-gradient(135deg, #3b82f6, #8b5cf6)'">
+          <span class="event-type">{{ event.type }}</span>
+        </div>
+        <div class="card-content">
+          <h3>{{ event.title }}</h3>
+          <p class="event-location">{{ event.location }}</p>
+          <div class="card-footer">
+            <span class="event-price">{{ event.price | currency:'TND' }}</span>
+            <button [routerLink]="['/Listevent', event.eventId]"
+                    class="details-btn">
+              Détails
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

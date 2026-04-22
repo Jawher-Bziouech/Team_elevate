@@ -1,0 +1,172 @@
+<div class="container mt-4">
+  <h2 class="mb-4">🔮 Tableau de bord prédictif</h2>
+
+  <!-- Message -->
+  <div *ngIf="message" class="alert alert-{{messageType}} alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" (click)="message = ''"></button>
+  </div>
+
+  <!-- Boutons de test -->
+  <div class="row mb-4">
+    <div class="col">
+      <button class="btn btn-primary me-2" (click)="chargerTout()" [disabled]="loadingPredictions || loadingObsolescence">
+        <i class="fas fa-sync-alt" [class.fa-spin]="loadingPredictions || loadingObsolescence"></i> Actualiser
+      </button>
+      <button class="btn btn-warning me-2" (click)="forcerPredictions()" [disabled]="loadingPredictions">
+        <i class="fas fa-magic"></i> Forcer prédictions
+      </button>
+      <button class="btn btn-danger" (click)="forcerDetection()" [disabled]="loadingObsolescence">
+        <i class="fas fa-exclamation-triangle"></i> Forcer détection obsolescence
+      </button>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Colonne Prédictions -->
+    <div class="col-md-6">
+      <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">📊 Prédictions d'inscriptions</h5>
+        </div>
+        <div class="card-body">
+          <div *ngIf="loadingPredictions" class="text-center p-3">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Chargement...</span>
+            </div>
+          </div>
+
+          <div *ngIf="!loadingPredictions && dashboardPredictions">
+            <!-- Fortes croissances -->
+            <h6 class="border-bottom pb-2">🚀 Fortes croissances prévues</h6>
+            <div *ngIf="dashboardPredictions.fortesCroissances.length === 0" class="text-muted p-2">
+              Aucune forte croissance détectée
+            </div>
+            <div class="list-group mb-3">
+              <div *ngFor="let pred of dashboardPredictions.fortesCroissances" 
+                   class="list-group-item list-group-item-action">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <strong>{{ pred.formation.titre }}</strong>
+                    <span class="badge bg-info ms-2">Confiance {{ pred.niveauConfiance * 100 }}%</span>
+                  </div>
+                  <div>
+                    <span class="me-2">{{ getCroissanceIcon(pred.croissanceEstimee) }}</span>
+                    <span [class]="getCroissanceClass(pred.croissanceEstimee)">
+                      +{{ pred.croissanceEstimee * 100 }}%
+                    </span>
+                  </div>
+                </div>
+                <small class="text-muted">
+                  📅 {{ pred.inscriptionsPrevues }} inscriptions prévues le mois prochain
+                </small>
+              </div>
+            </div>
+
+            <!-- Dernières prédictions -->
+            <h6 class="border-bottom pb-2">📅 Dernières prédictions</h6>
+            <div *ngIf="dashboardPredictions.dernieresPredictions.length === 0" class="text-muted p-2">
+              Aucune prédiction disponible
+            </div>
+            <div class="list-group">
+              <div *ngFor="let pred of dashboardPredictions.dernieresPredictions" 
+                   class="list-group-item">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <strong>{{ pred.formation.titre }}</strong>
+                    <span class="badge bg-info ms-2">{{ pred.niveauConfiance * 100 }}%</span>
+                  </div>
+                  <!-- ✅ NOUVEAU : Badge de tendance avec 3 couleurs -->
+                  <span class="badge" [ngClass]="{
+                    'bg-success': pred.tendance === 'HAUSSE',
+                    'bg-warning': pred.tendance === 'MOYEN',
+                    'bg-danger': pred.tendance === 'BAISSE'
+                  }">
+                    {{ pred.tendance }}
+                  </span>
+                </div>
+                <small class="text-muted">
+                  📊 {{ pred.inscriptionsPrevues }} prévues
+                </small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Colonne Obsolescence -->
+    <div class="col-md-6">
+      <div class="card mb-4">
+        <div class="card-header bg-danger text-white">
+          <h5 class="mb-0">⚠️ Analyse d'obsolescence</h5>
+        </div>
+        <div class="card-body">
+          <div *ngIf="loadingObsolescence" class="text-center p-3">
+            <div class="spinner-border text-danger" role="status">
+              <span class="visually-hidden">Chargement...</span>
+            </div>
+          </div>
+
+          <div *ngIf="!loadingObsolescence && dashboardObsolescence">
+            <!-- Formations à retirer -->
+            <h6 class="border-bottom pb-2 text-danger">🗑️ À retirer immédiatement</h6>
+            <div *ngIf="dashboardObsolescence.aRetirer.length === 0" class="text-muted p-2">
+              Aucune formation à retirer
+            </div>
+            <div class="list-group mb-3">
+              <div *ngFor="let rapport of dashboardObsolescence.aRetirer" 
+                   class="list-group-item list-group-item-danger">
+                <div class="d-flex justify-content-between">
+                  <strong>{{ rapport.formation.titre }}</strong>
+                  <span class="badge bg-danger">Score {{ rapport.scoreObsolescence }}/10</span>
+                </div>
+                <div *ngFor="let critere of rapport.criteres" class="small">
+                  {{ critere }}
+                </div>
+              </div>
+            </div>
+
+            <!-- Formations à mettre à jour -->
+            <h6 class="border-bottom pb-2 text-warning">🔄 À mettre à jour</h6>
+            <div *ngIf="dashboardObsolescence.aMettreAJour.length === 0" class="text-muted p-2">
+              Aucune formation à mettre à jour
+            </div>
+            <div class="list-group mb-3">
+              <div *ngFor="let rapport of dashboardObsolescence.aMettreAJour" 
+                   class="list-group-item list-group-item-warning">
+                <div class="d-flex justify-content-between">
+                  <strong>{{ rapport.formation.titre }}</strong>
+                  <span class="badge bg-warning text-dark">Score {{ rapport.scoreObsolescence }}/10</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Risques élevés -->
+            <h6 class="border-bottom pb-2">📊 Risques élevés</h6>
+            <div *ngIf="dashboardObsolescence.risquesEleves.length === 0" class="text-muted p-2">
+              Aucun risque élevé détecté
+            </div>
+            <div class="list-group">
+              <div *ngFor="let rapport of dashboardObsolescence.risquesEleves" 
+                   class="list-group-item">
+                <div class="d-flex justify-content-between align-items-center">
+                  <span>{{ rapport.formation.titre }}</span>
+                  <span class="badge" [ngClass]="getRisqueClass(rapport.niveauRisque)">
+                    {{ rapport.niveauRisque }}
+                  </span>
+                </div>
+                <small class="text-muted">
+                  Recommandation: 
+                  <span class="badge" [ngClass]="getRecommandationClass(rapport.recommandation)">
+                    {{ rapport.recommandation }}
+                  </span>
+                </small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

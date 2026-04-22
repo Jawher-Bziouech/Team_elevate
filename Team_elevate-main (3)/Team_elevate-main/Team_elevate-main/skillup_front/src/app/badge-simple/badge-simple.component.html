@@ -1,0 +1,39 @@
+<div class="badge-box">
+  <!-- Message -->
+  <div class="message" *ngIf="message">{{ message }}</div>
+
+  <!-- Mes badges -->
+  <div class="section">
+    <h3>Mes badges ({{ userBadges.length }})</h3>
+    <div class="badge-list">
+      <div *ngFor="let badge of userBadges" class="badge-item">
+        <span class="badge-icon">{{ getBadgeIcon(badge) }}</span>
+        <span class="badge-name">{{ badge }}</span>
+      </div>
+      <div *ngIf="userBadges.length === 0" class="empty">
+        Aucun badge pour le moment
+      </div>
+    </div>
+  </div>
+
+  <!-- Badges disponibles -->
+  <div class="section">
+    <h3>Badges disponibles</h3>
+    <div class="badge-grid">
+      <div *ngFor="let badge of allBadges" class="badge-card">
+        <div class="badge-icon large">{{ badge.icon }}</div>
+        <div class="badge-info">
+          <div class="badge-name">{{ badge.name }}</div>
+          <div class="badge-desc">{{ badge.description }}</div>
+        </div>
+        <button *ngIf="!hasBadge(badge.name)" 
+                class="btn-add" 
+                (click)="addBadge(badge.name)"
+                [disabled]="loading">
+          Ajouter
+        </button>
+        <span *ngIf="hasBadge(badge.name)" class="owned">✓</span>
+      </div>
+    </div>
+  </div>
+</div>

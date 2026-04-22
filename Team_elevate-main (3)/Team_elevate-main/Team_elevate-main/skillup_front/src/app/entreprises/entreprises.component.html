@@ -1,0 +1,419 @@
+<div class="ent-container">
+
+  <!-- Header -->
+  <div class="header-area">
+    <div class="header-text">
+      <h2>Discover <span class="highlight">Companies</span></h2>
+      <p>Browse approved companies and find your next career destination. Filter by sector, size, or search by name.</p>
+    </div>
+    <span class="header-count" *ngIf="!loading">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+      </svg>
+      {{ entreprises.length }} companies
+    </span>
+  </div>
+
+  <!-- Upgrade Banner (shown when logged in and not PRO) -->
+  <div class="upgrade-banner" *ngIf="isLoggedIn && !isPro">
+    <div class="upgrade-banner-text">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+      </svg>
+      <div>
+        <strong>Current plan: {{ currentPlan }}</strong>
+        <span *ngIf="currentPlan === 'FREE'"> — Contact info is hidden. Upgrade to reveal company emails &amp;
+          phones.</span>
+        <span *ngIf="currentPlan === 'BASIC'"> — Emails visible. Upgrade to Pro to also reveal phone numbers.</span>
+      </div>
+    </div>
+    <button class="btn-upgrade" (click)="openUpgradeModal()">
+      Upgrade Plan
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M5 12h14"></path>
+        <path d="m12 5 7 7-7 7"></path>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Search & Filters -->
+  <div class="toolbar">
+    <div class="search-box">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input type="text" placeholder="Search by company name, sector or location..." [(ngModel)]="searchTerm"
+             (input)="onSearchChange()" />
+    </div>
+    <div class="filter-row">
+      <div class="filter-chip">
+        <label>Sector</label>
+        <select [(ngModel)]="selectedSecteur" (change)="onSecteurChange()">
+          <option value="all">All</option>
+          <option *ngFor="let s of secteurs" [value]="s">{{ s }}</option>
+        </select>
+      </div>
+      <div class="filter-chip">
+        <label>Size</label>
+        <select [(ngModel)]="selectedTaille" (change)="onTailleChange()">
+          <option value="all">All</option>
+          <option value="STARTUP">Startup</option>
+          <option value="PME">PME</option>
+          <option value="GRANDE_ENTREPRISE">Grande Entreprise</option>
+        </select>
+      </div>
+      <div class="filter-chip">
+        <label>Sort</label>
+        <select [(ngModel)]="sortBy" (change)="applyFilters(false)">
+          <option *ngFor="let option of sortOptions" [value]="option.value">{{ option.label }}</option>
+        </select>
+      </div>
+      <button class="btn-clear" *ngIf="searchTerm || selectedSecteur !== 'all' || selectedTaille !== 'all'"
+              (click)="clearAllFilters()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+        Clear All
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div class="loader" *ngIf="loading">
+    <div class="loader-ring"></div>
+    <p>Loading companies...</p>
+  </div>
+
+  <!-- Error State -->
+  <div class="empty" *ngIf="!loading && loadError">
+    <div class="empty-icon">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+    </div>
+    <h3>Could not load companies</h3>
+    <p>The service may be unavailable. Please try again.</p>
+    <button class="btn-reset" (click)="loadEntreprises()">Retry</button>
+  </div>
+
+  <!-- Results -->
+  <div class="results" *ngIf="!loading && !loadError">
+    <div class="results-bar">
+      <h3>Companies</h3>
+      <span class="pill">{{ filteredEntreprises.length }} result<span
+        *ngIf="filteredEntreprises.length !== 1">s</span></span>
+    </div>
+
+    <!-- Card Grid -->
+    <div class="grid" *ngIf="filteredEntreprises.length > 0">
+      <article class="card animate-fade" *ngFor="let e of displayedEntreprises; let i = index; trackBy: trackById"
+               [style.animation-delay]="i * 0.1 + 's'" (click)="openDetail(e)">
+
+        <div class="card-header">
+          <div class="company-logo" [style.background]="getSecteurColor(e.secteur).bg">
+            <span class="logo-text" [style.color]="getSecteurColor(e.secteur).text">
+              {{ getInitials(e.nom) }}
+            </span>
+          </div>
+          <span class="card-secteur" *ngIf="e.secteur" [style.background]="getSecteurColor(e.secteur).bg"
+                [style.color]="getSecteurColor(e.secteur).text">
+            {{ e.secteur }}
+          </span>
+        </div>
+
+        <div class="card-body">
+          <h3 class="company-name">{{ e.nom }}</h3>
+          <p class="company-desc" *ngIf="e.description">{{ e.description }}</p>
+          <p class="company-desc" *ngIf="!e.description">Explore this company and discover career opportunities.</p>
+        </div>
+
+        <div class="card-meta">
+          <div class="meta-item" *ngIf="e.adresse">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+            {{ e.adresse }}
+          </div>
+          <div class="meta-item" *ngIf="e.taille">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+            {{ getTailleLabel(e.taille) }}
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <button class="btn-view">
+            View Details
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M5 12h14"></path>
+              <path d="m12 5 7 7-7 7"></path>
+            </svg>
+          </button>
+        </div>
+      </article>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination" *ngIf="filteredEntreprises.length > pageSize">
+      <button class="page-btn" [disabled]="currentPage === 0" (click)="onPageChange(currentPage - 1)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+        Previous
+      </button>
+      <span class="page-info">Page {{ currentPage + 1 }} of {{ Math.ceil(filteredEntreprises.length / pageSize)
+        }}</span>
+      <button class="page-btn" [disabled]="(currentPage + 1) * pageSize >= filteredEntreprises.length"
+              (click)="onPageChange(currentPage + 1)">
+        Next
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty" *ngIf="filteredEntreprises.length === 0">
+      <div class="empty-icon">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </div>
+      <h3>No companies found</h3>
+      <p>Try adjusting your filters to find more companies.</p>
+      <button class="btn-reset" (click)="clearAllFilters()">Reset Filters</button>
+    </div>
+  </div>
+
+  <!-- Detail Modal -->
+  <div class="modal-overlay" *ngIf="selectedEntreprise" (click)="closeDetail()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <button class="modal-close" (click)="closeDetail()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+
+      <div class="modal-top">
+        <div class="modal-logo" [style.background]="getSecteurColor(selectedEntreprise.secteur).bg">
+          <span [style.color]="getSecteurColor(selectedEntreprise.secteur).text">{{ getInitials(selectedEntreprise.nom)
+            }}</span>
+        </div>
+        <div class="modal-title-area">
+          <h2>{{ selectedEntreprise.nom }}</h2>
+          <div class="modal-badges">
+            <span class="modal-badge secteur" *ngIf="selectedEntreprise.secteur"
+                  [style.background]="getSecteurColor(selectedEntreprise.secteur).bg"
+                  [style.color]="getSecteurColor(selectedEntreprise.secteur).text">
+              {{ selectedEntreprise.secteur }}
+            </span>
+            <span class="modal-badge taille" *ngIf="selectedEntreprise.taille">
+              {{ getTailleLabel(selectedEntreprise.taille) }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-body">
+        <p class="modal-description" *ngIf="selectedEntreprise.description">{{ selectedEntreprise.description }}</p>
+
+        <div class="modal-grid">
+          <div class="modal-detail" *ngIf="selectedEntreprise.adresse">
+            <div class="detail-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+            </div>
+            <div>
+              <span class="detail-label">Address</span>
+              <span class="detail-value">{{ selectedEntreprise.adresse }}</span>
+            </div>
+          </div>
+
+          <!-- Email -->
+          <div class="modal-detail">
+            <div class="detail-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+              </svg>
+            </div>
+            <div>
+              <span class="detail-label">Email</span>
+              <span class="detail-value" *ngIf="!selectedEntreprise.emailMasked">{{ selectedEntreprise.email }}</span>
+              <span class="masked-info" *ngIf="selectedEntreprise.emailMasked">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                     style="margin-right:4px">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+                Hidden &mdash; <span class="upgrade-hint" (click)="closeDetail(); openUpgradeModal()">Upgrade
+                  plan</span>
+              </span>
+            </div>
+          </div>
+
+          <!-- Phone -->
+          <div class="modal-detail">
+            <div class="detail-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path
+                  d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.21 12.9a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z">
+                </path>
+              </svg>
+            </div>
+            <div>
+              <span class="detail-label">Phone</span>
+              <span class="detail-value" *ngIf="!selectedEntreprise.phoneMasked">{{ selectedEntreprise.telephone
+                }}</span>
+              <span class="masked-info" *ngIf="selectedEntreprise.phoneMasked">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                     style="margin-right:4px">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+                Hidden &mdash; <span class="upgrade-hint" (click)="closeDetail(); openUpgradeModal()">Upgrade
+                  plan</span>
+              </span>
+            </div>
+          </div>
+
+          <div class="modal-detail" *ngIf="selectedEntreprise.siteWeb">
+            <div class="detail-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
+                </path>
+              </svg>
+            </div>
+            <div>
+              <span class="detail-label">Website</span>
+              <a class="detail-value detail-link" [href]="selectedEntreprise.siteWeb" target="_blank">{{
+                  selectedEntreprise.siteWeb }}</a>
+            </div>
+          </div>
+          <div class="modal-detail" *ngIf="selectedEntreprise.dateCreation">
+            <div class="detail-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+            </div>
+            <div>
+              <span class="detail-label">Founded</span>
+              <span class="detail-value">{{ selectedEntreprise.dateCreation }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-actions" *ngIf="hasJobOffers(selectedEntreprise.id)">
+          <button class="btn-view-jobs" (click)="viewJobOffers()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+            </svg>
+            View Job Offers
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M5 12h14"></path>
+              <path d="m12 5 7 7-7 7"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Upgrade Plan Modal ────────────────────────────────────── -->
+  <div class="plan-modal-overlay" *ngIf="showUpgradeModal" (click)="closeUpgradeModal()">
+    <div class="plan-modal" (click)="$event.stopPropagation()">
+
+      <!-- Close -->
+      <button class="plan-modal-close" (click)="closeUpgradeModal()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+
+      <!-- Plan selection state -->
+      <ng-container>
+        <div class="plan-modal-header">
+          <h2>Choose Your Plan</h2>
+          <p>Unlock company contact information with a paid plan</p>
+        </div>
+
+        <!-- Plan cards -->
+        <div class="plan-cards">
+          <div class="plan-card" *ngFor="let p of plans" [class.plan-card--current]="p.key === currentPlan"
+               [class.plan-card--selected]="p.key === selectedUpgradePlan" [class.plan-card--pro]="p.key === 'PRO'"
+               [class.plan-card--disabled]="p.key === 'FREE' || p.key === currentPlan" (click)="selectUpgradePlan(p.key)">
+
+            <div class="plan-card-badge" *ngIf="p.key === currentPlan">Current</div>
+            <div class="plan-card-badge plan-card-badge--popular" *ngIf="p.key === 'PRO'">Popular</div>
+
+            <div class="plan-card-name">{{ p.label }}</div>
+            <div class="plan-card-price">
+              <span class="price-amount">{{ p.priceLabel }}</span>
+              <span class="price-period">{{ p.period }}</span>
+            </div>
+
+            <ul class="plan-features">
+              <li class="feature-ok" *ngFor="let b of p.benefits">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                {{ b }}
+              </li>
+              <li class="feature-no" *ngFor="let l of p.locked">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+                {{ l }}
+              </li>
+            </ul>
+
+            <div class="plan-card-select" *ngIf="p.key !== 'FREE' && p.key !== currentPlan">
+              <span *ngIf="p.key !== selectedUpgradePlan">Select</span>
+              <span *ngIf="p.key === selectedUpgradePlan">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                Selected
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Continue to checkout -->
+        <div class="plan-checkout" *ngIf="selectedUpgradePlan">
+          <button class="btn-confirm-upgrade" (click)="goToCheckout()">
+            Continue to Checkout
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M5 12h14"></path>
+              <path d="m12 5 7 7-7 7"></path>
+            </svg>
+          </button>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+
+</div>

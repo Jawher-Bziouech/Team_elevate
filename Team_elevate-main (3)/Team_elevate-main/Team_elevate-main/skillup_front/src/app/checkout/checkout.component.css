@@ -1,0 +1,399 @@
+/* ===== Checkout Page ===== */
+.checkout-page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 32px 20px 80px;
+  animation: fadeInUp 0.4s ease;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 32px;
+  font-family: inherit;
+  transition: color 0.2s;
+}
+.btn-back:hover { color: #2563eb; }
+
+/* ── Success ─────────────────────────────────────────────────────────────── */
+.success-card {
+  text-align: center;
+  padding: 60px 40px;
+  background: white;
+  border-radius: 24px;
+  border: 2px solid #d1fae5;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+}
+.success-icon { margin-bottom: 20px; }
+.success-card h2 {
+  font-size: 28px;
+  font-weight: 800;
+  color: #1e293b;
+  margin: 0 0 12px;
+}
+.success-card p { color: #64748b; font-size: 15px; margin: 0 0 8px; }
+.ref-line code {
+  background: #f1f5f9;
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-size: 13px;
+  color: #334155;
+}
+.relogin-note { color: #94a3b8; font-size: 13px; margin-top: 12px !important; }
+.btn-relogin {
+  display: inline-block;
+  margin-top: 24px;
+  padding: 14px 40px;
+  background: #2563eb;
+  color: white;
+  border-radius: 14px;
+  font-weight: 700;
+  font-size: 15px;
+  text-decoration: none;
+  transition: background 0.2s, transform 0.2s;
+}
+.btn-relogin:hover { background: #1d4ed8; transform: translateY(-1px); }
+
+/* ── Layout ──────────────────────────────────────────────────────────────── */
+.checkout-layout {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 28px;
+  align-items: start;
+}
+
+/* ── Order summary (left) ────────────────────────────────────────────────── */
+.order-summary {
+  background: white;
+  border-radius: 20px;
+  padding: 28px;
+  border: 1.5px solid #e2e8f0;
+  position: sticky;
+  top: 20px;
+}
+
+.summary-header { margin-bottom: 24px; }
+
+.plan-badge {
+  display: inline-block;
+  background: #dbeafe;
+  color: #1e40af;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 20px;
+  margin-bottom: 10px;
+}
+.plan-badge--pro { background: #ede9fe; color: #6d28d9; }
+
+.summary-header h2 {
+  font-size: 22px;
+  font-weight: 800;
+  color: #1e293b;
+  margin: 0 0 8px;
+}
+.summary-price { display: flex; align-items: baseline; gap: 4px; }
+.price-big { font-size: 36px; font-weight: 800; color: #1e293b; }
+.price-sub { font-size: 14px; color: #94a3b8; }
+
+.summary-benefits {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.summary-benefits li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: #334155;
+}
+
+.summary-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1.5px solid #e2e8f0;
+  padding-top: 16px;
+  font-size: 15px;
+  color: #475569;
+}
+.summary-total strong {
+  font-size: 18px;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+/* Test cards info box */
+.test-cards {
+  margin-top: 20px;
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 14px 16px;
+  border: 1px dashed #cbd5e1;
+}
+.test-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #94a3b8;
+  letter-spacing: 0.8px;
+  margin: 0 0 10px;
+}
+.test-card-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.test-card-row code {
+  font-size: 12px;
+  color: #475569;
+  letter-spacing: 0.5px;
+}
+.badge-ok {
+  font-size: 10px;
+  font-weight: 700;
+  background: #d1fae5;
+  color: #065f46;
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+.badge-fail {
+  font-size: 10px;
+  font-weight: 700;
+  background: #fee2e2;
+  color: #b91c1c;
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+.test-hint { font-size: 11px; color: #94a3b8; margin: 6px 0 0; }
+
+/* ── Payment form (right) ────────────────────────────────────────────────── */
+.payment-form-card {
+  background: white;
+  border-radius: 20px;
+  padding: 32px;
+  border: 1.5px solid #e2e8f0;
+}
+
+.form-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 800;
+  color: #1e293b;
+  margin: 0 0 24px;
+}
+
+.form-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1.5px solid #fecaca;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+.field-group label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.field-input {
+  padding: 14px 16px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 15px;
+  color: #1e293b;
+  font-family: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background: white;
+  width: 100%;
+  box-sizing: border-box;
+}
+.field-input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+.field-input:disabled { background: #f8fafc; color: #94a3b8; cursor: not-allowed; }
+
+.card-number-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.card-number-wrap .field-input { padding-right: 72px; }
+
+.card-type-badge {
+  position: absolute;
+  right: 14px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: #1a1f71;
+  color: white;
+  pointer-events: none;
+}
+.card-type-mc   { background: #eb001b; }
+.card-type-amex { background: #007bc1; }
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.btn-pay {
+  width: 100%;
+  padding: 17px;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: white;
+  border: none;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.btn-pay:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.35);
+}
+.btn-pay:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
+
+.processing-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2.5px solid rgba(255,255,255,0.4);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.secure-note {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #94a3b8;
+  margin: 0;
+  justify-content: center;
+}
+
+/* ── Stripe element container ────────────────────────────────────────────── */
+.stripe-element-container {
+  padding: 14px 16px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  background: white;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  min-height: 48px;
+}
+.stripe-element-container.stripe-element--loading {
+  display: flex;
+  align-items: center;
+}
+.stripe-element-container:focus-within {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.stripe-loading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+.mini-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid #e2e8f0;
+  border-top-color: #94a3b8;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+/* ── Stripe badge ─────────────────────────────────────────────────────────── */
+.stripe-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #94a3b8;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #f1f5f9;
+}
+.stripe-badge strong { color: #475569; }
+
+/* ── 3DS badge ────────────────────────────────────────────────────────────── */
+.badge-3ds {
+  font-size: 10px;
+  font-weight: 700;
+  background: #fef3c7;
+  color: #92400e;
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 720px) {
+  .checkout-layout { grid-template-columns: 1fr; }
+  .order-summary { position: static; }
+  .field-row { grid-template-columns: 1fr; }
+}

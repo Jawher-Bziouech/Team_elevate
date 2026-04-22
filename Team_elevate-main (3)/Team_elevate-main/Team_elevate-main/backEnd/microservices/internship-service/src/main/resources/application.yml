@@ -1,0 +1,28 @@
+server:
+  port: 8087
+
+spring:
+  application:
+    name: internship-service
+  datasource:
+    # Own DB for internship microservice (matches destination project pattern)
+    url: jdbc:mysql://localhost:3306/db_elevate_internship?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
+    username: root
+    password:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+jwt:
+  # Shared JWT signing key. Must match user-service exactly.
+  secret: esprit-skillup-jwt-secret-key-2024

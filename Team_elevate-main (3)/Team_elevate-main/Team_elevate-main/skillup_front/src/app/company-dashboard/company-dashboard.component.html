@@ -1,0 +1,344 @@
+<div class="company-dashboard container-fluid py-4">
+  <div class="dashboard-header d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-briefcase me-2"></i> Company Dashboard</h2>
+    <button class="btn btn-primary shadow-sm" (click)="openCreateOfferModal()">
+      <i class="fas fa-plus me-2"></i> Post New Internship
+    </button>
+  </div>
+
+  <div class="row">
+    <!-- Offers Table -->
+    <div class="col-12 mb-4">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white py-3">
+          <h5 class="mb-0 text-primary">My Internship Offers</h5>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle">
+              <thead class="bg-light">
+                <tr>
+                  <th class="ps-4">Title</th>
+                  <th>Dates</th>
+                  <th>Location</th>
+                  <th>Status</th>
+                  <th class="text-end pe-4">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <ng-container *ngFor="let offer of offers">
+                  <!-- Main Offer Row -->
+                  <tr>
+                    <td class="ps-4">
+                      <div class="fw-bold">{{ offer.title }}</div>
+                      <small class="text-muted">{{ offer.supervisorName }}</small>
+                    </td>
+                    <td>
+                      <small class="d-block">{{ offer.startDate | date }} - {{ offer.endDate | date }}</small>
+                    </td>
+                    <td>{{ offer.location }}</td>
+                    <td>
+                      <span class="badge"
+                        [ngClass]="offer.active ? 'bg-success-subtle text-success' : 'bg-secondary-subtle text-secondary'">
+                        {{ getOfferStatus(offer) }}
+                      </span>
+                    </td>
+                    <td class="text-end pe-4">
+                      <div class="btn-group">
+                        <button class="btn btn-sm btn-outline-primary" (click)="toggleApplicants(offer)"
+                          [title]="expandedOfferId === offer.id ? 'Hide Applicants' : 'View Applicants'">
+                          <i class="fas" [ngClass]="expandedOfferId === offer.id ? 'fa-chevron-up' : 'fa-users'"></i>
+                          {{ expandedOfferId === offer.id ? 'Hide' : 'Applicants' }}
+                        </button>
+                        <button class="btn btn-sm btn-outline-info ms-1" (click)="openEditOfferModal(offer)"
+                          title="Edit Offer">
+                          <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger ms-1" (click)="deleteOffer(offer)"
+                          title="Delete Offer">
+                          <i class="fas fa-trash"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <!-- Expanded Applicants Row -->
+                  <tr *ngIf="expandedOfferId === offer.id">
+                    <td colspan="5" class="bg-light p-0">
+                      <div class="applicants-container p-4">
+                        <h6 class="border-bottom pb-2 mb-3"><i class="fas fa-user-graduate me-2"></i> Applicants for {{
+                          offer.title }}</h6>
+
+                        <!-- Loading State -->
+                        <div *ngIf="loadingApplicantsMap[offer.id]" class="text-center py-3">
+                          <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                          <span class="ms-2">Loading applicants...</span>
+                        </div>
+
+                        <!-- No Applicants -->
+                        <div
+                          *ngIf="!loadingApplicantsMap[offer.id] && (!applicantsMap[offer.id] || applicantsMap[offer.id].length === 0)"
+                          class="text-center py-3 text-muted">
+                          No applications received for this offer.
+                        </div>
+
+                        <!-- Applicants List -->
+                        <div
+                          *ngIf="!loadingApplicantsMap[offer.id] && applicantsMap[offer.id] && applicantsMap[offer.id].length > 0"
+                          class="table-responsive bg-white rounded shadow-sm">
+                          <table class="table table-sm mb-0">
+                            <thead class="table-light">
+                              <tr>
+                                <th class="ps-3">Student Name</th>
+                                <th>Documents</th>
+                                <th>Motivation</th>
+                                <th>Status</th>
+                                <th class="text-end pe-3">Manage</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr *ngFor="let app of applicantsMap[offer.id]">
+                                <td class="ps-3">
+                                  <div class="fw-bold">{{ app.studentName || ('Student #' + app.studentUserId) }}</div>
+                                  <small class="text-muted">{{ app.applicationDate | date:'short' }}</small>
+                                </td>
+                                <td>
+                                  <a href="#" class="btn btn-link btn-sm p-0 text-decoration-none"
+                                    (click)="$event.preventDefault()">
+                                    <i class="fas fa-file-pdf me-1"></i> {{ app.cvFileName || 'CV' }}
+                                  </a>
+                                </td>
+                                <td>
+                                  <small class="text-truncate d-inline-block" style="max-width: 200px;"
+                                    [title]="app.motivationLetter">
+                                    {{ app.motivationLetter }}
+                                  </small>
+                                </td>
+                                <td>
+                                  <strong
+                                    [style.color]="app.status === 'ACCEPTED' ? 'green' : (app.status === 'REJECTED' ? 'red' : 'gray')">
+                                    {{ app.status || 'PENDING' }}
+                                  </strong>
+                                </td>
+                                <td class="text-end pe-3">
+                                  <div class="btn-group" *ngIf="app.status === 'PENDING'">
+                                    <button class="btn btn-sm btn-success" (click)="acceptApplicant(app.id, offer.id)">
+                                      Accept
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger ms-1"
+                                      (click)="rejectApplicant(app.id, offer.id)">
+                                      Reject
+                                    </button>
+                                  </div>
+                                  <!-- ACCEPTED: Chat with trainee -->
+                                  <div class="d-flex align-items-center gap-2 justify-content-end" *ngIf="app.status === 'ACCEPTED'">
+                                    <span class="badge bg-success-subtle text-success">
+                                      <i class="fas fa-check me-1"></i>Accepted
+                                    </span>
+                                    <button class="btn btn-sm btn-primary chat-open-btn" (click)="openChat(app)" title="Chat with this trainee">
+                                      <i class="fas fa-comment-dots me-1"></i>Chat
+                                    </button>
+                                  </div>
+                                  <!-- REJECTED -->
+                                  <span class="badge bg-danger-subtle text-danger" *ngIf="app.status === 'REJECTED'">
+                                    <i class="fas fa-times me-1"></i>Rejected
+                                  </span>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                </ng-container>
+
+                <tr *ngIf="!loadingOffers && offers.length === 0">
+                  <td colspan="5" class="text-center py-5 text-muted">
+                    <i class="fas fa-folder-open f-3x mb-3 d-block"></i>
+                    You haven't posted any internship offers yet.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Offer Modal -->
+<div class="modal d-block" tabindex="-1" *ngIf="showOfferModal">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header border-bottom py-3">
+        <h5 class="modal-title fw-bold text-primary">
+          {{ isEditMode ? 'Edit Internship Offer' : 'Post New Internship' }}
+        </h5>
+        <button type="button" class="btn-close" (click)="closeOfferModal()"></button>
+      </div>
+      <div class="modal-body p-4">
+        <div *ngIf="offerError" class="alert alert-danger mb-4 d-flex align-items-center">
+          <i class="fas fa-exclamation-triangle me-2"></i>
+          {{ offerError }}
+        </div>
+
+        <form #f="ngForm" (ngSubmit)="saveOffer()">
+          <div class="row g-3">
+            <div class="col-md-8">
+              <label class="form-label fw-semibold">Offer Title</label>
+              <input type="text" class="form-control" [(ngModel)]="offerForm.title" name="title" #title="ngModel"
+                required [class.is-invalid]="title.invalid && title.touched"
+                placeholder="e.g. Fullstack Developer Intern">
+              <div class="invalid-feedback" *ngIf="title.invalid && title.touched">
+                A descriptive title is required.
+              </div>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Location</label>
+              <input type="text" class="form-control" [(ngModel)]="offerForm.location" name="location"
+                #location="ngModel" required [class.is-invalid]="location.invalid && location.touched"
+                placeholder="e.g. New York or Remote">
+              <div class="invalid-feedback" *ngIf="location.invalid && location.touched">
+                Location is required.
+              </div>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Description</label>
+              <textarea class="form-control" rows="3" [(ngModel)]="offerForm.description" name="description"
+                #description="ngModel" required [class.is-invalid]="description.invalid && description.touched"
+                placeholder="Describe the responsibilities and environment..."></textarea>
+              <div class="invalid-feedback" *ngIf="description.invalid && description.touched">
+                Please provide a description of the internship.
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Required Skills</label>
+              <input type="text" class="form-control" [(ngModel)]="offerForm.requiredSkills" name="requiredSkills"
+                #skills="ngModel" required [class.is-invalid]="skills.invalid && skills.touched"
+                placeholder="e.g. Angular, Spring Boot, MySQL">
+              <div class="invalid-feedback" *ngIf="skills.invalid && skills.touched">
+                Required skills are mandatory.
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Study Level</label>
+              <input type="text" class="form-control" [(ngModel)]="offerForm.requiredStudyLevel" #studyLevel="ngModel"
+                name="requiredStudyLevel" required [class.is-invalid]="studyLevel.invalid && studyLevel.touched"
+                placeholder="e.g. Bachelor 3rd Year">
+              <div class="invalid-feedback" *ngIf="studyLevel.invalid && studyLevel.touched">
+                Study level is required.
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Start Date</label>
+              <input type="date" class="form-control" [(ngModel)]="offerForm.startDate" name="startDate"
+                #startDate="ngModel" required [class.is-invalid]="startDate.invalid && startDate.touched">
+              <div class="invalid-feedback" *ngIf="startDate.invalid && startDate.touched">
+                Start date is required.
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">End Date</label>
+              <input type="date" class="form-control" [(ngModel)]="offerForm.endDate" name="endDate" #endDate="ngModel"
+                required [class.is-invalid]="endDate.invalid && endDate.touched">
+              <div class="invalid-feedback" *ngIf="endDate.invalid && endDate.touched">
+                End date is required.
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Total Remuneration (Optional)</label>
+              <input type="text" class="form-control" [(ngModel)]="offerForm.remuneration" name="remuneration"
+                placeholder="e.g. $2000 total or $500/month">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Supervisor Name</label>
+              <input type="text" class="form-control" [(ngModel)]="offerForm.supervisorName" name="supervisorName"
+                #supervisor="ngModel" required [class.is-invalid]="supervisor.invalid && supervisor.touched"
+                placeholder="Who will mentor the intern?">
+              <div class="invalid-feedback" *ngIf="supervisor.invalid && supervisor.touched">
+                Please provide a supervisor name.
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Application Expiry Date</label>
+              <input type="date" class="form-control" [(ngModel)]="offerForm.expiryDate" name="expiryDate"
+                #expiryDate="ngModel" required [class.is-invalid]="expiryDate.invalid && expiryDate.touched">
+              <div class="invalid-feedback" *ngIf="expiryDate.invalid && expiryDate.touched">
+                Application deadline is required.
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-4 pt-3 border-top text-end">
+            <button type="button" class="btn btn-outline-secondary me-2" (click)="closeOfferModal()">Cancel</button>
+            <button type="submit" class="btn btn-primary px-4" [disabled]="!f.valid || savingOffer">
+              {{ savingOffer ? 'Saving...' : (isEditMode ? 'Update Offer' : 'Post Offer') }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade show" *ngIf="showOfferModal"></div>
+
+<!-- ====================================================
+     COMPANY CHAT MODAL
+  ==================================================== -->
+<div class="modal d-block chat-modal-overlay" tabindex="-1" *ngIf="showChatModal" (click)="closeChatModal()">
+  <div class="modal-dialog modal-md" style="max-width:520px;" (click)="$event.stopPropagation()">
+    <div class="modal-content border-0 shadow-lg chat-modal-content">
+
+      <!-- Header -->
+      <div class="modal-header chat-modal-header">
+        <div class="d-flex align-items-center gap-2">
+          <div class="chat-avatar"><i class="fas fa-user-graduate"></i></div>
+          <div>
+            <h6 class="mb-0 fw-bold">{{ chatApplicantName }}</h6>
+            <small class="text-muted">Application Chat</small>
+          </div>
+        </div>
+        <button type="button" class="btn-close btn-close-white" (click)="closeChatModal()"></button>
+      </div>
+
+      <!-- Messages -->
+      <div class="chat-messages-body" #chatBody>
+        <div *ngIf="chatLoading" class="text-center py-4">
+          <div class="spinner-border spinner-border-sm text-primary"></div>
+        </div>
+        <div *ngIf="!chatLoading && chatMessages.length === 0" class="text-center text-muted py-5">
+          <i class="fas fa-comments fa-2x mb-2 d-block opacity-50"></i>
+          No messages yet — say hello!
+        </div>
+        <div *ngFor="let msg of chatMessages"
+             class="chat-bubble-row"
+             [ngClass]="isMine(msg.senderId) ? 'sent' : 'received'">
+          <div class="chat-sender-label" *ngIf="!isMine(msg.senderId)">{{ chatApplicantName }}</div>
+          <div class="chat-bubble">
+            {{ msg.content }}
+            <div class="chat-time">{{ msg.timestamp | date:'HH:mm' }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Input -->
+      <div class="chat-input-area">
+        <input
+          type="text"
+          class="form-control chat-input"
+          [(ngModel)]="newMessage"
+          placeholder="Type a message..."
+          (keyup.enter)="sendChatMessage()"
+          id="company-chat-input"
+          autocomplete="off">
+        <button class="btn btn-primary send-btn" (click)="sendChatMessage()" [disabled]="!newMessage.trim()">
+          <i class="fas fa-paper-plane"></i>
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade show" *ngIf="showChatModal"></div>

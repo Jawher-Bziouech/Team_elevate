@@ -1,0 +1,386 @@
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <!-- Header with back button -->
+      <div class="d-flex align-items-center mb-4">
+        <button class="btn btn-outline-primary me-3" (click)="router.navigate(['/formation/', formationId])">
+          <i class="fas fa-arrow-left me-2"></i>Retour
+        </button>
+        <h4 class="mb-0 text-primary">
+          <i class="fas fa-credit-card me-2"></i>Paiement et Inscription
+        </h4>
+      </div>
+
+      <div class="card shadow-lg border-0">
+        <div class="card-header bg-gradient-primary text-white py-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">
+              <i class="fas fa-shopping-cart me-2"></i>Finaliser votre inscription
+            </h4>
+            <span class="badge bg-white text-primary fs-6">
+              <i class="fas fa-tag me-1"></i>{{ formation?.prix | currency:'TND' }}
+            </span>
+          </div>
+        </div>
+        
+        <div class="card-body p-4">
+          <!-- Loading formation -->
+          <div *ngIf="loadingFormation" class="text-center py-5">
+            <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+              <span class="visually-hidden">Chargement...</span>
+            </div>
+            <p class="mt-3 text-muted">Chargement des détails de la formation...</p>
+          </div>
+
+          <!-- Error loading formation -->
+          <div *ngIf="errorMessage && !formation" class="alert alert-danger d-flex align-items-center" role="alert">
+            <i class="fas fa-exclamation-circle me-2 fs-4"></i>
+            <div>
+              <strong>Erreur!</strong> {{ errorMessage }}
+            </div>
+          </div>
+
+          <!-- Main Content -->
+          <div *ngIf="formation && !loadingFormation" class="row">
+            <!-- Left Column - Formation Summary -->
+            <div class="col-lg-5 mb-4">
+              <div class="card bg-light border-0 h-100">
+                <div class="card-body">
+                  <h6 class="text-primary mb-3">
+                    <i class="fas fa-graduation-cap me-2"></i>Récapitulatif de la formation
+                  </h6>
+                  
+                  <!-- Formation Image placeholder -->
+                  <div class="formation-image-placeholder mb-3 text-center">
+                    <i class="fas fa-book-open fs-1 text-primary"></i>
+                  </div>
+                  
+                  <h5 class="fw-bold mb-3">{{ formation.titre }}</h5>
+                  
+                  <div class="formation-details">
+                    <div class="detail-row mb-2">
+                      <span class="detail-label"><i class="fas fa-folder me-2 text-muted"></i>Catégorie:</span>
+                      <span class="badge bg-info">{{ formation.categorie }}</span>
+                    </div>
+                    <div class="detail-row mb-2">
+                      <span class="detail-label"><i class="fas fa-clock me-2 text-muted"></i>Durée:</span>
+                      <span class="detail-value">{{ formation.dureeHeures }} heures</span>
+                    </div>
+                    <div class="detail-row mb-2">
+                      <span class="detail-label"><i class="fas fa-calendar me-2 text-muted"></i>Dates:</span>
+                      <span class="detail-value">{{ formation.dateDebut | date:'dd/MM/yyyy' }} - {{ formation.dateFin | date:'dd/MM/yyyy' }}</span>
+                    </div>
+                    <div class="detail-row mb-3">
+                      <span class="detail-label"><i class="fas fa-users me-2 text-muted"></i>Places:</span>
+                      <span class="detail-value" [class.text-danger]="formation.placesDisponibles < 5">
+                        {{ formation.placesDisponibles }} restantes
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <hr class="my-3">
+                  
+                  <!-- Price Summary -->
+                  <div class="price-summary">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                      <span class="text-muted">Prix de la formation:</span>
+                      <span class="fs-5 fw-bold text-primary">{{ formation.prix | currency:'TND' }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                      <span class="text-muted">Frais de traitement:</span>
+                      <span class="text-success">Gratuit</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between align-items-center">
+                      <span class="fw-bold">Total à payer:</span>
+                      <span class="fs-4 fw-bold text-success">{{ formation.prix | currency:'TND' }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Column - Payment Form -->
+            <div class="col-lg-7">
+              <!-- Success message -->
+              <div *ngIf="success" class="alert alert-success d-flex align-items-center" role="alert">
+                <i class="fas fa-check-circle me-2 fs-3"></i>
+                <div>
+                  <strong>Paiement réussi!</strong><br>
+                  Votre inscription a été confirmée. Vous recevrez un email de confirmation.
+                  <br><small>Redirection dans quelques secondes...</small>
+                </div>
+              </div>
+
+              <!-- Error message -->
+              <div *ngIf="errorMessage && !success" class="alert alert-danger d-flex align-items-center" role="alert">
+                <i class="fas fa-exclamation-triangle me-2 fs-4"></i>
+                <div>{{ errorMessage }}</div>
+              </div>
+
+              <!-- Payment Method Selection -->
+              <form [formGroup]="paymentForm" (ngSubmit)="onSubmit()" *ngIf="!success && !loadingFormation">
+                <h6 class="text-primary mb-3">
+                  <i class="fas fa-wallet me-2"></i>Choisissez votre méthode de paiement
+                </h6>
+
+                <!-- Payment Methods Grid -->
+                <div class="payment-methods-grid mb-4">
+                  <!-- Credit Card -->
+                  <div class="payment-method-card" 
+                       [class.selected]="f['paymentMethod'].value === 'CREDIT_CARD'"
+                       (click)="selectPaymentMethod('CREDIT_CARD')">
+                    <div class="payment-icon">
+                      <i class="fas fa-credit-card"></i>
+                    </div>
+                    <div class="payment-info">
+                      <h6 class="fw-bold mb-1">Carte Bancaire</h6>
+                      <small class="text-muted">Visa, Mastercard, CIM</small>
+                    </div>
+                    <div class="payment-check">
+                      <i class="fas fa-check-circle" *ngIf="f['paymentMethod'].value === 'CREDIT_CARD'"></i>
+                    </div>
+                    <input type="radio" class="d-none" formControlName="paymentMethod" value="CREDIT_CARD">
+                  </div>
+
+                  <!-- PayPal -->
+                  <div class="payment-method-card" 
+                       [class.selected]="f['paymentMethod'].value === 'PAYPAL'"
+                       (click)="selectPaymentMethod('PAYPAL')">
+                    <div class="payment-icon paypal">
+                      <i class="fab fa-paypal"></i>
+                    </div>
+                    <div class="payment-info">
+                      <h6 class="fw-bold mb-1">PayPal</h6>
+                      <small class="text-muted">Paiement sécurisé</small>
+                    </div>
+                    <div class="payment-check">
+                      <i class="fas fa-check-circle" *ngIf="f['paymentMethod'].value === 'PAYPAL'"></i>
+                    </div>
+                    <input type="radio" class="d-none" formControlName="paymentMethod" value="PAYPAL">
+                  </div>
+
+                  <!-- Bank Transfer -->
+                  <div class="payment-method-card" 
+                       [class.selected]="f['paymentMethod'].value === 'BANK_TRANSFER'"
+                       (click)="selectPaymentMethod('BANK_TRANSFER')">
+                    <div class="payment-icon">
+                      <i class="fas fa-university"></i>
+                    </div>
+                    <div class="payment-info">
+                      <h6 class="fw-bold mb-1">Virement Bancaire</h6>
+                      <small class="text-muted">Compte à compte</small>
+                    </div>
+                    <div class="payment-check">
+                      <i class="fas fa-check-circle" *ngIf="f['paymentMethod'].value === 'BANK_TRANSFER'"></i>
+                    </div>
+                    <input type="radio" class="d-none" formControlName="paymentMethod" value="BANK_TRANSFER">
+                  </div>
+
+                  <!-- Cash on Delivery -->
+                  <div class="payment-method-card" 
+                       [class.selected]="f['paymentMethod'].value === 'CASH'"
+                       (click)="selectPaymentMethod('CASH')">
+                    <div class="payment-icon">
+                      <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                    <div class="payment-info">
+                      <h6 class="fw-bold mb-1">Espèces</h6>
+                      <small class="text-muted">Paiement sur place</small>
+                    </div>
+                    <div class="payment-check">
+                      <i class="fas fa-check-circle" *ngIf="f['paymentMethod'].value === 'CASH'"></i>
+                    </div>
+                    <input type="radio" class="d-none" formControlName="paymentMethod" value="CASH">
+                  </div>
+                </div>
+
+                <!-- Validation error -->
+                <div *ngIf="submitted && f['paymentMethod'].errors?.['required']" class="alert alert-warning py-2">
+                  <i class="fas fa-exclamation-triangle me-2"></i>
+                  Veuillez sélectionner une méthode de paiement
+                </div>
+
+                <!-- Terms and Conditions -->
+                <div class="terms-section mb-4">
+                  <div class="form-check p-3 bg-light rounded">
+                    <input class="form-check-input" type="checkbox" id="acceptConditions" 
+                           formControlName="acceptConditions"
+                           [class.is-invalid]="submitted && f['acceptConditions'].errors">
+                    <label class="form-check-label" for="acceptConditions">
+                      <i class="fas fa-file-contract me-2 text-primary"></i>
+                      J'accepte les <a href="#" class="text-primary">conditions générales</a> et la 
+                      <a href="#" class="text-primary">politique de confidentialité</a>
+                      <span class="text-danger">*</span>
+                    </label>
+                    <div class="invalid-feedback" *ngIf="submitted && f['acceptConditions'].errors">
+                      Vous devez accepter les conditions pour continuer
+                    </div>
+                  </div>
+                </div>
+
+                <!-- User Info Summary -->
+                <div class="user-info-card mb-4">
+                  <h6 class="text-primary mb-2">
+                    <i class="fas fa-user-circle me-2"></i>Informations de paiement
+                  </h6>
+                  <div class="row g-2">
+                    <div class="col-md-6">
+                      <small class="text-muted">Nom:</small>
+                      <div class="fw-bold">{{ authService.getCurrentUser()?.nom }} {{ authService.getCurrentUser()?.prenom }}</div>
+                    </div>
+                    <div class="col-md-6">
+                      <small class="text-muted">Email:</small>
+                      <div class="fw-bold">{{ authService.getCompleteEmail() }}</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="d-grid gap-2">
+                  <button type="submit" class="btn btn-success btn-lg py-3" 
+                          [disabled]="loading || paymentForm.invalid || !formation">
+                    <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status"></span>
+                    <i class="fas fa-lock me-2" *ngIf="!loading"></i>
+                    {{ loading ? 'Traitement en cours...' : 'Payer ' + (formation?.prix | currency:'TND') + ' et S\'inscrire' }}
+                  </button>
+                  
+                  <button type="button" class="btn btn-outline-secondary" 
+                          (click="router.navigate(['/formations'])" [disabled]="loading">
+                    <i class="fas fa-times me-2"></i>Annuler
+                  </button>
+                </div>
+
+                <!-- Security Badges -->
+                <div class="security-badges mt-4 text-center">
+                  <small class="text-muted">
+                    <i class="fas fa-shield-alt me-1 text-success"></i>
+                    Paiement 100% sécurisé • SSL Encrypté • Remboursement garanti
+                  </small>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Custom Styles -->
+<style>
+  .bg-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+
+  .formation-image-placeholder {
+    height: 120px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .detail-row {
+    display: flex;
+    align-items: center;
+  }
+
+  .detail-label {
+    min-width: 100px;
+    color: #6c757d;
+  }
+
+  .detail-value {
+    font-weight: 500;
+  }
+
+  .price-summary {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  }
+
+  /* Payment Methods Grid */
+  .payment-methods-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+
+  .payment-method-card {
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 20px 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: white;
+    position: relative;
+  }
+
+  .payment-method-card:hover {
+    border-color: #667eea;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+  }
+
+  .payment-method-card.selected {
+    border-color: #667eea;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e8eaf6 100%);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  }
+
+  .payment-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    flex-shrink: 0;
+  }
+
+  .payment-icon.paypal {
+    background: linear-gradient(135deg, #003087 0%, #009cde 100%);
+  }
+
+  .payment-info {
+    flex: 1;
+  }
+
+  .payment-check {
+    color: #667eea;
+    font-size: 20px;
+  }
+
+  .terms-section {
+    margin-top: 20px;
+  }
+
+  .user-info-card {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid #667eea;
+  }
+
+  .security-badges {
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 8px;
+  }
+
+  @media (max-width: 768px) {
+    .payment-methods-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

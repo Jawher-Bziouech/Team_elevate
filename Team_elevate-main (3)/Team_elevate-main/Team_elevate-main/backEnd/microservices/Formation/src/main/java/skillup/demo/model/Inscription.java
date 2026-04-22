@@ -1,0 +1,52 @@
+package skillup.demo.model;
+
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;  // ← AJOUTER CET IMPORT
+
+@Entity
+@Getter
+@Setter
+@JsonPropertyOrder({
+        "id",
+        "nom",
+        "prenom",
+        "email",
+        "telephone",
+        "dateInscription",
+        "statut",
+        "formation",
+        "archivee",        // ← AJOUTER
+        "dateArchive"      // ← AJOUTER
+})
+@Table(name = "inscriptions")
+public class Inscription {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String nom;
+    private String prenom;
+
+    @Column(nullable = false)
+    private String email;
+
+    private String telephone;
+    private LocalDate dateInscription = LocalDate.now();
+    private String statut = "CONFIRMEE";  // Valeur par défaut
+
+    @ManyToOne
+    @JoinColumn(name = "formation_id")
+    private Formation formation;
+
+    // ===== NOUVEAUX CHAMPS POUR L'ARCHIVAGE =====
+    @Column(nullable = false)
+    private boolean archivee = false;  // ← AJOUTER
+
+    @Column
+    private LocalDateTime dateArchive;  // ← AJOUTER
+}

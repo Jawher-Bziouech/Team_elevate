@@ -1,0 +1,237 @@
+.cert-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+  padding-bottom: 50px;
+}
+
+.cert-header h2 { font-size: 28px; color: var(--text-dark); margin-bottom: 5px; }
+.cert-header .highlight { color: var(--primary-blue); }
+.cert-header p { color: var(--text-gray); font-size: 14px; margin-bottom: 25px; }
+
+/* TABS */
+.tab-bar {
+  display: flex; gap: 8px; margin-bottom: 30px;
+  border-bottom: 2px solid #f1f5f9; padding-bottom: 0;
+}
+.tab-btn {
+  background: none; border: none; border-bottom: 3px solid transparent;
+  padding: 12px 20px; font-weight: 700; font-size: 14px;
+  color: #94a3b8; cursor: pointer; transition: all 0.2s;
+  display: flex; align-items: center; gap: 6px;
+}
+.tab-btn:hover { color: var(--text-dark); }
+.tab-btn.active { color: var(--primary-blue); border-bottom-color: var(--primary-blue); }
+.req-badge {
+  background: #ef4444; color: white; font-size: 11px; font-weight: 800;
+  padding: 2px 8px; border-radius: 12px;
+}
+
+/* TAB CONTENT */
+.tab-content { min-height: 300px; }
+
+.animate-fade { animation: fadeIn 0.4s ease-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* EMPTY STATE */
+.empty-state { text-align: center; padding: 60px 20px; color: #94a3b8; }
+.empty-icon { font-size: 50px; margin-bottom: 15px; opacity: 0.5; }
+
+/* CERTIFICATE CARDS GRID */
+.cert-grid { 
+  display: grid; 
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); 
+  gap: 24px; 
+}
+.cert-card {
+  background: white; 
+  border-radius: 20px; 
+  border: 1px solid #eef2f6;
+  padding: 30px; 
+  position: relative; 
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.cert-card:hover { 
+  transform: translateY(-8px); 
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); 
+}
+.cert-card-badge {
+  position: absolute; top: 15px; right: 15px;
+  background: #ecfdf5; color: #10b981; font-size: 11px; font-weight: 800;
+  padding: 4px 10px; border-radius: 8px;
+}
+.cert-card-icon { font-size: 40px; margin-bottom: 12px; }
+.cert-card h4 { font-size: 17px; color: var(--text-dark); margin-bottom: 6px; }
+.cert-issuer { font-size: 13px; color: var(--primary-blue); font-weight: 600; margin-bottom: 8px; }
+.cert-desc { font-size: 13px; color: var(--text-gray); line-height: 1.5; margin-bottom: 15px; }
+.cert-card-footer {
+  display: flex; 
+  flex-direction: column; /* Stack vertically: Date on top, Buttons below */
+  gap: 15px;
+  border-top: 1px solid #f1f5f9; 
+  padding-top: 18px; 
+  margin-top: auto;
+}
+.cert-date { 
+  color: #64748b; 
+  font-weight: 500; 
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.cert-link { color: var(--primary-blue); font-weight: 700; text-decoration: none; }
+.cert-link:hover { text-decoration: underline; }
+
+/* REQUEST FORM */
+.request-form-card {
+  background: white; border-radius: 16px; border: 1px solid #e2e8f0;
+  padding: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+}
+.request-form-card h3 { font-size: 20px; color: var(--text-dark); margin-bottom: 5px; }
+.form-subtitle { color: var(--text-gray); font-size: 13px; margin-bottom: 25px; }
+.form-group { margin-bottom: 18px; }
+.form-group label { display: block; font-weight: 700; font-size: 13px; color: var(--text-dark); margin-bottom: 6px; }
+
+.custom-input, .custom-textarea {
+  width: 100%; background: #f8fafc; border: 1px solid #e2e8f0;
+  border-radius: 10px; padding: 12px 15px;
+  font-size: 14px; outline: none; transition: all 0.2s;
+  box-sizing: border-box;
+}
+.custom-input:focus, .custom-textarea:focus { border-color: var(--primary-blue); background: white; }
+
+.form-actions { display: flex; justify-content: flex-end; margin-top: 10px; }
+.btn-submit {
+  background: var(--primary-blue); color: white; border: none;
+  padding: 12px 30px; border-radius: 10px; font-weight: 700;
+  font-size: 14px; cursor: pointer; transition: all 0.2s;
+}
+.btn-submit:hover { background: #1e3a8a; box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
+.btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* MY REQUESTS LIST */
+.request-item {
+  display: flex; align-items: center; gap: 16px;
+  background: white; border-radius: 14px; border: 1px solid #e2e8f0;
+  padding: 20px; margin-bottom: 12px; transition: all 0.2s;
+}
+.request-item:hover { box-shadow: 0 6px 16px rgba(0,0,0,0.04); }
+
+.req-status-dot {
+  width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0;
+}
+.req-status-dot.pending { background: #f59e0b; }
+.req-status-dot.rejected { background: #ef4444; }
+
+.req-info { flex: 1; }
+.req-info h4 { font-size: 15px; color: var(--text-dark); margin: 0 0 4px 0; }
+.req-info p { font-size: 13px; color: var(--text-gray); margin: 0 0 4px 0; }
+.req-info small { font-size: 12px; color: #94a3b8; }
+
+.req-status-badge {
+  padding: 6px 14px; border-radius: 8px; font-size: 11px;
+  font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;
+}
+.badge-pending { background: #fef3c7; color: #d97706; }
+.badge-rejected { background: #fee2e2; color: #ef4444; }
+/* NEW: Dynamic Badges for Certificates */
+.cert-card-badge {
+  /* Override the default background/color so we can control it dynamically */
+  background: transparent;
+  color: inherit;
+}
+
+.badge-approved {
+  background: #ecfdf5; 
+  color: #10b981;
+}
+
+.badge-expiring {
+  background: #fffbeb; 
+  color: #f59e0b;
+}
+
+.badge-expired {
+  background: #fef2f2; 
+  color: #ef4444;
+}
+
+/* NEW: Warning Box Styles */
+.cert-warning-box {
+  margin-bottom: 15px;
+  padding: 10px;
+  border-radius: 8px;
+  border-left: 4px solid transparent;
+}
+
+.warning-urgent {
+  background-color: #fffbeb;
+  border-left-color: #f59e0b;
+  color: #b45309;
+}
+
+.warning-critical {
+  background-color: #fef2f2;
+  border-left-color: #ef4444;
+  color: #991b1b;
+}
+/* NEW: Download PDF Button */
+.btn-download-pdf {
+  background-color: #f1f5f9;
+  color: var(--primary-blue);
+  border: 1px solid #cbd5e1;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-download-pdf:hover {
+  background-color: var(--primary-blue);
+  color: white;
+  border-color: var(--primary-blue);
+}
+/* NEW: LinkedIn Button */
+.btn-linkedin {
+  background-color: #0a66c2; /* Official LinkedIn Blue */
+  color: white;
+  border: 1px solid #0a66c2;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.btn-linkedin:hover {
+  background-color: #004182; /* Darker blue on hover */
+}
+.cert-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.btn-forum {
+  background-color: #f0f7ff;
+  color: #0061ff;
+  border: 1px solid #d0e4ff;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+.btn-forum:hover {
+  background-color: #0061ff;
+  color: white;
+}

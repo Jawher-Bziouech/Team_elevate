@@ -1,0 +1,154 @@
+<div class="modal-header">
+  <h4 class="modal-title">{{isEdit ? 'Modifier' : 'Ajouter'}} une formation</h4>
+  <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss()"></button>
+</div>
+<div class="modal-body">
+  <form [formGroup]="formationForm">
+    <!-- Titre -->
+    <div class="mb-3">
+      <label class="form-label">Titre *</label>
+      <input type="text" class="form-control" formControlName="titre" 
+             [class.is-invalid]="formationForm.get('titre')?.invalid && formationForm.get('titre')?.touched">
+      <div class="invalid-feedback" *ngIf="formationForm.get('titre')?.invalid && formationForm.get('titre')?.touched">
+        Le titre est requis
+      </div>
+    </div>
+
+    <!-- Description -->
+    <div class="mb-3">
+      <label class="form-label">Description *</label>
+      <textarea class="form-control" rows="4" formControlName="description"
+                [class.is-invalid]="formationForm.get('description')?.invalid && formationForm.get('description')?.touched"></textarea>
+      <div class="invalid-feedback" *ngIf="formationForm.get('description')?.invalid && formationForm.get('description')?.touched">
+        La description est requise
+      </div>
+    </div>
+
+    <!-- Catégorie -->
+    <div class="mb-3">
+      <label class="form-label">Catégorie *</label>
+      <div class="input-group">
+        <select class="form-select" formControlName="categorie" 
+                *ngIf="!showNewCategoryInput"
+                [class.is-invalid]="formationForm.get('categorie')?.invalid && formationForm.get('categorie')?.touched">
+          <option value="">Sélectionner une catégorie</option>
+          <option *ngFor="let cat of categories" [value]="cat">{{cat}}</option>
+        </select>
+        <input 
+          type="text" 
+          class="form-control" 
+          *ngIf="showNewCategoryInput"
+          [(ngModel)]="newCategory" 
+          [ngModelOptions]="{standalone: true}"
+          placeholder="Nouvelle catégorie">
+        <button 
+          class="btn btn-outline-secondary" 
+          type="button"
+          (click)="showNewCategoryInput ? addNewCategory() : showNewCategoryInput = true">
+          <i class="fas" [class.fa-plus]="!showNewCategoryInput" [class.fa-check]="showNewCategoryInput"></i>
+        </button>
+      </div>
+      <small class="text-muted" *ngIf="!showNewCategoryInput">Ou cliquez sur + pour ajouter une catégorie</small>
+    </div>
+
+    <!-- Durée et Prix -->
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Durée (heures) *</label>
+        <input type="number" class="form-control" formControlName="dureeHeures" min="1"
+               [class.is-invalid]="formationForm.get('dureeHeures')?.invalid && formationForm.get('dureeHeures')?.touched">
+        <div class="invalid-feedback" *ngIf="formationForm.get('dureeHeures')?.invalid && formationForm.get('dureeHeures')?.touched">
+          La durée doit être d'au moins 1 heure
+        </div>
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Prix (TND) *</label>
+        <input type="number" class="form-control" formControlName="prix" min="0" step="0.01"
+               [class.is-invalid]="formationForm.get('prix')?.invalid && formationForm.get('prix')?.touched">
+        <div class="invalid-feedback" *ngIf="formationForm.get('prix')?.invalid && formationForm.get('prix')?.touched">
+          Le prix doit être positif
+        </div>
+      </div>
+    </div>
+
+    <!-- Dates -->
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Date de début *</label>
+        <input type="date" class="form-control" formControlName="dateDebut"
+               [class.is-invalid]="formationForm.get('dateDebut')?.invalid && formationForm.get('dateDebut')?.touched">
+        <div class="invalid-feedback" *ngIf="formationForm.get('dateDebut')?.invalid && formationForm.get('dateDebut')?.touched">
+          La date de début est requise
+        </div>
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Date de fin *</label>
+        <input type="date" class="form-control" formControlName="dateFin"
+               [class.is-invalid]="formationForm.get('dateFin')?.invalid && formationForm.get('dateFin')?.touched">
+        <div class="invalid-feedback" *ngIf="formationForm.get('dateFin')?.invalid && formationForm.get('dateFin')?.touched">
+          La date de fin est requise
+        </div>
+      </div>
+    </div>
+
+    <!-- Places disponibles -->
+    <div class="mb-3">
+      <label class="form-label">Places disponibles *</label>
+      <input type="number" class="form-control" formControlName="placesDisponibles" min="1"
+             [class.is-invalid]="formationForm.get('placesDisponibles')?.invalid && formationForm.get('placesDisponibles')?.touched">
+      <div class="invalid-feedback" *ngIf="formationForm.get('placesDisponibles')?.invalid && formationForm.get('placesDisponibles')?.touched">
+        Le nombre de places doit être d'au moins 1
+      </div>
+    </div>
+    <!-- Après le champ placesDisponibles -->
+<div class="mb-3">
+  <label class="form-label">Lien vidéo </label>
+  <input type="url" class="form-control" formControlName="videoUrl" 
+         placeholder="https://video/... ou https://www.vid.com/watch?v=...">
+  <small class="text-muted">Optionnel - Lien vers une vidéo de présentation</small>
+</div>
+    <!-- NOUVEAU : Image de la formation -->
+<div class="mb-3">
+  <label class="form-label">Image de la formation</label>
+  <div class="upload-area" 
+     (click)="fileInput.click()"
+     (dragover)="onDragOver($event)"
+     (drop)="onDropFile($event)"
+     [class.has-image]="imagePreview">
+    
+    <!-- Aperçu de l'image si sélectionnée -->
+    <div *ngIf="imagePreview" class="image-preview-container">
+      <img [src]="imagePreview" alt="Aperçu" class="image-preview">
+      <button type="button" class="btn-remove-image" (click)="removeImage($event)" title="Supprimer l'image">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <!-- Message par défaut -->
+    <div *ngIf="!imagePreview" class="upload-placeholder">
+      <i class="fas fa-cloud-upload-alt fa-2x"></i>
+      <p>Cliquez ou déposez une image ici</p>
+      <small class="text-muted">Formats: JPG, PNG, GIF (max. 2 Mo)</small>
+    </div>
+  </div>
+  
+ <!-- Input file caché -->
+<input 
+  type="file" 
+  #fileInput
+  accept="image/*"
+  style="display: none"
+  (change)="onFileSelected($event)">
+  <!-- Message d'erreur -->
+  <div *ngIf="imageError" class="text-danger mt-1">
+    <small>{{ imageError }}</small>
+  </div>
+</div>
+  </form>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="activeModal.dismiss()">Annuler</button>
+  <button type="button" class="btn btn-primary" (click)="onSubmit()" [disabled]="!formationForm.valid">
+    {{isEdit ? 'Modifier' : 'Ajouter'}}
+  </button>
+</div>

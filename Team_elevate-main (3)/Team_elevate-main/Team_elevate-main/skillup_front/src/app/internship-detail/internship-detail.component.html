@@ -1,0 +1,209 @@
+<div class="internship-detail-container">
+  <div class="mb-4 d-flex justify-content-between align-items-center">
+    <button type="button" class="btn back-btn bg-white shadow-sm" (click)="backToList()">
+      <i class="fas fa-chevron-left me-2"></i> Back to Opportunities
+    </button>
+  </div>
+
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <div class="mt-3 fw-bold text-secondary">Bringing you the details...</div>
+  </div>
+
+  <div *ngIf="errorMessage" class="alert alert-danger rounded-4 shadow-sm py-3 px-4">
+    <i class="fas fa-exclamation-triangle me-3"></i>{{ errorMessage }}
+  </div>
+
+  <div *ngIf="!loading && internship" class="glass-card animate-fade-in">
+    <h1 class="detail-title">{{ internship.title }}</h1>
+    
+    <div class="detail-subtitle d-flex align-items-center flex-wrap">
+      <span><i class="fas fa-map-marker-alt text-danger me-2"></i> {{ internship.location }}</span>
+      <span class="subtitle-sep">|</span>
+      <span><i class="far fa-calendar-alt text-primary me-2"></i> {{ internship.startDate | date: 'longDate' }} - {{ internship.endDate | date: 'longDate' }}</span>
+    </div>
+
+    <!-- Info Grid -->
+    <div class="info-grid">
+      <!-- Company -->
+      <div class="info-box">
+        <div class="info-box-icon"><i class="fas fa-building"></i></div>
+        <div class="info-box-content">
+          <p class="info-label">Company</p>
+          <p class="info-value">{{ internship.companyName || 'N/A' }}</p>
+        </div>
+      </div>
+      
+      <!-- Supervisor -->
+      <div class="info-box">
+        <div class="info-box-icon"><i class="fas fa-user-tie"></i></div>
+        <div class="info-box-content">
+          <p class="info-label">Supervisor</p>
+          <p class="info-value">{{ internship.supervisorName }}</p>
+        </div>
+      </div>
+      
+      <!-- Level -->
+      <div class="info-box">
+        <div class="info-box-icon"><i class="fas fa-graduation-cap"></i></div>
+        <div class="info-box-content">
+          <p class="info-label">Study Level</p>
+          <p class="info-value">{{ internship.requiredStudyLevel }}</p>
+        </div>
+      </div>
+      
+      <!-- Remuneration -->
+      <div class="info-box">
+        <div class="info-box-icon"><i class="fas fa-money-bill-wave"></i></div>
+        <div class="info-box-content">
+          <p class="info-label">Remuneration</p>
+          <p class="info-value">{{ internship.remuneration || 'Unpaid / Experience' }}</p>
+        </div>
+      </div>
+      
+      <!-- Published -->
+      <div class="info-box">
+        <div class="info-box-icon"><i class="fas fa-paper-plane"></i></div>
+        <div class="info-box-content">
+          <p class="info-label">Published On</p>
+          <p class="info-value">{{ internship.publishDate | date: 'mediumDate' }}</p>
+        </div>
+      </div>
+      
+      <!-- Expiry -->
+      <div class="info-box">
+        <div class="info-box-icon"><i class="fas fa-hourglass-half"></i></div>
+        <div class="info-box-content">
+          <p class="info-label">Application Deadline</p>
+          <p class="info-value text-danger">{{ internship.expiryDate | date: 'mediumDate' }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Description -->
+    <h5 class="section-title"><i class="fas fa-info-circle"></i> About the Internship</h5>
+    <div class="content-block shadow-sm">
+      {{ internship.description }}
+    </div>
+
+    <!-- Skills -->
+    <h5 class="section-title"><i class="fas fa-bolt"></i> Required Skills</h5>
+    <div class="content-block shadow-sm" style="border-left-color: #fbbf24;">
+      <div class="d-flex flex-wrap gap-2">
+        <span class="badge bg-white text-dark border py-2 px-3 rounded-pill" *ngFor="let s of internship.requiredSkills.split(',')">
+          {{ s.trim() }}
+        </span>
+        <span *ngIf="!internship.requiredSkills">{{ internship.requiredSkills }}</span>
+      </div>
+    </div>
+
+    <!-- Feedback Message -->
+    <div *ngIf="applySuccessMessage" class="alert alert-success mt-4 rounded-4 shadow-sm px-4 py-3">
+      <i class="fas fa-check-circle me-3"></i>{{ applySuccessMessage }}
+    </div>
+
+    <!-- Apply Button -->
+    <div class="apply-btn-wrapper" *ngIf="canApply()">
+      <button type="button" class="btn apply-btn-lg" (click)="openApplyModal()">
+        <i class="fas fa-rocket me-2"></i> Apply for this position
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Application Modal -->
+<div *ngIf="showApplyModal" class="modal-backdrop-custom">
+  <div class="modal-dialog-custom">
+    <div class="modal-content shadow-2xl">
+      <div class="modal-header">
+        <h3 class="fw-800 mb-0">Join the Team</h3>
+        <button type="button" class="btn-close" (click)="closeApplyModal()"></button>
+      </div>
+      <div class="modal-body pt-0">
+        <p class="text-secondary mb-4 small">Submit your application for <strong>{{ internship?.title }}</strong></p>
+        
+        <div *ngIf="applyErrorMessage" class="alert alert-danger mb-4 rounded-4">
+          <i class="fas fa-exclamation-triangle me-2"></i>{{ applyErrorMessage }}
+        </div>
+
+        <div class="alert alert-info py-2 mb-4 d-flex align-items-center rounded-3">
+          <i class="fas fa-magic me-2 fs-5 text-primary"></i>
+          <span class="small fw-500">Tip: Upload your CV and click 'Parse Resume' to auto-fill your information.</span>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label fw-700 small text-uppercase ls-1">Resume (PDF or DOCX)</label>
+          <div class="d-flex gap-2">
+            <input type="file" accept=".pdf,.docx" class="form-control custom-control flex-grow-1" (change)="onCvFileSelected($event)"/>
+            <button type="button" class="btn btn-outline-primary fw-bold px-3 py-2 text-nowrap rounded-3 shadow-sm d-flex align-items-center" [disabled]="!selectedFile || parsingResume" (click)="parseResume()">
+              <span *ngIf="parsingResume" class="spinner-border spinner-border-sm me-2"></span>
+              <i *ngIf="!parsingResume" class="fas fa-wand-magic-sparkles me-2"></i>
+              {{ parsingResume ? 'Parsing...' : 'Parse Resume' }}
+            </button>
+          </div>
+          <div class="form-text mt-2 small text-muted">Maximum file size: 5MB for PDF or DOCX file</div>
+        </div>
+
+        <!-- Profile Information Fields (Always visible) -->
+        <div class="p-4 mb-4 rounded-4 bg-light border border-primary border-opacity-25 shadow-sm" style="background-color: rgba(var(--bs-primary-rgb), 0.03) !important;">
+          <h6 class="fw-bold mb-3 text-primary"><i class="fas fa-user-circle me-2"></i> Profile Information</h6>
+          
+          <div class="mb-3">
+            <label class="form-label fw-600 small text-secondary">Full Name</label>
+            <input type="text" class="form-control custom-control" [(ngModel)]="parsedData.name" placeholder="Will be auto-filled after parsing...">
+          </div>
+          
+          <div class="mb-3">
+            <label class="form-label fw-600 small text-secondary">Email Address</label>
+            <input type="email" class="form-control custom-control" [(ngModel)]="parsedData.email" placeholder="Will be auto-filled after parsing...">
+          </div>
+          
+          <div class="mb-3">
+            <label class="form-label fw-600 small text-secondary">Detected Skills</label>
+            <div class="d-flex flex-wrap gap-2 mt-1" *ngIf="parsedData.skills && parsedData.skills.length > 0">
+              <span class="badge bg-primary text-white rounded-pill px-3 py-2 fw-medium shadow-sm" *ngFor="let skill of parsedData.skills">{{ skill }}</span>
+            </div>
+            <div *ngIf="!parsedData.skills || parsedData.skills.length === 0" class="text-muted small fst-italic mt-1">
+              Skills will appear here after parsing...
+            </div>
+          </div>
+          
+          <div class="mb-2">
+            <label class="form-label fw-600 small text-secondary">Education</label>
+            <input type="text" class="form-control custom-control" [(ngModel)]="parsedData.education" placeholder="Will be auto-filled after parsing...">
+          </div>
+        </div>
+
+        <div *ngIf="uploadingCv" class="text-center py-2 mb-3">
+          <div class="spinner-border spinner-border-sm text-primary me-2"></div>
+          <span class="small fw-600">Securely uploading your CV...</span>
+        </div>
+
+        <div *ngIf="selectedCvInfo && !uploadingCv" class="alert alert-success d-flex align-items-center mb-4 rounded-4">
+          <i class="fas fa-file-check fs-4 me-3"></i>
+          <div>
+            <div class="fw-bold small">{{ selectedCvInfo }}</div>
+            <div class="smaller opacity-75">{{ selectedCvFileSize }}</div>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label fw-700 small text-uppercase ls-1">Why should we pick you?</label>
+          <textarea class="form-control custom-control" rows="5" 
+                    placeholder="Write a brief motivation letter..."
+                    [(ngModel)]="applicationForm.motivationLetter"></textarea>
+        </div>
+        
+        <div class="d-grid mt-5">
+          <button type="button" class="btn btn-primary py-3 rounded-pill fw-bold" 
+                  (click)="submitApplication()" [disabled]="applying || uploadingCv || !applicationForm.cvData">
+            <span *ngIf="applying" class="spinner-border spinner-border-sm me-2"></span>
+            {{ applying ? 'Sending your profile...' : 'Submit Application' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

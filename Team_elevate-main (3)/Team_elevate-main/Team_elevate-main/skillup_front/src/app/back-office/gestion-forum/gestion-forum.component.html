@@ -1,0 +1,139 @@
+<div class="management-view animate-fade">
+    <div class="pro-card">
+
+        <!-- HEADER -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h3 class="fw-bold m-0 text-dark">Forum Moderation</h3>
+                <p class="text-secondary small m-0" *ngIf="!selectedPostId">Manage posts and moderate comments.</p>
+                <p class="text-primary small m-0 fw-bold" *ngIf="selectedPostId">💬 Moderating: {{ comments.length }} comments</p>
+            </div>
+            <div class="d-flex gap-2">
+                <button *ngIf="!selectedPostId" class="btn-stats-toggle" (click)="showStats = !showStats">
+                    {{ showStats ? '📋 Hide Stats' : '📊 Show Stats' }}
+                </button>
+                <button *ngIf="selectedPostId" class="btn-back-pro" (click)="closeComments()">← Back to Posts</button>
+            </div>
+        </div>
+
+        <!-- ====== STATISTICS DASHBOARD ====== -->
+        <div *ngIf="showStats && !selectedPostId" class="stats-dashboard animate-fade">
+
+            <!-- ROW 1: Users + Categories -->
+            <div class="charts-row">
+
+                <!-- Most Active Users -->
+                <div class="chart-card">
+                    <div class="chart-title"><span>🏆</span> Most Active Users</div>
+                    <div class="bar-chart-h">
+                        <div *ngFor="let u of topUsers; let i = index" class="bar-h-row">
+                            <span class="bar-h-label">{{ u.username }}</span>
+                            <div class="bar-h-track">
+                                <div class="bar-h-fill bar-blue" [style.width.%]="u.pct">
+                                    <span class="bar-h-val">{{ u.postCount }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div *ngIf="topUsers.length === 0" class="chart-empty">No data yet</div>
+                    </div>
+                </div>
+
+                <!-- Categories with Posts -->
+                <div class="chart-card">
+                    <div class="chart-title"><span>🗂️</span> Most Active Categories</div>
+                    <div class="bar-chart-h">
+                        <div *ngFor="let c of topCategories; let i = index" class="bar-h-row">
+                            <span class="bar-h-label">{{ c.topic }}</span>
+                            <div class="bar-h-track">
+                                <div class="bar-h-fill bar-purple" [style.width.%]="c.pct">
+                                    <span class="bar-h-val">{{ c.postCount }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div *ngIf="topCategories.length === 0" class="chart-empty">No data yet</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ROW 2: Activity by Day + Hour -->
+            <div class="charts-row">
+
+                <!-- Most Active Days -->
+                <div class="chart-card">
+                    <div class="chart-title"><span>📅</span> Posts by Day of Week</div>
+                    <div class="bar-chart-v">
+                        <div *ngFor="let d of topDays" class="bar-v-col">
+                            <div class="bar-v-count">{{ d.postCount }}</div>
+                            <div class="bar-v-track">
+                                <div class="bar-v-fill bar-teal" [style.height.%]="d.pct || 2"></div>
+                            </div>
+                            <div class="bar-v-label">{{ d.day }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Most Active Hours -->
+                <div class="chart-card">
+                    <div class="chart-title"><span>🕐</span> Posts by Hour of Day</div>
+                    <div class="bar-chart-v">
+                        <div *ngFor="let h of topHours" class="bar-v-col">
+                            <div class="bar-v-count">{{ h.postCount }}</div>
+                            <div class="bar-v-track">
+                                <div class="bar-v-fill bar-orange" [style.height.%]="h.pct || 2"></div>
+                            </div>
+                            <div class="bar-v-label">{{ h.hour }}</div>
+                        </div>
+                        <div *ngIf="topHours.length === 0" class="chart-empty">No data yet</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- 1. POSTS TABLE -->
+        <table class="table custom-table" *ngIf="!selectedPostId">
+            <thead>
+                <tr>
+                    <th>Post Title</th>
+                    <th>Author</th>
+                    <th>Stats</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let post of allPosts">
+                    <td><strong>{{ post.title }}</strong></td>
+                    <td><span class="user-badge">{{ userNames[post.authorId] || 'Loading...' }}</span></td>
+                    <td><span class="badge-count">{{ post.comments?.length || 0 }} comments</span></td>
+                    <td>
+                        <button class="btn-view-pro me-2" (click)="viewComments(post.id)">Moderate</button>
+                        <button class="btn-delete-pro" (click)="deletePost(post.id)">Delete</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- 2. COMMENTS LIST -->
+        <div *ngIf="selectedPostId" class="comments-moderation-list animate-fade">
+            <div *ngIf="comments.length === 0" class="empty-state">
+                <div class="empty-icon">📭</div>
+                <p>This post has no comments yet.</p>
+            </div>
+            <div *ngFor="let c of comments" class="comment-mod-item">
+                <div class="c-avatar">{{ (userNames[c.authorId] || '?').charAt(0) }}</div>
+                <div class="c-content">
+                    <div class="c-header">
+                        <span class="c-author">{{ userNames[c.authorId] || 'Unknown' }}</span>
+                        <span class="c-date">Recently posted</span>
+                    </div>
+                    <div class="c-text">{{ c.content }}</div>
+                </div>
+                <div class="c-actions">
+                    <button class="btn-danger-outline" (click)="deleteComment(c.id)">Delete</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

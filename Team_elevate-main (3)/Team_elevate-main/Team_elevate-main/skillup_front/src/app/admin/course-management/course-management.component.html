@@ -1,0 +1,217 @@
+<!--<div class="container mt-4">
+  <h2>Gestion des Cours (Admin)</h2>
+
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <input type="text" class="form-control" placeholder="Rechercher par titre" [(ngModel)]="searchQuery" (keyup.enter)="search()">
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-primary" (click)="search()">Rechercher</button>
+    </div>
+  </div>
+
+  <div class="card mb-4">
+    <div class="card-header">
+      {{ isEditMode ? 'Modifier le cours' : 'Ajouter un nouveau cours' }}
+    </div>
+    <div class="card-body">
+      <form (ngSubmit)="submitForm()">
+        <div class="mb-3">
+          <label>Titre</label>
+          <input type="text" class="form-control" [(ngModel)]="courseForm.title" name="title" required>
+        </div>
+        <div class="mb-3">
+          <label>Description</label>
+          <textarea class="form-control" [(ngModel)]="courseForm.description" name="description"></textarea>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-4 mb-3">
+              <label>Prix</label>
+              <input type="number" class="form-control" [(ngModel)]="courseForm.price" name="price">
+            </div>
+            <div class="row">
+  <div class="col-md-4 mb-3">
+    <label>ID du Formateur (Trainer)</label>
+    <input type="number" class="form-control" [(ngModel)]="courseForm.trainerId" name="trainerId">
+  </div>
+  <div class="col-md-4 mb-3">
+    <label>ID de la Formation (optionnel)</label>
+    <input type="number" class="form-control" [(ngModel)]="courseForm.formationId" name="formationId">
+  </div>
+</div>
+            <div class="col-md-4 mb-3">
+              <label>Langue</label>
+              <input type="text" class="form-control" [(ngModel)]="courseForm.language" name="language">
+            </div>
+            <div class="col-md-4 mb-3">
+                <label>Durée (H)</label>
+                <input type="number" class="form-control" [(ngModel)]="courseForm.durationHours" name="durationHours">
+              </div>
+        </div>
+
+        <div class="mb-3">
+          <label>Type de Contenu</label>
+          <select class="form-control" [(ngModel)]="courseForm.contentType" name="contentType">
+            <option value="VIDEO">Lien Vidéo</option>
+            <option value="PDF">Fichier PDF</option>
+          </select>
+        </div>
+
+        <div class="mb-3" *ngIf="courseForm.contentType === 'VIDEO'">
+          <label>URL de la vidéo</label>
+          <input type="text" class="form-control" [(ngModel)]="courseForm.contentUrl" name="contentUrl">
+        </div>
+
+        <div class="mb-3" *ngIf="courseForm.contentType === 'PDF'">
+          <label>Fichier PDF</label>
+          <input type="file" accept=".pdf" class="form-control" (change)="onFileChange($event)">
+        </div>
+
+        <div class="mb-3">
+          <label>ID du cours Prérequis (Optionnel)</label>
+          <input type="number" class="form-control" [(ngModel)]="courseForm.prerequisiteId" name="prerequisiteId">
+        </div>
+
+        <button type="submit" class="btn btn-success">{{ isEditMode ? 'Mettre à jour' : 'Ajouter' }}</button>
+        <button type="button" class="btn btn-secondary ms-2" (click)="cancelEdit()">Annuler</button>
+      </form>
+    </div>
+  </div>
+
+  <table class="table table-bordered table-striped">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Titre</th>
+        <th>Type</th>
+        <th>Prix</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let c of courses">
+        <td>{{ c.id }}</td>
+        <td>{{ c.title }}</td>
+        <td>{{ c.contentType }}</td>
+        <td>{{ c.price }} dt</td>
+        <td>
+          <button class="btn btn-warning btn-sm me-2" (click)="editCourse(c)">Modifier</button>
+          <button class="btn btn-danger btn-sm" (click)="deleteCourse(c.id!)">Supprimer</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>-->
+<div class="course-management-container">
+  <div class="page-header">
+    <h1 class="page-title">📚 Gestion des Cours</h1>
+    <div class="search-wrapper">
+      <i class="search-icon">🔍</i>
+      <input type="text" placeholder="Rechercher un cours..." class="search-input" [(ngModel)]="searchQuery" (keyup.enter)="search()">
+    </div>
+  </div>
+
+  <!-- Formulaire ajout / modification -->
+  <div class="form-card">
+    <div class="form-card-header">
+      <h3>{{ isEditMode ? '✏️ Modifier le cours' : '➕ Ajouter un nouveau cours' }}</h3>
+    </div>
+    <div class="form-card-body">
+      <form (ngSubmit)="submitForm()">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Titre *</label>
+            <input type="text" class="form-control" [(ngModel)]="courseForm.title" name="title" required>
+          </div>
+          <div class="form-group">
+            <label>Catégorie</label>
+            <input type="text" class="form-control" [(ngModel)]="courseForm.category" name="category">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea class="form-control" rows="3" [(ngModel)]="courseForm.description" name="description"></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Niveau</label>
+            <select class="form-control" [(ngModel)]="courseForm.level" name="level">
+              <option value="Débutant">Débutant</option><option value="Intermédiaire">Intermédiaire</option><option value="Avancé">Avancé</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Durée (heures)</label>
+            <input type="number" class="form-control" [(ngModel)]="courseForm.durationHours" name="durationHours">
+          </div>
+          <div class="form-group">
+            <label>Langue</label>
+            <input type="text" class="form-control" [(ngModel)]="courseForm.language" name="language">
+          </div>
+          <div class="form-group">
+            <label>Prix (DT)</label>
+            <input type="number" class="form-control" [(ngModel)]="courseForm.price" name="price">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>ID Formateur</label>
+            <input type="number" class="form-control" [(ngModel)]="courseForm.trainerId" name="trainerId">
+          </div>
+          <div class="form-group">
+            <label>ID Formation (optionnel)</label>
+            <input type="number" class="form-control" [(ngModel)]="courseForm.formationId" name="formationId">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Type de contenu</label>
+            <select class="form-control" [(ngModel)]="courseForm.contentType" name="contentType">
+              <option value="VIDEO">Vidéo (URL)</option><option value="PDF">Fichier PDF</option>
+            </select>
+          </div>
+          <div class="form-group" *ngIf="courseForm.contentType === 'VIDEO'">
+            <label>URL Vidéo</label>
+            <input type="text" class="form-control" [(ngModel)]="courseForm.contentUrl" name="contentUrl">
+          </div>
+          <div class="form-group" *ngIf="courseForm.contentType === 'PDF'">
+            <label>Fichier PDF</label>
+            <input type="file" accept=".pdf" class="form-control" (change)="onFileChange($event)">
+          </div>
+          <div class="form-group">
+            <label>ID Cours Prérequis</label>
+            <input type="number" class="form-control" [(ngModel)]="courseForm.prerequisiteId" name="prerequisiteId">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">{{ isEditMode ? 'Mettre à jour' : 'Ajouter' }}</button>
+          <button type="button" class="btn btn-secondary" (click)="cancelEdit()">Annuler</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Liste des cours sous forme de cartes -->
+  <div class="courses-grid">
+    <div class="course-card" *ngFor="let c of courses">
+      <div class="course-card-header">
+        <h4>{{ c.title }}</h4>
+        <span class="content-type-badge" [class.video]="c.contentType === 'VIDEO'" [class.pdf]="c.contentType === 'PDF'">
+          {{ c.contentType === 'VIDEO' ? '🎬 Vidéo' : '📄 PDF' }}
+        </span>
+      </div>
+      <div class="course-card-body">
+        <p class="course-description">{{ c.description | slice:0:100 }}...</p>
+        <div class="course-meta">
+          <span><strong>💰</strong> {{ c.price }} DT</span>
+          <span><strong>⏱️</strong> {{ c.durationHours }} h</span>
+          <span><strong>🌐</strong> {{ c.language }}</span>
+        </div>
+      </div>
+      <div class="course-card-actions">
+        <button class="btn-icon edit" (click)="editCourse(c)">✏️ Modifier</button>
+        <button class="btn-icon delete" (click)="deleteCourse(c.id!)">🗑️ Supprimer</button>
+      </div>
+    </div>
+  </div>
+</div>

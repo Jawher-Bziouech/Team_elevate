@@ -1,0 +1,42 @@
+.avis-container {
+    margin-top: 20px;
+}
+
+.emoji-card {
+    cursor: pointer;
+    padding: 15px 25px;
+    border-radius: 12px;
+    transition: all 0.2s;
+    background-color: #f8f9fa;
+    text-align: center;
+    min-width: 100px;
+}
+
+.emoji-card:hover {
+    transform: scale(1.05);
+    background-color: #e9ecef;
+}
+
+.emoji {
+    font-size: 48px;
+    margin-bottom: 8px;
+}
+
+.emoji-option {
+    cursor: pointer;
+    padding: 8px 20px;
+    border-radius: 30px;
+    transition: all 0.2s;
+    background-color: #f0f0f0;
+    font-size: 16px;
+}
+
+.emoji-option:hover {
+    background-color: #e0e0e0;
+    transform: scale(1.02);
+}
+
+.emoji-option.active {
+    background-color: #007bff;
+    color: white;
+}

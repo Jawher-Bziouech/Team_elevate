@@ -1,0 +1,64 @@
+/* Émojis pour l'avis */
+.emoji-rating {
+    display: flex;
+    gap: 12px;
+}
+
+.emoji {
+    font-size: 28px;
+    cursor: pointer;
+    transition: transform 0.2s, opacity 0.2s;
+    opacity: 0.6;
+}
+
+.emoji:hover {
+    transform: scale(1.2);
+    opacity: 1;
+}
+
+/* Options dans le modal */
+.emoji-option {
+    cursor: pointer;
+    padding: 8px 20px;
+    border-radius: 30px;
+    transition: all 0.2s;
+    background-color: #f0f0f0;
+    font-size: 16px;
+}
+
+.emoji-option:hover {
+    background-color: #e0e0e0;
+    transform: scale(1.02);
+}
+
+.emoji-option.active {
+    background-color: #007bff;
+    color: white;
+}
+
+/* Avis déjà donné */
+.avis-deja-donne {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.emoji-result {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.commentaire-court {
+    font-size: 11px;
+    color: #666;
+    font-style: italic;
+    max-width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Table responsive */
+.table-responsive {
+    overflow-x: auto;
+}

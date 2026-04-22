@@ -1,0 +1,128 @@
+<div class="container animate-fade">
+  <mat-card class="search-card">
+    <mat-card-content>
+      <form [formGroup]="searchForm" (ngSubmit)="search()" class="premium-form">
+        <div class="search-fields">
+          <mat-form-field appearance="outline">
+            <mat-label>Company</mat-label>
+            <input matInput formControlName="company" placeholder="Filter by firm name">
+            <mat-icon matPrefix>business</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Industry</mat-label>
+            <input matInput formControlName="industry" placeholder="Filter by sector">
+            <mat-icon matPrefix>category</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Location</mat-label>
+            <input matInput formControlName="location" placeholder="City or Country">
+            <mat-icon matPrefix>place</mat-icon>
+          </mat-form-field>
+
+          <!-- Salary Range Slider -->
+          <div class="slider-container">
+            <mat-label>Salary Range</mat-label>
+            <mat-slider min="0" max="200000" step="1000" discrete range>
+              <input matSliderStartThumb formControlName="minSalary">
+              <input matSliderEndThumb formControlName="maxSalary">
+            </mat-slider>
+            <div class="slider-values" *ngIf="searchForm.get('minSalary')?.value || searchForm.get('maxSalary')?.value">
+              <span>Min: {{ searchForm.get('minSalary')?.value | currency }}</span>
+              <span>Max: {{ searchForm.get('maxSalary')?.value | currency }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="search-actions">
+          <button mat-button type="button" (click)="resetSearch()">
+            <mat-icon>restart_alt</mat-icon> Reset
+          </button>
+          <button mat-raised-button type="submit" color="primary" class="btn-search">
+            <mat-icon>search</mat-icon> Filter Listings
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Table with sorting and pagination -->
+  <div class="table-container mat-elevation-z8">
+    <table mat-table [dataSource]="dataSource" matSort>
+
+      <!-- Job Title Column -->
+      <ng-container matColumnDef="jobTitle">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Job Title </th>
+        <td mat-cell *matCellDef="let offer">
+          <strong>{{offer.jobTitle}}</strong>
+        </td>
+      </ng-container>
+
+      <!-- Company Column -->
+      <ng-container matColumnDef="company">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Company </th>
+        <td mat-cell *matCellDef="let offer">
+          <span class="company-tag">{{offer.firm?.nom}}</span>
+        </td>
+      </ng-container>
+
+      <!-- Industry Column -->
+      <ng-container matColumnDef="industry">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Industry </th>
+        <td mat-cell *matCellDef="let offer"> {{offer.industry}} </td>
+      </ng-container>
+
+      <!-- Location Column -->
+      <ng-container matColumnDef="location">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Location </th>
+        <td mat-cell *matCellDef="let offer">
+          <mat-icon
+            style="font-size: 16px; width: 16px; height: 16px; vertical-align: middle; margin-right: 4px; color: #64748b;">place</mat-icon>
+          {{offer.location}}
+        </td>
+      </ng-container>
+
+      <!-- Salary Range Column -->
+      <ng-container matColumnDef="salaryRange">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Salary Range </th>
+        <td mat-cell *matCellDef="let offer">
+          <span class="salary-box">{{offer.salaryRange}}</span>
+        </td>
+      </ng-container>
+
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef> Actions </th>
+        <td mat-cell *matCellDef="let offer">
+          <button mat-icon-button color="primary" (click)="onEdit(offer.opportunityId)" title="Edit">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="delete(offer.opportunityId)" title="Delete">
+            <mat-icon>delete_outline</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="premium-row"></tr>
+
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" colspan="6" style="text-align: center; padding: 40px !important;">
+          <div style="opacity: 0.5;">
+            <mat-icon style="font-size: 48px; width: 48px; height: 48px; margin-bottom: 10px;">search_off</mat-icon>
+            <p>No job offers found matching your filters.</p>
+          </div>
+        </td>
+      </tr>
+    </table>
+
+    <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" showFirstLastButtons></mat-paginator>
+  </div>
+
+  <div class="add-button">
+    <button mat-fab color="primary" (click)="onAddNew()" title="Create New Offer">
+      <mat-icon>add</mat-icon>
+    </button>
+  </div>
+</div>

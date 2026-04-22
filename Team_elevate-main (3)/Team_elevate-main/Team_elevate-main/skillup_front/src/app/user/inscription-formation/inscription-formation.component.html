@@ -1,0 +1,37 @@
+<div class="card">
+  <div class="card-header bg-primary text-white">
+    <h5>Inscription à la formation : {{ formation?.titre }}</h5>
+  </div>
+  
+  <div class="card-body">
+    <!-- Message succès -->
+    <div *ngIf="success" class="alert alert-success">
+      ✅ Inscription réussie ! Un email de confirmation vous a été envoyé.
+    </div>
+    
+    <!-- Message erreur -->
+    <div *ngIf="errorMessage" class="alert alert-danger">
+      ❌ {{ errorMessage }}
+    </div>
+    
+    <!-- Info utilisateur -->
+    <div *ngIf="isAuthenticated" class="alert alert-info">
+      <strong>Bonjour {{ currentUser?.prenom }} {{ currentUser?.nom }}</strong><br>
+      Email : {{ currentUser?.email }}<br>
+      Cliquez sur le bouton pour procéder au paiement et finaliser votre inscription.
+    </div>
+    
+    <div *ngIf="!isAuthenticated" class="alert alert-warning">
+      ⚠️ Veuillez vous connecter pour vous inscrire à cette formation.
+    </div>
+    
+    <!-- Bouton -->
+    <button *ngIf="isAuthenticated" 
+            class="btn btn-success btn-lg w-100" 
+            [disabled]="loading"
+            (click)="onSubmit()">
+      <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+      {{ loading ? 'Redirection...' : 'Je m\'inscris et je paie' }}
+    </button>
+  </div>
+</div>

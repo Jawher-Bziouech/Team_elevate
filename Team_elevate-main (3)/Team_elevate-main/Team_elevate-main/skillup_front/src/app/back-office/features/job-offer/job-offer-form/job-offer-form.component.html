@@ -1,0 +1,69 @@
+<div class="form-container animate-fade">
+  <mat-card class="premium-card">
+    <mat-card-header class="premium-header">
+      <div class="header-icon">{{ isEdit ? '✏️' : '🆕' }}</div>
+      <mat-card-title>{{ isEdit ? 'Edit Job Offer' : 'Create New Opportunity' }}</mat-card-title>
+      <mat-card-subtitle>Fill in the details below to publish this job</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content class="premium-content">
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <div class="form-grid">
+          <!-- Job Title -->
+          <mat-form-field appearance="outline" class="full-row">
+            <mat-label>Job Title</mat-label>
+            <input matInput formControlName="jobTitle" placeholder="e.g. Senior Angular Developer">
+            <mat-icon matPrefix>work_outline</mat-icon>
+            <mat-error *ngIf="form.get('jobTitle')?.hasError('required')">Required</mat-error>
+          </mat-form-field>
+
+          <!-- Firm -->
+          <mat-form-field appearance="outline">
+            <mat-label>Associated Firm</mat-label>
+            <select matNativeControl formControlName="firmId">
+              <option value="" disabled selected>Select a firm</option>
+              <option *ngFor="let firm of firms" [value]="firm.id">{{ firm.nom }}</option>
+            </select>
+            <mat-icon matPrefix>business</mat-icon>
+            <mat-error *ngIf="form.get('firmId')?.hasError('required')">Please select a firm</mat-error>
+          </mat-form-field>
+
+          <!-- Industry -->
+          <mat-form-field appearance="outline">
+            <mat-label>Industry / Sector</mat-label>
+            <input matInput formControlName="industry" placeholder="e.g. Technology">
+            <mat-icon matPrefix>category</mat-icon>
+            <mat-error *ngIf="form.get('industry')?.hasError('required')">Required</mat-error>
+          </mat-form-field>
+
+          <!-- Location -->
+          <mat-form-field appearance="outline">
+            <mat-label>Office Location</mat-label>
+            <input matInput formControlName="location" placeholder="e.g. Tunis, Tunisia">
+            <mat-icon matPrefix>place</mat-icon>
+            <mat-error *ngIf="form.get('location')?.hasError('required')">Required</mat-error>
+          </mat-form-field>
+
+          <!-- Salary -->
+          <mat-form-field appearance="outline">
+            <mat-label>Salary Range</mat-label>
+            <input matInput formControlName="salaryRange" placeholder="e.g. 50000-70000">
+            <mat-icon matPrefix>payments</mat-icon>
+            <mat-error *ngIf="form.get('salaryRange')?.hasError('required')">Required</mat-error>
+            <mat-error *ngIf="form.get('salaryRange')?.hasError('pattern')">Format: 50000-70000</mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-footer">
+          <button mat-button type="button" class="btn-cancel" (click)="onCancel()">
+            Cancel
+          </button>
+          <button mat-raised-button color="primary" type="submit" class="btn-submit" [disabled]="form.invalid">
+            <mat-icon>{{ isEdit ? 'save' : 'add' }}</mat-icon>
+            {{ isEdit ? 'Update Offer' : 'Publish Offer' }}
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

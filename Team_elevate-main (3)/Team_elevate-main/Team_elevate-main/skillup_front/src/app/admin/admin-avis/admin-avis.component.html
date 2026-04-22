@@ -1,0 +1,103 @@
+<div class="container-fluid mt-4">
+  <h2 class="mb-4">📝 Gestion des Avis</h2>
+
+  <!-- Filtres -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-4">
+          <label class="form-label">Filtrer par formation</label>
+          <select class="form-select" [(ngModel)]="formationFilter" (change)="filterByFormation()">
+            <option value="">Toutes les formations</option>
+            <option *ngFor="let f of formations" [value]="f.id">{{ f.titre }}</option>
+          </select>
+        </div>
+        <div class="col-md-4 d-flex align-items-end">
+          <button class="btn btn-primary" (click)="loadAllAvis()">
+            <i class="fas fa-sync-alt"></i> Actualiser
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Statistiques -->
+  <div class="row mb-4">
+    <div class="col-md-3">
+      <div class="card text-center bg-success text-white">
+        <div class="card-body">
+          <h2>{{ getStats('SATISFAIT') }}</h2>
+          <p>😊 Satisfaits</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-center bg-warning text-dark">
+        <div class="card-body">
+          <h2>{{ getStats('NEUTRE') }}</h2>
+          <p>😐 Neutres</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-center bg-danger text-white">
+        <div class="card-body">
+          <h2>{{ getStats('INSATISFAIT') }}</h2>
+          <p>☹️ Insatisfaits</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-center bg-info text-white">
+        <div class="card-body">
+          <h2>{{ avisList.length }}</h2>
+          <p>📊 Total avis</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Liste des avis -->
+  <div class="card">
+    <div class="card-header bg-dark text-white">
+      <h5 class="mb-0">Liste des avis</h5>
+    </div>
+    <div class="card-body">
+      <div *ngIf="loading" class="text-center py-5">
+        <div class="spinner-border text-primary"></div>
+        <p class="mt-2">Chargement...</p>
+      </div>
+
+      <div *ngIf="!loading && avisList.length === 0" class="alert alert-info text-center">
+        Aucun avis pour le moment
+      </div>
+
+      <table class="table table-striped" *ngIf="!loading && avisList.length > 0">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Utilisateur</th>
+            <th>Formation</th>
+            <th>Ressenti</th>
+            <th>Commentaire</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let avis of avisList">
+            <td>{{ avis.id }}</td>
+            <td>{{ avis.userEmail }}</td>
+            <td>{{ getFormationTitle(avis.formationId) }}</td>
+            <td>
+              <span class="badge" [ngClass]="getRessentiClass(avis.ressenti)">
+                {{ getRessentiIcon(avis.ressenti) }} {{ avis.ressenti }}
+              </span>
+            </td>
+            <td>{{ avis.commentaire || '-' }}</td>
+            <td>{{ avis.dateAvis | date:'dd/MM/yyyy HH:mm' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

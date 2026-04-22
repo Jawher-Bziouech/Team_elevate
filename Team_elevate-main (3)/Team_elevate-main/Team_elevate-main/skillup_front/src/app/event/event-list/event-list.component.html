@@ -1,0 +1,310 @@
+<div class="event-discovery">
+
+  <!-- HERO SECTION AVEC RECHERCHE -->
+  <div class="hero-section">
+    <div class="hero-content">
+      <h1>Découvrez les meilleurs événements</h1>
+      <p>Formations, conférences, workshops - Trouvez votre prochaine expérience d'apprentissage</p>
+
+      <div class="search-container">
+        <div class="search-box">
+          <span class="material-icons">search</span>
+          <input
+            type="text"
+            [(ngModel)]="searchTerm"
+            (input)="applyFilters()"
+            placeholder="Rechercher par titre, description, lieu..."
+            class="search-input">
+        </div>
+      </div>
+
+      <div class="stats-banner">
+        <div class="stat-item">
+          <span class="stat-value">{{ totalEvents }}</span>
+          <span class="stat-label">Événements</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">{{ availablePlaces }}</span>
+          <span class="stat-label">Places disponibles</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">{{ popularCategories.length }}</span>
+          <span class="stat-label">Catégories</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CATÉGORIES POPULAIRES -->
+  <div class="categories-section">
+    <h2>Catégories populaires</h2>
+    <div class="categories-grid">
+      <div *ngFor="let cat of popularCategories"
+           class="category-card"
+           [style.background]="cat.color"
+           (click)="toggleCategory(cat.name)"
+           [class.active]="selectedCategories.includes(cat.name)">
+        <span class="category-name">{{ cat.name }}</span>
+        <span class="category-count">{{ cat.count }} événements</span>
+        <span class="material-icons" *ngIf="selectedCategories.includes(cat.name)">check_circle</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- FILTRES AVANCÉS -->
+  <div class="filters-section">
+    <div class="filters-header">
+      <h2>Filtrer les événements</h2>
+      <button (click)="clearFilters()" class="clear-filters">
+        <span class="material-icons">refresh</span>
+        Effacer tous les filtres
+      </button>
+    </div>
+
+    <div class="filters-grid">
+      <!-- Filtre Type -->
+      <div class="filter-group">
+        <label>Type d'événement</label>
+        <div class="filter-options">
+          <button *ngFor="let type of types"
+                  (click)="toggleType(type)"
+                  [class.active]="selectedTypes.includes(type)"
+                  class="filter-chip">
+            {{ type }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Filtre Prix -->
+      <div class="filter-group">
+        <label>Budget (TND)</label>
+        <div class="price-range">
+          <input type="range"
+                 [(ngModel)]="priceRange[1]"
+                 (input)="applyFilters()"
+                 min="0" max="1000" step="50">
+          <div class="price-values">
+            <span>{{ priceRange[0] }} TND</span>
+            <span>{{ priceRange[1] }} TND</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filtre Date -->
+      <div class="filter-group">
+        <label>Date</label>
+        <select [(ngModel)]="selectedDate" (change)="applyFilters()" class="filter-select">
+          <option value="all">Toutes les dates</option>
+          <option value="today">Aujourd'hui</option>
+          <option value="week">Cette semaine</option>
+          <option value="month">Ce mois</option>
+        </select>
+      </div>
+
+      <!-- Filtre Lieu -->
+      <div class="filter-group">
+        <label>Lieu</label>
+        <select [(ngModel)]="selectedLocation" (change)="applyFilters()" class="filter-select">
+          <option value="">Tous les lieux</option>
+          <option *ngFor="let loc of locations" [value]="loc">{{ loc }}</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- FILTRES ACTIFS -->
+    <div class="active-filters" *ngIf="selectedCategories.length > 0 || selectedTypes.length > 0">
+      <span class="active-label">Filtres actifs:</span>
+      <div class="filter-tags">
+        <span *ngFor="let cat of selectedCategories" class="filter-tag" (click)="toggleCategory(cat)">
+          {{ cat }} <span class="material-icons">close</span>
+        </span>
+        <span *ngFor="let type of selectedTypes" class="filter-tag" (click)="toggleType(type)">
+          {{ type }} <span class="material-icons">close</span>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- VUE SWITCHER -->
+  <div class="view-switcher">
+    <button [class.active]="viewMode === 'grid'" (click)="viewMode = 'grid'">
+      <span class="material-icons">grid_view</span> Grille
+    </button>
+    <button [class.active]="viewMode === 'list'" (click)="viewMode = 'list'">
+      <span class="material-icons">list</span> Liste
+    </button>
+  </div>
+
+  <!-- LOADER -->
+  <div *ngIf="isLoading" class="loader-container">
+    <div class="loader"></div>
+  </div>
+
+  <!-- GRILLE DES ÉVÉNEMENTS -->
+  <div *ngIf="!isLoading" class="events-container">
+
+    <!-- Vue Grille -->
+    <div *ngIf="viewMode === 'grid'" class="events-grid">
+      <div *ngFor="let event of getPaginatedEvents()"
+           class="event-card"
+           (mouseenter)="hoveredEventId = event.eventId!"
+           (mouseleave)="hoveredEventId = null"
+           [class.hovered]="hoveredEventId === event.eventId">
+
+        <!-- Image de l'événement -->
+        <div class="event-image"
+             [style.background]="'linear-gradient(135deg, ' + getCategoryColor(event.category || event.type) + ', #8b5cf6)'">
+          <div class="event-badges">
+            <span class="event-type">{{ event.type }}</span>
+            <span class="event-status" [ngClass]="event.status?.toLowerCase()">{{ event.status }}</span>
+          </div>
+          <div class="event-date-badge">
+            <span class="day">{{ event.startDate | date:'dd' }}</span>
+            <span class="month">{{ event.startDate | date:'MMM' }}</span>
+          </div>
+        </div>
+
+        <!-- Contenu de la carte -->
+        <div class="event-content">
+          <div class="event-header">
+            <h3>{{ event.title }}</h3>
+            <div class="event-rating" *ngIf="event.rating">
+              <span class="material-icons">star</span>
+              <span>{{ event.rating }}</span>
+            </div>
+          </div>
+
+          <div class="event-location">
+            <span class="material-icons">location_on</span>
+            {{ event.location }}
+          </div>
+
+          <p class="event-description">{{ event.description | slice:0:100 }}...</p>
+
+          <div class="event-meta">
+            <div class="event-price">
+              <span class="price">{{ formatPrice(event.price) }}</span>
+              <span class="price-label">/ personne</span>
+            </div>
+
+            <div class="event-capacity" [class]="getAvailabilityClass(event)">
+              <div class="capacity-bar">
+                <div class="capacity-fill"
+                     [style.width.%]="((event.registeredCount || 0) / (event.capacity || 1) * 100)">
+                </div>
+              </div>
+              <span class="capacity-text">{{ getAvailabilityText(event) }}</span>
+            </div>
+          </div>
+
+          <div class="event-footer">
+            <div class="event-speaker" *ngIf="event.organizer">
+              <div class="speaker-avatar">
+                {{ event.organizer.name.charAt(0) || 'O' }}
+              </div>
+              <span class="speaker-name">{{ event.organizer.name }}</span>
+            </div>
+
+            <div class="event-actions">
+              <button class="action-btn quick-register"
+                      (click)="quickRegister(event)"
+                      [disabled]="(event.registeredCount || 0) >= (event.capacity || 0)">
+                <span class="material-icons">bolt</span>
+              </button>
+              <button class="action-btn view-details"
+                      (click)="viewEventDetails(event.eventId!)">
+                <span class="material-icons">arrow_forward</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Tags -->
+          <div class="event-tags" *ngIf="event.tags?.length">
+            <span *ngFor="let tag of event.tags?.slice(0,3)" class="tag">#{{ tag }}</span>
+          </div>
+        </div>
+
+        <!-- Overlay d'inscription rapide au survol -->
+        <div class="quick-overlay" *ngIf="hoveredEventId === event.eventId">
+          <button class="quick-register-btn" (click)="quickRegister(event)">
+            <span class="material-icons">how_to_reg</span>
+            Inscription rapide
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Vue Liste -->
+    <div *ngIf="viewMode === 'list'" class="events-list">
+      <div *ngFor="let event of getPaginatedEvents()" class="list-item">
+        <div class="list-item-image"
+             [style.background]="'linear-gradient(135deg, ' + getCategoryColor(event.category || event.type) + ', #8b5cf6)'">
+          <span class="list-date">{{ event.startDate | date:'dd MMM' }}</span>
+        </div>
+
+        <div class="list-item-content">
+          <div class="list-item-header">
+            <h3>{{ event.title }}</h3>
+            <span class="list-price">{{ formatPrice(event.price) }}</span>
+          </div>
+
+          <div class="list-item-meta">
+            <span><span class="material-icons">location_on</span> {{ event.location }}</span>
+            <span><span class="material-icons">people</span> {{ event.registeredCount || 0 }}/{{ event.capacity }}</span>
+            <span class="list-type">{{ event.type }}</span>
+          </div>
+        </div>
+
+        <button class="list-view-btn" (click)="viewEventDetails(event.eventId!)">
+          <span class="material-icons">arrow_forward</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- PAGINATION -->
+    <div class="pagination" *ngIf="filteredEvents.length > itemsPerPage">
+      <button [disabled]="currentPage === 1" (click)="currentPage = currentPage - 1">
+        <span class="material-icons">chevron_left</span>
+      </button>
+
+      <span class="page-info">
+        Page {{ currentPage }} sur {{ totalPages }}
+      </span>
+
+      <button [disabled]="currentPage === totalPages" (click)="currentPage = currentPage + 1">
+        <span class="material-icons">chevron_right</span>
+      </button>
+    </div>
+
+    <!-- ÉTAT VIDE -->
+    <div *ngIf="filteredEvents.length === 0" class="empty-state">
+      <span class="material-icons">event_busy</span>
+      <h3>Aucun événement trouvé</h3>
+      <p>Essayez de modifier vos filtres de recherche</p>
+      <button (click)="clearFilters()" class="reset-btn">
+        Réinitialiser les filtres
+      </button>
+    </div>
+  </div>
+
+  <!-- SECTION ÉVÉNEMENTS POPULAIRES -->
+  <div class="popular-section" *ngIf="popularEvents.length > 0">
+    <h2>Événements populaires</h2>
+    <div class="popular-grid">
+      <div *ngFor="let event of popularEvents.slice(0, 3)"
+           class="popular-card"
+           (click)="viewEventDetails(event.eventId!)">
+        <div class="popular-image" [style.background]="'linear-gradient(135deg, ' + getCategoryColor(event.category || event.type) + ', #8b5cf6)'">
+          <span class="popular-badge">
+            <span class="material-icons">trending_up</span>
+            {{ event.registeredCount || 0 }} inscrits
+          </span>
+        </div>
+        <div class="popular-content">
+          <h3>{{ event.title }}</h3>
+          <p>{{ event.location }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

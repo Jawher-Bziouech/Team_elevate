@@ -1,0 +1,10 @@
+.table td,
+.table th {
+  white-space: nowrap;
+}
+
+.text-bg-orange {
+  color: #fff;
+  background-color: #fd7e14;
+}
+

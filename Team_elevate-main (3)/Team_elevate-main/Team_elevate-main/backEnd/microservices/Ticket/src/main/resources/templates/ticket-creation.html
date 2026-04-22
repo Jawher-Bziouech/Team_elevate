@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Ticket créé</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+<div style="max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px;">
+    <h2 style="color: #667eea;">Ticket créé avec succès #<span th:text="${ticketId}"></span></h2>
+
+    <p>Bonjour <span th:text="${createdByName}"></span>,</p>
+    <p>Votre ticket a été créé avec succès.</p>
+
+    <div style="background: #f5f5f5; padding: 15px; border-radius: 5px; margin: 15px 0;">
+        <p><strong>Catégorie :</strong> <span th:text="${category}"></span></p>
+        <p><strong>Description :</strong></p>
+        <p th:text="${description}" style="background: white; padding: 10px; border-radius: 3px;"></p>
+        <p><strong>Date de création :</strong> <span th:text="${#dates.format(createdAt, 'dd/MM/yyyy HH:mm')}"></span></p>
+    </div>
+
+    <p>Vous recevrez un email dès qu'un administrateur répondra à votre ticket.</p>
+
+    <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+    <p style="color: #999; font-size: 12px;">Cordialement,<br>L'équipe de support</p>
+</div>
+</body>
+</html>

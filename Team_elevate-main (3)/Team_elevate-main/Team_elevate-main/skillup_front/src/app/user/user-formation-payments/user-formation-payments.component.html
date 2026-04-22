@@ -1,0 +1,274 @@
+﻿<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h2 class="mb-1">
+            <i class="fas fa-receipt text-primary me-3"></i>
+            Mes Paiements de Formations
+          </h2>
+          <p class="text-muted mb-0">Suivez vos paiements et inscriptions aux formations</p>
+        </div>
+        <button class="btn btn-outline-primary" (click)="loadFormationPayments()">
+          <i class="fas fa-sync-alt me-2"></i>Actualiser
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Enhanced Stats Cards -->
+  <div class="row mb-4">
+    <div class="col-md-3">
+      <div class="stats-card total-paid">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="stats-icon">
+              <i class="fas fa-dollar-sign"></i>
+            </div>
+            <div class="ms-3">
+              <h3 class="mb-0">{{ totalPaid | currency:'TND':'symbol':'1.0-0' }}</h3>
+              <small class="text-muted">Total Payés</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stats-card completed">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="stats-icon">
+              <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="ms-3">
+              <h3 class="mb-0">{{ completedPayments }}</h3>
+              <small class="text-muted">Paiements Reussis</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stats-card pending">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="stats-icon">
+              <i class="fas fa-clock"></i>
+            </div>
+            <div class="ms-3">
+              <h3 class="mb-0">{{ pendingPayments }}</h3>
+              <small class="text-muted">En Attente</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stats-card average">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="stats-icon">
+              <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="ms-3">
+              <h3 class="mb-0">{{ averagePaymentAmount | currency:'TND':'symbol':'1.0-0' }}</h3>
+              <small class="text-muted">Moyenne/Paiement</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent and Upcoming Payments -->
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">
+          <h6 class="mb-0">
+            <i class="fas fa-history text-primary me-2"></i>
+            Paiements RÃ©cents (30 derniers jours)
+          </h6>
+        </div>
+        <div class="card-body">
+          <div *ngIf="recentPayments.length === 0" class="text-center py-3">
+            <small class="text-muted">Aucun paiement recent</small>
+          </div>
+          <div *ngFor="let payment of recentPayments" class="d-flex justify-content-between align-items-center mb-2">
+            <div>
+              <small class="fw-bold">{{ payment.formationName }}</small>
+              <br>
+              <small class="text-muted">{{ payment.paymentDate | date:'dd/MM/yyyy' }}</small>
+            </div>
+            <span [class]="getStatusBadgeClass(payment.status)">
+              {{ payment.amount | currency:'TND':'symbol':'1.0-0' }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">
+          <h6 class="mb-0">
+            <i class="fas fa-calendar-alt text-warning me-2"></i>
+            Paiements en Attente
+          </h6>
+        </div>
+        <div class="card-body">
+          <div *ngIf="upcomingPayments.length === 0" class="text-center py-3">
+            <small class="text-muted">Aucun paiement en attente</small>
+          </div>
+          <div *ngFor="let payment of upcomingPayments" class="d-flex justify-content-between align-items-center mb-2">
+            <div>
+              <small class="fw-bold">{{ payment.formationName }}</small>
+              <br>
+              <small class="text-muted">{{ payment.paymentDate | date:'dd/MM/yyyy' }}</small>
+            </div>
+            <span class="badge bg-warning">
+              {{ payment.amount | currency:'TND':'symbol':'1.0-0' }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters and Search -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label fw-bold">Rechercher</label>
+          <div class="input-group">
+            <span class="input-group-text">
+              <i class="fas fa-search"></i>
+            </span>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Formation, rÃ©fÃ©rence, utilisateur..."
+              [(ngModel)]="searchTerm"
+              (input)="onSearchChange($event)">
+          </div>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-bold">Filtrer par statut</label>
+          <select class="form-select" [(ngModel)]="statusFilter" (change)="onStatusFilterChange($event)">
+            <option value="ALL">Tous les statuts</option>
+            <option value="COMPLETED">TerminÃ©s</option>
+            <option value="PENDING">En attente</option>
+            <option value="FAILED">Ã‰chouÃ©s</option>
+            <option value="REFUNDED">RemboursÃ©s</option>
+            <option value="CANCELLED">AnnulÃ©s</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Chargement...</span>
+    </div>
+    <p class="mt-2">Chargement de vos paiements...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error" class="alert alert-danger">
+    <i class="fas fa-exclamation-triangle me-2"></i>
+    {{ error }}
+  </div>
+
+  <!-- Payments List -->
+  <div *ngIf="!loading && !error" class="row">
+    <div class="col-12">
+      <div class="payments-container">
+        <div *ngIf="getFilteredPayments().length === 0" class="empty-state">
+          <i class="fas fa-receipt fa-3x text-muted mb-3"></i>
+          <h4>Aucun paiement trouvÃ©</h4>
+          <p class="text-muted">Aucun paiement ne correspond Ã  vos critÃ¨res de recherche.</p>
+        </div>
+
+        <div *ngFor="let payment of getFilteredPayments()" class="payment-card" [ngClass]="{'completed': payment.status === 'COMPLETED', 'pending': payment.status === 'PENDING', 'failed': payment.status === 'FAILED'}">
+          <div class="card">
+            <div class="card-header">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h5 class="mb-0">
+                    <i class="fas fa-graduation-cap text-primary me-2"></i>
+                    {{ payment.formationName }}
+                  </h5>
+                  <small class="text-muted">ID: {{ payment.formationId }}</small>
+                </div>
+                <div class="text-end">
+                  <span class="badge status-badge" [ngClass]="getStatusBadgeClass(payment.status)">
+                    <i [class]="getStatusIcon(payment.status) + ' me-1'"></i>
+                    {{ payment.status }}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="payment-detail">
+                    <i class="fas fa-calendar-alt text-muted me-2"></i>
+                    <strong>Date:</strong> {{ payment.paymentDate | date:'dd/MM/yyyy HH:mm' }}
+                  </div>
+                  <div class="payment-detail">
+                    <i [class]="getPaymentMethodIcon(payment.paymentMethod) + ' text-muted me-2'"></i>
+                    <strong>Methode:</strong> {{ getPaymentMethodLabel(payment.paymentMethod) }}
+                  </div>
+                  <div class="payment-detail" *ngIf="payment.paymentMethod === 'USER_CHOICE' && payment.status === 'PENDING'">
+                    <i class="fas fa-circle-info text-muted me-2"></i>
+                    <strong>Info:</strong> vous choisissez la methode quand vous payez cette demande.
+                  </div>
+                  <div class="payment-detail">
+                    <i class="fas fa-hashtag text-muted me-2"></i>
+                    <strong>RÃ©fÃ©rence:</strong> {{ payment.paymentReference }}
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="payment-detail">
+                    <i class="fas fa-tag text-muted me-2"></i>
+                    <strong>Montant:</strong>
+                    <span class="amount">{{ payment.amount | currency:'TND':'symbol':'1.0-0' }}</span>
+                  </div>
+                  <div class="payment-detail">
+                    <i class="fas fa-user text-muted me-2"></i>
+                    <strong>Utilisateur:</strong> {{ payment.userName }}
+                  </div>
+                  <div class="payment-detail">
+                    <i class="fas fa-envelope text-muted me-2"></i>
+                    <strong>Email:</strong> {{ payment.userEmail }}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer">
+              <div class="d-flex justify-content-between align-items-center">
+                <small class="text-muted">
+                  <i class="fas fa-info-circle me-1"></i>
+                  Cliquez pour voir les dÃ©tails
+                </small>
+                <div class="btn-group btn-group-sm">
+                  <button class="btn btn-outline-primary" (click)="viewPaymentDetails(payment)" title="Voir les dÃ©tails">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                  <button class="btn btn-outline-success" (click)="downloadReceipt(payment)" title="TÃ©lÃ©charger le reÃ§u" *ngIf="payment.status === 'COMPLETED'">
+                    <i class="fas fa-download"></i>
+                  </button>
+                  <button class="btn btn-outline-warning" (click)="contactSupport(payment)" title="Contacter le support">
+                    <i class="fas fa-headset"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

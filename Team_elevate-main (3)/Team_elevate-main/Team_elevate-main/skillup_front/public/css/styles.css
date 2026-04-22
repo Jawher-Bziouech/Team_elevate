@@ -1,0 +1,200 @@
+:root {
+    --primary-blue: #2563eb;
+    --primary-blue-hover: #1d4ed8;
+    --sidebar-bg: #1e3a8a;
+    --sidebar-bg-gradient-start: #1e3a8a;
+    --sidebar-bg-gradient-end: #172554;
+    --bg-color: #f3f4f6;
+    --text-dark: #1f2937;
+    --text-gray: #6b7280;
+    --white: #ffffff;
+    --card-border: #e5e7eb;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+body { 
+  display: flex; 
+  background-color: var(--bg-color); 
+  height: 100vh; 
+  width: 100vw;
+  margin: 0;
+}
+/* --- COMPONENT: SIDEBAR --- */
+.sidebar {
+    width: 260px;
+    background: linear-gradient(180deg, var(--sidebar-bg-gradient-start) 0%, var(--sidebar-bg-gradient-end) 100%);
+    color: var(--white);
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    flex-shrink: 0;
+}
+
+.logo { font-size: 24px; font-weight: 700; display: flex; align-items: center; gap: 10px; margin-bottom: 30px; }
+.logo-icon {
+    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+    width: 32px; height: 32px; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+}
+
+.user-profile-summary {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 20px; padding-bottom: 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.avatar-small { width: 40px; height: 40px; background-color: #94a3b8; border-radius: 50%; overflow: hidden; }
+.avatar-small img { width: 100%; height: 100%; object-fit: cover; }
+
+.nav-menu { list-style: none; display: flex; flex-direction: column; gap: 4px; overflow-y: auto; }
+.nav-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 16px; border-radius: 8px;
+    cursor: pointer; color: #bfdbfe;
+    transition: all 0.2s; font-weight: 500; font-size: 14px;
+    text-decoration: none; /* In case we use <a> tags */
+}
+.nav-item:hover { background-color: rgba(255, 255, 255, 0.1); color: var(--white); }
+.nav-item.active { background-color: rgba(255, 255, 255, 0.15); border-left: 3px solid #60a5fa; color: white; }
+.nav-item span { width: 20px; text-align: center; }
+
+
+/* --- COMPONENT: TOP BAR --- */
+.main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
+
+.top-bar {
+    height: 70px;
+    background: linear-gradient(90deg, #1e3a8a 0%, #2563eb 100%);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 30px; color: white; flex-shrink: 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.page-title { font-size: 18px; font-weight: 600; }
+.top-actions { display: flex; align-items: center; gap: 20px; }
+.icon-btn { background: none; border: none; color: white; cursor: pointer; position: relative; font-size: 18px; }
+.badge { position: absolute; top: -5px; right: -5px; background-color: #ef4444; color: white; font-size: 10px; width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+
+/* --- COMMON UTILITIES --- */
+.content-wrapper { padding: 30px; height: 100%; }
+.btn-primary { background-color: var(--primary-blue); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: background 0.2s; text-decoration: none; display: inline-block; }
+.btn-primary:hover { background-color: var(--primary-blue-hover); }
+
+/* --- COMPONENT: CARDS (Used in Catalog, Certs, Jobs) --- */
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; padding-bottom: 40px; }
+.card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid var(--card-border); transition: transform 0.2s; display: flex; flex-direction: column; }
+.card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+
+/* --- COMPONENT: FILTERS (Used in Catalog) --- */
+.filter-panel { width: 250px; flex-shrink: 0; }
+.filter-group { background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+.filter-title { font-size: 14px; font-weight: 600; margin-bottom: 15px; color: var(--text-dark); text-transform: uppercase; letter-spacing: 0.5px; }
+.checkbox-item { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; color: var(--text-gray); font-size: 14px; cursor: pointer; }
+.checkbox-item input { accent-color: var(--primary-blue); }
+
+/* --- COMPONENT: SEARCH BAR --- */
+.search-bar { width: 100%; background: white; padding: 15px 20px; border-radius: 12px; border: 1px solid #e5e7eb; font-size: 15px; margin-bottom: 25px; display: flex; align-items: center; gap: 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+.search-input { border: none; outline: none; width: 100%; font-size: 15px; }
+
+/* --- PAGE SPECIFIC: COURSE PLAYER --- */
+.video-wrapper { width: 100%; aspect-ratio: 16/9; background-color: #000; border-radius: 12px; overflow: hidden; position: relative; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); margin-bottom: 24px; display: flex; align-items: center; justify-content: center; }
+.play-overlay { width: 80px; height: 80px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); cursor: pointer; }
+
+/* --- PAGE SPECIFIC: FORUM --- */
+.forum-layout { display: grid; grid-template-columns: 1fr 300px; gap: 30px; max-width: 1200px; margin: 0 auto; width: 100%; }
+.post-card { background: white; border-radius: 8px; border: 1px solid var(--card-border); margin-bottom: 15px; display: flex; overflow: hidden; }
+
+/* --- PAGE SPECIFIC: ENROLLMENT --- */
+.course-banner { background-size: cover; background-position: center; border-radius: 12px; padding: 30px; color: white; margin-bottom: 24px; position: relative; }
+.badge-tag { background-color: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; display: inline-block; }
+
+/* --- PAGE SPECIFIC: QUIZ --- */
+.quiz-wrapper { padding: 40px; display:flex; justify-content:center; }
+.quiz-container { width: 100%; max-width: 800px; background: white; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); padding: 40px; }
+.option-item { display: flex; align-items: center; padding: 15px 20px; border: 2px solid #e2e8f0; border-radius: 10px; cursor: pointer; transition: all 0.2s; }
+.option-item.selected { border-color: var(--primary-blue); background-color: #eff6ff; }
+
+
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+    width: 100%;
+}
+.auth-card {
+    background: white;
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 400px;
+}
+
+.main-layout {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Reduce the overall width of each card */
+.card-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px;
+}
+
+/* Force the image area to be smaller and rectangular */
+.card-img-top {
+    height: 140px; /* This is the secret! */
+    overflow: hidden;
+    position: relative;
+    background-color: #cbd5e1;
+}
+
+.card-img-top img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* This makes sure the image fits nicely */
+}
+
+/* Make the text area more compact */
+.card-body {
+    padding: 15px;
+}
+
+.course-title {
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+
+/* Centering the Login/Signup Cards */
+.auth-container {
+    position: fixed; /* Takes over the whole screen */
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Beautiful Blue Gradient from your Sidebar colors */
+    background: linear-gradient(135deg, #1e3a8a 0%, #172554 100%);
+    z-index: 9999;
+}
+
+.auth-card {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    width: 100%;
+    max-width: 420px;
+}
+
+/* Make sure the text inside the card is readable */
+.auth-card .logo span {
+    color: var(--text-dark) !important;
+}

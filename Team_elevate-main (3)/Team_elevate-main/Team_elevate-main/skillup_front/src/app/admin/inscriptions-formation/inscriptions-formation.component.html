@@ -1,0 +1,36 @@
+<div class="container mt-3">
+  <h4 *ngIf="formation">Inscriptions pour {{formation.titre}}</h4>
+
+  <div *ngIf="loading" class="text-center my-3">
+    <div class="spinner-border spinner-border-sm text-primary"></div>
+  </div>
+
+  <div *ngIf="!loading && error" class="alert alert-danger">{{error}}</div>
+
+  <div *ngIf="!loading && inscriptions.length === 0" class="alert alert-info">
+    Aucune inscription
+  </div>
+
+  <table class="table table-sm table-striped" *ngIf="!loading && inscriptions.length > 0">
+    <thead>
+      <tr>
+        <th>Nom</th>
+        <th>Prénom</th>
+        <th>Email</th>
+        <th>Téléphone</th>
+        <th>Date</th>
+        <th>Statut</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let ins of inscriptions">
+        <td>{{ins.nom}}</td>
+        <td>{{ins.prenom}}</td>
+        <td>{{ins.email}}</td>
+        <td>{{ins.telephone}}</td>
+        <td>{{ins.dateInscription | date:'dd/MM/yyyy'}}</td>
+        <td><span [ngClass]="getStatutClass(ins.statut)">{{ins.statut}}</span></td>
+      </tr>
+    </tbody>
+  </table>
+</div>

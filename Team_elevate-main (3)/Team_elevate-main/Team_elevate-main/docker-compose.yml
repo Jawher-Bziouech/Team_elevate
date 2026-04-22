@@ -1,0 +1,379 @@
+version: '3.9'
+
+# SkillUp / Team Elevate — Full Stack Docker Compose
+# Atelier 2: Application multi-conteneurs
+#
+# Usage:
+#   ./build-and-push.sh        → compile JARs + build images + push to DockerHub
+#   docker compose up -d       → start all 16 containers
+#   docker compose ps          → verify all containers are Up
+#
+# Access points (local):
+#   Eureka      → http://localhost:8761
+#   API Gateway → http://localhost:9090
+#   Keycloak    → http://localhost:8099  (admin / admin)
+#   Frontend    → cd skillup_front && npm start → http://localhost:4200
+
+networks:
+  elevate-net:
+    driver: bridge
+
+volumes:
+  mysql_data:
+
+services:
+
+  # ─── Infrastructure ─────────────────────────────────────────────────────────
+
+  mysqldb:
+    image: mysql:8.0
+    container_name: db
+    restart: unless-stopped
+    environment:
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+      - MYSQL_ROOT_PASSWORD=
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - elevate-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "--silent"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  eureka:
+    build: ./backEnd/eureka
+    image: wassimhamouda/eureka:latest
+    container_name: eureka
+    restart: on-failure
+    ports:
+      - "8761:8761"
+    networks:
+      - elevate-net
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8761/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+
+  config-server:
+    build: ./backEnd/config-server
+    image: wassimhamouda/config-server:latest
+    container_name: configServer
+    restart: on-failure
+    ports:
+      - "8888:8888"
+    networks:
+      - elevate-net
+    depends_on:
+      eureka:
+        condition: service_healthy
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8888/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+
+  gateway:
+    build: ./backEnd/gateway
+    image: wassimhamouda/gateway:latest
+    container_name: gateway
+    restart: on-failure
+    ports:
+      - "9090:9090"
+    networks:
+      - elevate-net
+    depends_on:
+      eureka:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888
+      # Uncomment when Keycloak OAuth2 is enabled in gateway config:
+      # - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://localhost:8099/realms/team-elevate
+      # - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI=http://keycloak:8099/realms/team-elevate/protocol/openid-connect/certs
+
+  # ─── Microservices ──────────────────────────────────────────────────────────
+
+  user:
+    build: ./backEnd/microservices/user
+    image: wassimhamouda/user:latest
+    container_name: user
+    restart: on-failure
+    ports:
+      - "8024:8024"
+    networks:
+      - elevate-net
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+      eureka:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysqldb:3306/db_elevate_user?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=
+
+  quiz:
+    build: ./backEnd/microservices/Quiz
+    image: wassimhamouda/quiz:latest
+    container_name: quiz
+    restart: on-failure
+    ports:
+      - "8025:8025"
+    networks:
+      - elevate-net
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+      eureka:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysqldb:3306/db_elevate_quiz?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=
+
+  forum:
+    build: ./backEnd/microservices/forum
+    image: wassimhamouda/forum:latest
+    container_name: forum
+    restart: on-failure
+    ports:
+      - "8023:8023"
+    networks:
+      - elevate-net
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+      eureka:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysqldb:3306/db_elevate_forum?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=
+
+  course:
+    build: ./backEnd/microservices/Course
+    image: wassimhamouda/course:latest
+    container_name: course
+    restart: on-failure
+    ports:
+      - "8086:8086"
+    networks:
+      - elevate-net
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+      eureka:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysqldb:3306/db_elevate_course?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=
+
+  formation:
+    build: ./backEnd/microservices/Formation
+    image: wassimhamouda/formation:latest
+    container_name: formation
+    restart: on-failure
+    ports:
+      - "8084:8084"
+    networks:
+      - elevate-net
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+      eureka:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysqldb:3306/db_elevate_formation?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=
+
+  certificat:
+    build: ./backEnd/microservices/certificat
+    image: wassimhamouda/certificat:latest
+    container_name: certificat
+    restart: on-failure
+    ports:
+      - "8022:8022"
+    networks:
+      - elevate-net
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+      eureka:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysqldb:3306/db_elevate_certificat?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=
+
+  eventgestion:
+    build: ./backEnd/microservices/eventGestion
+    image: wassimhamouda/eventgestion:latest
+    container_name: eventgestion
+    restart: on-failure
+    ports:
+      - "8082:8082"
+    networks:
+      - elevate-net
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+      eureka:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysqldb:3306/db_elevate_event?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=
+
+  job-offer:
+    build: ./backEnd/microservices/job-offer
+    image: wassimhamouda/job-offer:latest
+    container_name: job-offer
+    restart: on-failure
+    ports:
+      - "8083:8083"
+    networks:
+      - elevate-net
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+      eureka:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysqldb:3306/db_elevate_job?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=
+
+  payment:
+    build: ./backEnd/microservices/Payment
+    image: wassimhamouda/payment:latest
+    container_name: payment
+    restart: on-failure
+    ports:
+      - "8075:8075"
+    networks:
+      - elevate-net
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+      eureka:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysqldb:3306/db_elevate_payment?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=
+
+  ticket:
+    build: ./backEnd/microservices/Ticket
+    image: wassimhamouda/ticket:latest
+    container_name: ticket
+    restart: on-failure
+    ports:
+      - "8000:8000"
+    networks:
+      - elevate-net
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+      eureka:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysqldb:3306/db_elevate_ticket?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=
+
+  internship-service:
+    build: ./backEnd/microservices/internship-service
+    image: wassimhamouda/internship-service:latest
+    container_name: internship-service
+    restart: on-failure
+    ports:
+      - "8087:8087"
+    networks:
+      - elevate-net
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+      eureka:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysqldb:3306/db_elevate_internship?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=
+
+  # ─── Keycloak (IAM) — Keycloak 26.3.1, port 8099 ───────────────────────────
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.3.1
+    container_name: keycloak
+    restart: always
+    command: start-dev --http-port=8099
+    environment:
+      - KC_BOOTSTRAP_ADMIN_USERNAME=admin
+      - KC_BOOTSTRAP_ADMIN_PASSWORD=admin
+      - KC_HOSTNAME_STRICT=false
+    ports:
+      - "8099:8099"
+    networks:
+      - elevate-net
+    volumes:
+      - ./data/keycloak:/opt/keycloak/data

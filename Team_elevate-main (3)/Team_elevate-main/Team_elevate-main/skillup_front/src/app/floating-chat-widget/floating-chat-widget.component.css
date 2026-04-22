@@ -1,0 +1,313 @@
+/* ═══════════════════════════════════════════════════
+   Floating Chat Widget — Trainee Messenger
+   ═══════════════════════════════════════════════════ */
+
+/* ── Launcher button ─────────────────────────────── */
+.fcw-launcher {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 2000;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0084ff 0%, #a445b2 100%);
+  color: #fff;
+  font-size: 1.6rem;
+  cursor: pointer;
+  box-shadow: 0 8px 32px rgba(0, 132, 255, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.fcw-launcher:hover {
+  transform: scale(1.1);
+  box-shadow: 0 8px 30px rgba(102,126,234,0.65);
+}
+
+/* ── Unread pill ─────────────────────────────────── */
+.fcw-badge {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  border: 2px solid #fff;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%,100% { transform: scale(1); }
+  50%      { transform: scale(1.2); }
+}
+
+.fcw-unread-pill {
+  background: #ef4444;
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  flex-shrink: 0;
+}
+
+/* ── Panel ───────────────────────────────────────── */
+.fcw-panel {
+  position: fixed;
+  bottom: 98px;
+  right: 28px;
+  z-index: 1999;
+  width: 330px;
+  max-height: 500px;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transform: scale(0.85) translateY(24px);
+  transform-origin: bottom right;
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), opacity 0.2s;
+}
+.fcw-panel--open {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* ── Header ──────────────────────────────────────── */
+.fcw-header {
+  background: linear-gradient(135deg, #0084ff 0%, #a445b2 100%);
+  color: #fff;
+  padding: 13px 16px;
+  font-weight: 600;
+  font-size: 0.92rem;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 6px;
+}
+
+.fcw-back {
+  background: none;
+  border: none;
+  color: #fff;
+  opacity: 0.85;
+  cursor: pointer;
+  font-size: 0.95rem;
+  padding: 0;
+  line-height: 1;
+}
+.fcw-back:hover { opacity: 1; }
+
+.fcw-conv-title { flex: 1; overflow: hidden; }
+.fcw-conv-company {
+  font-weight: 700;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.fcw-conv-offer {
+  font-size: 0.73rem;
+  opacity: 0.78;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Thread list ─────────────────────────────────── */
+.fcw-thread-list {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.fcw-thread-row {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 12px 14px;
+  cursor: pointer;
+  border-bottom: 1px solid #f1f3f5;
+  transition: background 0.15s;
+}
+.fcw-thread-row:hover { background: #f8f9ff; }
+.fcw-thread-row:last-child { border-bottom: none; }
+
+.fcw-thread-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea18, #764ba218);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #667eea;
+  font-size: 1.05rem;
+  flex-shrink: 0;
+}
+
+.fcw-thread-info { flex: 1; overflow: hidden; }
+.fcw-thread-company {
+  font-weight: 700;
+  font-size: 0.86rem;
+  color: #111827;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.fcw-thread-offer {
+  font-size: 0.74rem;
+  color: #6b7280;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.fcw-thread-last {
+  font-size: 0.73rem;
+  color: #9ca3af;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 1px;
+}
+
+/* ── Messages ────────────────────────────────────── */
+.fcw-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 12px;
+  background: #f9fafb;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Company name shown above their bubbles */
+.fcw-sender-label {
+  font-size: 0.67rem;
+  font-weight: 600;
+  color: #667eea;
+  margin-bottom: 2px;
+  margin-left: 2px;
+}
+
+.fcw-bubble-wrap { display: flex; }
+.fcw-bubble-wrap.mine     { justify-content: flex-end; }
+.fcw-bubble-wrap.theirs   { justify-content: flex-start; }
+
+.fcw-bubble {
+  max-width: 78%;
+  padding: 9px 13px;
+  border-radius: 16px;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  word-break: break-word;
+}
+.fcw-bubble-wrap.mine .fcw-bubble {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  border-bottom-right-radius: 4px;
+}
+.fcw-bubble-wrap.theirs .fcw-bubble {
+  background: #fff;
+  color: #111827;
+  border-bottom-left-radius: 4px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+.fcw-ts {
+  font-size: 0.63rem;
+  margin-top: 3px;
+  opacity: 0.6;
+  text-align: right;
+}
+
+/* ── Input row ───────────────────────────────────── */
+.fcw-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-top: 1px solid #e5e7eb;
+  background: #fff;
+  flex-shrink: 0;
+}
+
+.fcw-input {
+  flex: 1;
+  border: 1px solid #e5e7eb;
+  border-radius: 24px;
+  padding: 8px 14px;
+  font-size: 0.85rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.fcw-input:focus { border-color: #667eea; }
+
+.fcw-send {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: opacity 0.2s, transform 0.15s;
+}
+.fcw-send:disabled { opacity: 0.4; cursor: not-allowed; }
+.fcw-send:not(:disabled):hover { transform: scale(1.08); }
+
+/* ── Empty state ─────────────────────────────────── */
+.fcw-empty {
+  text-align: center;
+  color: #9ca3af;
+  font-size: 0.82rem;
+  padding: 28px 18px;
+  line-height: 1.8;
+}
+
+/* ── Close button in header ──────────────────────── */
+.fcw-close-btn {
+  background: transparent;
+  border: none;
+  color: white;
+  opacity: 0.7;
+  cursor: pointer;
+  padding: 5px;
+  margin-left: 10px;
+  transition: opacity 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fcw-close-btn:hover {
+  opacity: 1;
+}
+
+.fcw-close-btn i {
+  font-size: 1.1rem;
+}
+

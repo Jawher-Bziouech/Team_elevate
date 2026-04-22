@@ -1,0 +1,108 @@
+<!-- Only renders for trainees -->
+<ng-container *ngIf="isTrainee">
+
+  <!-- ── Launcher bubble ── -->
+  <button class="fcw-launcher" (click)="toggle()" id="floating-chat-launcher" title="Messages">
+    <i class="fab fa-facebook-messenger" *ngIf="!isOpen"></i>
+    <i class="fas fa-times" *ngIf="isOpen"></i>
+    <span class="fcw-badge" *ngIf="!isOpen && totalUnread > 0">{{ totalUnread }}</span>
+  </button>
+
+  <!-- ── Panel ── -->
+  <div class="fcw-panel" [class.fcw-panel--open]="isOpen">
+
+    <!-- ═══════════════════ THREAD LIST ═══════════════════ -->
+    <ng-container *ngIf="!activeThread">
+      <div class="fcw-header">
+        <i class="fas fa-inbox me-2"></i>
+        My Messages
+        <span class="fcw-unread-pill ms-auto" *ngIf="totalUnread > 0">{{ totalUnread }}</span>
+        <button class="fcw-close-btn" (click)="toggle()" title="Close">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <div class="fcw-thread-list">
+        <!-- Empty: company hasn't written yet -->
+        <div *ngIf="threads.length === 0" class="fcw-empty">
+          <i class="fas fa-comment-slash fa-2x d-block mb-3 opacity-25"></i>
+          No messages yet.<br>
+          <small>When a company that accepted your application sends you a message, it will appear here.</small>
+        </div>
+
+        <div *ngFor="let t of threads"
+             class="fcw-thread-row"
+             (click)="open(t)"
+             [id]="'thread-' + t.applicationId">
+          <div class="fcw-thread-avatar">
+            <i class="fas fa-building"></i>
+          </div>
+          <div class="fcw-thread-info">
+            <div class="fcw-thread-company">{{ t.companyName }}</div>
+            <div class="fcw-thread-offer">{{ t.offerTitle }}</div>
+            <div class="fcw-thread-last" *ngIf="t.messages.length">
+              <span *ngIf="isMine(t.messages[t.messages.length - 1])">You: </span>
+              {{ t.messages[t.messages.length - 1].content }}
+            </div>
+          </div>
+          <span class="fcw-unread-pill" *ngIf="t.unread > 0">{{ t.unread }}</span>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- ═══════════════════ CONVERSATION VIEW ═══════════════════ -->
+    <ng-container *ngIf="activeThread">
+      <div class="fcw-header">
+        <button class="fcw-back" (click)="back()" *ngIf="threads.length > 1" title="Back">
+          <i class="fas fa-arrow-left"></i>
+        </button>
+        <div class="fcw-conv-title ms-2">
+          <div class="fcw-conv-company">{{ activeThread.companyName }}</div>
+          <div class="fcw-conv-offer">{{ activeThread.offerTitle }}</div>
+        </div>
+        <button class="fcw-close-btn ms-auto" (click)="toggle()" title="Close">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <!-- Full conversation: messages from BOTH sides -->
+      <div class="fcw-messages" #widgetBody>
+
+        <div *ngIf="activeThread.messages.length === 0" class="fcw-empty">
+          <i class="fas fa-comments fa-2x d-block mb-2 opacity-25"></i>
+          No messages yet.
+        </div>
+
+        <div *ngFor="let msg of activeThread.messages"
+             class="fcw-bubble-wrap"
+             [ngClass]="isMine(msg) ? 'mine' : 'theirs'">
+
+          <!-- Sender label (shown above each bubble) -->
+          <div class="fcw-sender-label" *ngIf="!isMine(msg)">{{ activeThread.companyName }}</div>
+
+          <div class="fcw-bubble">
+            {{ msg.content }}
+            <div class="fcw-ts">{{ msg.timestamp | date:'HH:mm' }}</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Reply input -->
+      <div class="fcw-input-row">
+        <input
+          type="text"
+          class="fcw-input"
+          [(ngModel)]="newMessage"
+          placeholder="Reply to {{ activeThread.companyName }}..."
+          (keyup.enter)="send()"
+          id="trainee-reply-input"
+          autocomplete="off">
+        <button class="fcw-send" (click)="send()" [disabled]="!newMessage.trim()">
+          <i class="fas fa-paper-plane"></i>
+        </button>
+      </div>
+    </ng-container>
+
+  </div>
+</ng-container>

@@ -1,0 +1,92 @@
+<div class="internship-admin-container animate-fade">
+  <!-- 1. Stats Overview -->
+  <div class="admin-stats-grid mb-5" *ngIf="stats">
+    <div class="admin-stat-card">
+      <div class="stat-icon" style="background: #eef2ff; color: #4f46e5;">📋</div>
+      <div class="stat-details">
+        <div class="stat-value">{{ stats.totalInternships }}</div>
+        <div class="stat-label">Total Offers</div>
+      </div>
+    </div>
+    <div class="admin-stat-card">
+      <div class="stat-icon" style="background: #ecfdf5; color: #10b981;">📩</div>
+      <div class="stat-details">
+        <div class="stat-value">{{ stats.totalApplications }}</div>
+        <div class="stat-label">Total Applications</div>
+      </div>
+    </div>
+    <div class="admin-stat-card">
+      <div class="stat-icon" style="background: #fff7ed; color: #f97316;">⏳</div>
+      <div class="stat-details">
+        <div class="stat-value">{{ stats.pendingApprovals }}</div>
+        <div class="stat-label">Pending Apps</div>
+      </div>
+    </div>
+    <div class="admin-stat-card">
+      <div class="stat-icon" style="background: #fdf2f8; color: #db2777;">⭐</div>
+      <div class="stat-details">
+        <div class="stat-value">{{ stats.averageGrade | number:'1.1-1' }} / 20</div>
+        <div class="stat-label">Avg Evaluation</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Offers Table -->
+  <div class="admin-card">
+    <div class="card-header-flex">
+      <h3>Internship Offers Management</h3>
+      <button class="btn-refresh" (click)="loadAllOffers()" [class.spinning]="loading">
+        <i class="fas fa-sync-alt"></i> Refresh
+      </button>
+    </div>
+
+    <div class="table-responsive">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Company ID</th>
+            <th>Supervisor</th>
+            <th>Date Range</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let offer of offers" class="admin-row">
+            <td>#{{ offer.id }}</td>
+            <td>
+              <div class="offer-title">{{ offer.title }}</div>
+              <small class="text-muted">{{ offer.location }}</small>
+            </td>
+            <td><span class="badge-id">USER-{{ offer.companyUserId }}</span></td>
+            <td>{{ offer.supervisorName }}</td>
+            <td>
+              <div class="date-info">
+                {{ offer.startDate | date:'shortDate' }} - {{ offer.endDate | date:'shortDate' }}
+              </div>
+            </td>
+            <td>
+              <span class="status-badge" [class.active]="offer.active" [class.inactive]="!offer.active">
+                {{ offer.active ? 'Active' : 'Inactive' }}
+              </span>
+            </td>
+            <td class="actions-cell">
+              <button class="btn-icon toggle" (click)="toggleOfferStatus(offer)" 
+                      [title]="offer.active ? 'Deactivate' : 'Activate'">
+                <i class="fas" [ngClass]="offer.active ? 'fa-toggle-on' : 'fa-toggle-off'"></i>
+              </button>
+              <button class="btn-icon delete" (click)="deleteOffer(offer.id)" title="Delete Permanently">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="offers.length === 0 && !loading">
+            <td colspan="7" class="empty-state">No internship offers found in the system.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

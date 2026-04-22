@@ -1,0 +1,202 @@
+<div class="trainer-courses-container">
+  <!-- Vue catalogue -->
+  <div *ngIf="!activeCourse" class="catalog-view">
+    <div class="catalog-header">
+      <h1>Course Catalog</h1>
+      <div class="user-welcome">
+        <span>Welcome, {{ username }}</span>
+        <div class="avatar"></div>
+      </div>
+    </div>
+
+    <div class="topics-row">
+      <span class="topic">Programming</span>
+      <span class="topic">Management</span>
+      <span class="topic">Data Science</span>
+      <span class="topic">Design</span>
+      <span class="topic">Planning</span>
+      <span class="topic">Integration</span>
+    </div>
+
+    <div class="search-bar-wrapper">
+    <div class="search-bar">
+        <i class="search-icon">🔍</i>
+        <input type="text" 
+               placeholder="Search courses by keyword (e.g., python, management, design)..." 
+               [(ngModel)]="keywordSearchQuery"
+               (keyup.enter)="searchByKeyword()"
+               (input)="onKeywordSearchInput()">
+        <button class="btn-search" (click)="searchByKeyword()">Search</button>
+    </div>
+    <div *ngIf="isSearching" class="search-results-info">
+        {{ filteredCourses.length }} result(s) found for "{{ keywordSearchQuery }}"
+        <button *ngIf="keywordSearchQuery" class="clear-search" (click)="clearKeywordSearch()">✖ Clear</button>
+    </div>
+</div>
+
+    <div class="level-filters">
+      <button class="level-btn" [class.active]="selectedLevel === 'Beginner'" 
+              (click)="filterByLevel('Beginner')">Beginner</button>
+      <button class="level-btn" [class.active]="selectedLevel === 'Intermediate'" 
+              (click)="filterByLevel('Intermediate')">Intermediate</button>
+      <button class="level-btn" [class.active]="selectedLevel === 'Advanced'" 
+              (click)="filterByLevel('Advanced')">Advanced</button>
+    </div>
+
+    <div class="courses-grid">
+      <div class="course-card" *ngFor="let course of filteredCourses">
+        <!-- Image avec cœur -->
+       <!-- <div class="card-image">
+          <img src="assets/course-placeholder.jpg" alt="course">
+          <button class="favorite-btn" (click)="toggleFavorite(course, $event)">
+            <span class="heart" [class.filled]="isFavorite(course.id!)">❤️</span>
+          </button>
+        </div>-->
+        <div class="card-image" 
+     [style.backgroundImage]="'url(' + getVideoThumbnailUrl(course.contentUrl) + ')'"
+     [style.backgroundSize]="'cover'"
+     [style.backgroundPosition]="'center'">
+    <!-- Optional overlay or PDF badge -->
+    <div class="content-badge" *ngIf="course.contentType === 'PDF'">📄 PDF</div>
+    <button class="favorite-btn" (click)="toggleFavorite(course, $event)">
+        <span class="heart" [class.filled]="isFavorite(course.id!)">❤️</span>
+    </button>
+</div>
+        <div class="card-body">
+          <h3>{{ course.title }}</h3>
+          <p class="description">{{ course.description | slice:0:80 }}...</p>
+          <div class="meta">
+            <span class="level" [ngClass]="course.level?.toLowerCase()">{{ course.level }}</span>
+            <span class="duration">⏱️ {{ course.durationHours }}h</span>
+            <span class="rating">⭐ 4.8</span>
+          </div>
+          <button class="btn-details" (click)="openCourse(course)">View Details</button>
+        </div>
+      </div>
+    </div>
+<app-course-advanced-features></app-course-advanced-features>
+    <!-- Bouton flottant pour ouvrir la sidebar des favoris -->
+    <button class="btn-favorites-toggle" (click)="toggleFavoritesSidebar()">
+      ❤️ Mes favoris ({{ favoriteCourses.length }})
+    </button>
+
+    <!-- Sidebar des favoris -->
+    <div class="favorites-sidebar" *ngIf="showFavoritesSidebar">
+      <div class="sidebar-header">
+        <h3>Mes favoris</h3>
+        <button class="close-btn" (click)="toggleFavoritesSidebar()">✖</button>
+      </div>
+      <div class="sidebar-content">
+        <div *ngIf="favoriteCourses.length === 0" class="empty-state">
+          Aucun favori pour le moment.
+        </div>
+        <div *ngFor="let fav of favoriteCourses" class="favorite-item">
+          <span class="fav-title">{{ fav.title }}</span>
+          <button class="btn-open" (click)="openCourse(fav)">Ouvrir</button>
+          <button class="btn-remove" (click)="toggleFavorite(fav, $event)">🗑️</button>
+        </div>
+        <div class="info-note">
+          ⏳ Les favoris sont automatiquement supprimés après 28 jours.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Vue détail du cours (inchangée) -->
+  <div *ngIf="activeCourse" class="course-detail-view">
+    <div class="detail-header">
+      <button class="btn-back" (click)="closeCourse()">← Back</button>
+      <div class="user-info">
+        <span>Welcome, {{ username }}</span>
+        <div class="avatar">JD</div>
+      </div>
+    </div>
+
+    <div class="course-content-layout">
+      <!-- Sidebar gauche -->
+      <div class="course-sidebar">
+        <h3>Course Content</h3>
+        <div class="progress-summary">
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="completionPercentage"></div>
+          </div>
+          <span>{{ completionPercentage }}% Completed</span>
+          <span>{{ completedLessonsCount }}/{{ totalLessonsCount }} Lessons</span>
+        </div>
+
+        <div class="lessons-list">
+          <!-- Prérequis -->
+          <div *ngIf="prerequisiteCourse" class="lesson-item prerequisite">
+            <div class="lesson-icon">🔒</div>
+            <div class="lesson-info">
+              <span class="lesson-title">Prerequisite: {{ prerequisiteCourse.title }}</span>
+              <span class="lesson-status" [class.completed]="isPrerequisiteCompleted">
+                {{ isPrerequisiteCompleted ? '✓ Completed' : 'Not completed' }}
+              </span>
+            </div>
+            <button *ngIf="!isPrerequisiteCompleted" class="btn-goto" 
+                    (click)="switchToCourse(prerequisiteCourse)">Go to</button>
+          </div>
+
+          <!-- Cours actuel -->
+          <div class="lesson-item current">
+            <div class="lesson-icon">🎬</div>
+            <div class="lesson-info">
+              <span class="lesson-title">{{ activeCourse.title }}</span>
+              <span class="lesson-status">In progress</span>
+            </div>
+            <button class="btn-goto active">Now</button>
+          </div>
+
+          <!-- Cours suivants -->
+          <div *ngFor="let nextCourse of nextCourses" class="lesson-item next">
+            <div class="lesson-icon">🔓</div>
+            <div class="lesson-info">
+              <span class="lesson-title">{{ nextCourse.title }}</span>
+              <span class="lesson-status" [class.locked]="!isCurrentCourseCompleted">
+                {{ isCurrentCourseCompleted ? 'Available' : 'Locked' }}
+              </span>
+            </div>
+            <button *ngIf="isCurrentCourseCompleted" class="btn-goto" 
+                    (click)="switchToCourse(nextCourse)">Go to</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Zone principale du contenu -->
+    <!--  <div class="course-main">
+        <h2>{{ activeCourse.title }}</h2>
+        <div class="content-wrapper">
+          <div *ngIf="activeCourse.contentType === 'VIDEO'" class="video-container">
+            <iframe [src]="sanitizeUrl(activeCourse.contentUrl)" frameborder="0" 
+                    allowfullscreen class="video-iframe"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture">
+            </iframe>
+          </div>
+          <div *ngIf="activeCourse.contentType === 'PDF'" class="pdf-container">
+            <iframe [src]="sanitizeUrl(activeCourse.contentUrl)" class="pdf-iframe"></iframe>
+            <a [href]="'http://localhost:9090' + activeCourse.contentUrl" target="_blank" 
+               class="btn-pdf-link">📄 Open PDF fullscreen</a>
+          </div>
+        </div>
+      </div>-->
+      <!-- Inside the "course-main" div, where the content is displayed -->
+<div class="course-main">
+  <h2>{{ activeCourse.title }}</h2>
+  <div class="content-wrapper">
+    <!-- VIDEO CONTENT (YouTube) -->
+    <div *ngIf="activeCourse.contentType === 'VIDEO'" class="video-container">
+      <div id="youtube-player"></div>
+    </div>
+
+    <!-- PDF CONTENT (unchanged) -->
+    <div *ngIf="activeCourse.contentType === 'PDF'" class="pdf-container">
+      <iframe [src]="sanitizeUrl(activeCourse.contentUrl)" class="pdf-iframe"></iframe>
+      <a [href]="'http://localhost:9090' + activeCourse.contentUrl" target="_blank"
+         class="btn-pdf-link">📄 Open PDF fullscreen</a>
+    </div>
+  </div>
+</div>
+    </div>
+  </div>
+</div>

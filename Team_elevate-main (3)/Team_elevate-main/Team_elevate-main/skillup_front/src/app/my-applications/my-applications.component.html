@@ -1,0 +1,53 @@
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0">My Applications</h2>
+    <button class="btn btn-outline-secondary btn-sm" (click)="loadMyApplications()" [disabled]="loading">
+      Refresh
+    </button>
+  </div>
+
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && errorMessage" class="alert alert-danger">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="!loading && !errorMessage" class="table-responsive shadow-sm border rounded-3">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Internship Title</th>
+          <th>Company Name</th>
+          <th>Application Date</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let application of applications">
+          <td>{{ application.internshipTitle || '-' }}</td>
+          <td>{{ application.companyName || '-' }}</td>
+          <td>{{ application.applicationDate | date : 'medium' }}</td>
+          <td>
+            <span class="badge" [ngClass]="getStatusClass(application.status)">
+              {{ application.status }}
+            </span>
+          </td>
+          <td>
+            <button *ngIf="application.status === 'ACCEPTED' || application.status === 'ACCEPTED_BY_COMPANY'"
+              class="btn btn-sm btn-success" (click)="downloadCertificate()">
+              Download Certificate
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="applications.length === 0">
+          <td colspan="5" class="text-center text-muted py-4">No applications found.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="config-server" />
+        <module name="Ticket" />
+        <module name="Payment" />
+        <module name="Certificat" />
+        <module name="entreprise" />
+        <module name="eureka" />
+        <module name="eventGestion" />
+        <module name="Course" />
+        <module name="Formation" />
+        <module name="job-offer" />
+        <module name="internship-service" />
+        <module name="gateway" />
+      </profile>
+      <profile name="Annotation profile for backEnd-aggregator" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.32/lombok-1.18.32.jar" />
+        </processorPath>
+        <module name="forum" />
+        <module name="user" />
+        <module name="Quiz" />
+      </profile>
+    </annotationProcessing>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="Certificat" options="-parameters" />
+      <module name="Course" options="-parameters" />
+      <module name="Formation" options="-parameters" />
+      <module name="Payment" options="-parameters" />
+      <module name="Quiz" options="-parameters" />
+      <module name="Ticket" options="-parameters" />
+      <module name="config-server" options="-parameters" />
+      <module name="entreprise" options="-parameters" />
+      <module name="eureka" options="-parameters" />
+      <module name="eventGestion" options="-parameters" />
+      <module name="forum" options="-parameters" />
+      <module name="gateway" options="-parameters" />
+      <module name="internship-service" options="-parameters" />
+      <module name="job-offer" options="-parameters" />
+      <module name="user" options="-parameters" />
+    </option>
+  </component>
+</project>

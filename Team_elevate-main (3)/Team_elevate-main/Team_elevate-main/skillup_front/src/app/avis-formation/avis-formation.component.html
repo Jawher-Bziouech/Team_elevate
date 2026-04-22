@@ -1,0 +1,108 @@
+<!-- Si formation terminée ET pas encore d'avis -->
+<div *ngIf="formationTerminee && !aDejaDonneAvis" class="avis-container">
+  <div class="card border-primary">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">📝 Donnez votre avis sur cette formation</h5>
+    </div>
+    <div class="card-body text-center">
+      <p class="mb-3">Comment avez-vous trouvé cette formation ?</p>
+      <div class="d-flex justify-content-center gap-4">
+        <div class="emoji-card" (click)="ouvrirModalAvis('SATISFAIT')">
+          <div class="emoji">😊</div>
+          <span>Satisfait</span>
+        </div>
+        <div class="emoji-card" (click)="ouvrirModalAvis('NEUTRE')">
+          <div class="emoji">😐</div>
+          <span>Neutre</span>
+        </div>
+        <div class="emoji-card" (click)="ouvrirModalAvis('INSATISFAIT')">
+          <div class="emoji">☹️</div>
+          <span>Insatisfait</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Si avis déjà donné -->
+<div *ngIf="aDejaDonneAvis" class="alert alert-success">
+  <i class="fas fa-check-circle me-2"></i>
+  <strong>Merci pour votre avis !</strong>
+  <p class="mt-2 mb-0" *ngIf="monAvis">
+    <small>Vous avez donné : 
+      <span *ngIf="monAvis.ressenti === 'SATISFAIT'">😊 Satisfait</span>
+      <span *ngIf="monAvis.ressenti === 'NEUTRE'">😐 Neutre</span>
+      <span *ngIf="monAvis.ressenti === 'INSATISFAIT'">☹️ Insatisfait</span>
+    </small>
+  </p>
+  <p class="mb-0" *ngIf="monAvis?.commentaire">
+    <small><em>"{{ monAvis.commentaire }}"</em></small>
+  </p>
+</div>
+
+<!-- Si formation non terminée -->
+<div *ngIf="!formationTerminee" class="alert alert-secondary">
+  <i class="fas fa-clock me-2"></i>
+  Vous pourrez donner votre avis à la fin de la formation.
+</div>
+
+<!-- MODAL POUR L'AVIS -->
+<div class="modal fade" id="avisModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header" [ngClass]="{
+        'bg-success': ressentiSelectionne === 'SATISFAIT',
+        'bg-warning': ressentiSelectionne === 'NEUTRE',
+        'bg-danger': ressentiSelectionne === 'INSATISFAIT'
+      }">
+        <h5 class="modal-title text-white">
+          <span *ngIf="ressentiSelectionne === 'SATISFAIT'">😊</span>
+          <span *ngIf="ressentiSelectionne === 'NEUTRE'">😐</span>
+          <span *ngIf="ressentiSelectionne === 'INSATISFAIT'">☹️</span>
+          Donnez votre avis
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label fw-bold">Votre ressenti :</label>
+          <div class="d-flex gap-3">
+            <span class="emoji-option" [class.active]="ressentiSelectionne === 'SATISFAIT'"
+                  (click)="ressentiSelectionne = 'SATISFAIT'">
+              😊 Satisfait
+            </span>
+            <span class="emoji-option" [class.active]="ressentiSelectionne === 'NEUTRE'"
+                  (click)="ressentiSelectionne = 'NEUTRE'">
+              😐 Neutre
+            </span>
+            <span class="emoji-option" [class.active]="ressentiSelectionne === 'INSATISFAIT'"
+                  (click)="ressentiSelectionne = 'INSATISFAIT'">
+              ☹️ Insatisfait
+            </span>
+          </div>
+        </div>
+        
+        <div class="mb-3">
+          <label class="form-label">Votre commentaire <span class="text-muted">(optionnel)</span></label>
+          <textarea class="form-control" 
+                    rows="4" 
+                    [(ngModel)]="commentaire"
+                    placeholder="Partagez votre expérience..."></textarea>
+          <small class="text-muted">{{ commentaire.length }} / 500 caractères</small>
+        </div>
+        
+        <div class="alert alert-info" *ngIf="ressentiSelectionne === 'INSATISFAIT'">
+          <i class="fas fa-info-circle"></i>
+          Nous sommes désolés que votre expérience n'ait pas été à la hauteur.<br>
+          Votre commentaire nous aidera à nous améliorer.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+        <button type="button" class="btn btn-primary" (click)="envoyerAvis()">
+          <i class="fas fa-paper-plane"></i> Envoyer mon avis
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

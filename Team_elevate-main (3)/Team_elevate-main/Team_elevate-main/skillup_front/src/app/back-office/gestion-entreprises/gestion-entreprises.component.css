@@ -1,0 +1,72 @@
+/* CONTAINER & CARD */
+.pro-card { background: white; padding: 40px; border-radius: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+
+/* STATS BAR */
+.stats-bar { display: flex; gap: 16px; flex-wrap: wrap; }
+.stat-item { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 16px 24px; display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 100px; }
+.stat-count { font-size: 24px; font-weight: 800; color: #1e293b; }
+.stat-label { font-size: 12px; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; }
+.stat-approved { color: #10b981; }
+.stat-pending { color: #f59e0b; }
+.stat-rejected { color: #ef4444; }
+
+/* CUSTOM TABLE */
+.custom-table { width: 100%; border-collapse: separate; border-spacing: 0 12px; }
+.custom-table thead th { border: none; color: #94a3b8; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; padding: 10px 20px; }
+.custom-table tbody tr { background: #f8fafc; border-radius: 16px; transition: 0.3s; }
+.custom-table tbody tr:hover { background: #f1f5f9; transform: scale(1.005); }
+.custom-table td { padding: 20px; border: none; vertical-align: middle; }
+.custom-table td:first-child { border-top-left-radius: 16px; border-bottom-left-radius: 16px; }
+.custom-table td:last-child { border-top-right-radius: 16px; border-bottom-right-radius: 16px; }
+
+/* COMPANY CELL */
+.company-cell { display: flex; align-items: center; gap: 12px; }
+.cell-avatar { width: 40px; height: 40px; background: #2563eb; color: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; flex-shrink: 0; }
+
+/* STATUS BADGES */
+.status-badge { padding: 5px 14px; border-radius: 8px; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+.status-approved { background: #d1fae5; color: #065f46; }
+.status-pending { background: #fef3c7; color: #92400e; }
+.status-rejected { background: #fee2e2; color: #991b1b; }
+
+/* TAILLE BADGES */
+.taille-badge { padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 11px; background: #f1f5f9; color: #475569; }
+.taille-startup { background: #d1fae5; color: #065f46; }
+.taille-pme { background: #dbeafe; color: #1e40af; }
+.taille-grande { background: #f3e8ff; color: #6b21a8; }
+
+/* BUTTONS */
+.btn-add { background: #2563eb; color: white; border: none; padding: 12px 24px; border-radius: 12px; font-weight: 700; font-size: 14px; cursor: pointer; transition: 0.2s; }
+.btn-add:hover { background: #1e3a8a; box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
+.btn-view-pro { background: #2563eb; color: white; border: none; padding: 8px 16px; border-radius: 10px; font-weight: 700; font-size: 11px; transition: 0.2s; cursor: pointer; }
+.btn-view-pro:hover { background: #1e3a8a; }
+.btn-delete-pro { background: #fee2e2; color: #ef4444; border: none; padding: 8px 16px; border-radius: 10px; font-weight: 700; font-size: 11px; cursor: pointer; }
+.btn-delete-pro:hover { background: #ef4444; color: white; }
+.btn-edit { background: #f1f5f9; color: #1e293b; border: none; padding: 8px 16px; border-radius: 10px; font-weight: 700; font-size: 11px; cursor: pointer; transition: 0.2s; }
+.btn-edit:hover { background: #e2e8f0; }
+
+.action-buttons { display: flex; gap: 6px; flex-wrap: wrap; }
+
+/* MODAL */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 1000; animation: fadeIn 0.3s ease-out; }
+.modal-content { background: white; border-radius: 24px; padding: 40px; max-width: 600px; width: 90%; max-height: 85vh; overflow-y: auto; position: relative; animation: slideInUp 0.4s ease-out; }
+.modal-close { position: absolute; top: 16px; right: 16px; background: #f1f5f9; border: none; width: 36px; height: 36px; border-radius: 50%; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.modal-close:hover { background: #e2e8f0; }
+.modal-title { font-size: 22px; font-weight: 800; color: #1e293b; margin-bottom: 24px; }
+
+/* FORM */
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; font-size: 13px; font-weight: 700; color: #64748b; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+.form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px 16px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 14px; outline: none; transition: border-color 0.2s; font-family: inherit; }
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; }
+.btn-cancel { padding: 12px 24px; background: #f1f5f9; color: #1e293b; border: none; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; }
+.btn-cancel:hover { background: #e2e8f0; }
+.btn-save { padding: 12px 24px; background: #2563eb; color: white; border: none; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; }
+.btn-save:hover { background: #1e3a8a; }
+
+/* ANIMATIONS */
+.animate-fade { animation: fadeIn 0.4s ease-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }

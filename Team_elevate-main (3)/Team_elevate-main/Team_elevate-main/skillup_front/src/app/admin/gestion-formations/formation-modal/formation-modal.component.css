@@ -1,0 +1,104 @@
+.upload-area {
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8f9fa;
+}
+
+.upload-area:hover {
+  border-color: #007bff;
+  background-color: #e9ecef;
+}
+
+.upload-area.has-image {
+  border-style: solid;
+  border-color: #28a745;
+  background-color: #f8f9fa;
+  padding: 10px;
+}
+
+.upload-placeholder {
+  color: #6c757d;
+}
+
+.upload-placeholder i {
+  margin-bottom: 10px;
+  color: #007bff;
+}
+
+.upload-placeholder p {
+  margin: 10px 0 5px;
+  font-weight: 500;
+}
+
+.image-preview-container {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+}
+
+.image-preview {
+  max-width: 250px;
+  max-height: 150px;
+  border-radius: 6px;
+  object-fit: cover;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.btn-remove-image {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: #dc3545;
+  color: white;
+  border: 2px solid white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: all 0.2s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.btn-remove-image:hover {
+  background-color: #c82333;
+  transform: scale(1.1);
+}
+
+.btn-remove-image i {
+  font-size: 12px;
+}
+
+.text-danger {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+/* Animation pour l'upload */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+.upload-area.has-image {
+  animation: pulse 0.3s ease;
+}
+
+/* Style pour le drag & drop actif */
+.upload-area.dragover {
+  border-color: #28a745;
+  background-color: #d4edda;
+}

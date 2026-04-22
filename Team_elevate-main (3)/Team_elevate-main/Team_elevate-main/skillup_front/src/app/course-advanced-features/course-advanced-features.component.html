@@ -1,0 +1,50 @@
+<div class="advanced-features">
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card mb-4">
+        <div class="card-header">🔥 Top 5 popular course</div>
+        <div class="card-body">
+          <ul class="list-group">
+  <li *ngFor="let course of popularCourses" class="list-group-item">
+    {{ course.title }} - {{ course.viewsCount }} vues
+    <button class="btn btn-sm btn-outline-primary float-end" (click)="openCourse(course)">Voir</button>
+  </li>
+</ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card mb-4">
+        <div class="card-header">🎯 Recommandés pour vous </div>
+        <div class="card-body">
+          <ul class="list-group">
+            <li *ngFor="let course of recommendedCourses" class="list-group-item">
+              {{ course.title }} ({{ course.category }})
+              <button class="btn btn-sm btn-outline-primary float-end" (click)="openCourse(course)">Voir</button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    
+
+    <div class="col-md-6">
+      <div class="card mb-4">
+        <div class="card-header">🧠 Matching </div>
+        <div class="card-body">
+          <button class="btn btn-success" (click)="loadMatching()">Trouver des cours adaptés à mes compétences</button>
+          <ul class="list-group mt-3">
+            <li *ngFor="let course of matchedCourses" class="list-group-item">
+              {{ course.title }}
+              <button class="btn btn-sm btn-outline-primary float-end" (click)="openCourse(course)">Voir</button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

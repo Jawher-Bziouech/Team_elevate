@@ -1,0 +1,136 @@
+<div class="internships-container">
+  <!-- Header & Filters -->
+  <div class="filter-wrapper mb-5 animate-fade-in">
+    <div class="row g-3 align-items-end">
+      <div class="col-12 col-xl-5">
+        <h1 class="page-title mb-3">Discovery Portal</h1>
+        <div class="search-box">
+          <i class="fas fa-search"></i>
+          <input type="text" class="form-control" placeholder="Search internships, companies, or keywords..." 
+                 [(ngModel)]="searchTerm" (ngModelChange)="applyFilter()">
+        </div>
+      </div>
+      
+      <div class="col-6 col-md-3 col-xl-2">
+        <label class="filter-label">Level</label>
+        <select class="form-select filter-select" [(ngModel)]="selectedLevel" (change)="applyFilter()">
+          <option value="">All Levels</option>
+          <option *ngFor="let level of levels" [value]="level">{{level}}</option>
+        </select>
+      </div>
+
+      <div class="col-6 col-md-3 col-xl-2">
+        <label class="filter-label">Location</label>
+        <select class="form-select filter-select" [(ngModel)]="selectedLocation" (change)="applyFilter()">
+          <option value="">All Locations</option>
+          <option *ngFor="let loc of locations" [value]="loc">{{loc}}</option>
+        </select>
+      </div>
+
+      <div class="col-12 col-md-6 col-xl-3 d-flex gap-2 justify-content-md-end">
+        <button class="btn btn-reset w-100" (click)="resetFilters()">
+          <i class="fas fa-undo me-2"></i>Reset
+        </button>
+        <button class="btn btn-primary-custom w-100" (click)="loadInternships()">
+          <i class="fas fa-sync-alt me-2"></i>Refresh
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Skeletons -->
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" *ngIf="loading">
+    <div class="col" *ngFor="let i of [1,2,3,4,5,6]">
+      <div class="skeleton-card">
+        <div class="skeleton-header"></div>
+        <div class="skeleton-line" style="width: 80%;"></div>
+        <div class="skeleton-line" style="width: 60%;"></div>
+        <div class="skeleton-line" style="width: 70%;"></div>
+        <div class="skeleton-footer"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="errorMessage && !loading" class="error-banner animate-fade-in">
+    <div class="d-flex align-items-center">
+      <i class="fas fa-exclamation-triangle fs-3 me-3"></i>
+      <div>
+        <h5 class="mb-0 fw-bold">Connection Error</h5>
+        <p class="mb-0 opacity-75">{{ errorMessage }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Grid Results -->
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" *ngIf="!loading && filteredInternships.length > 0">
+    <div class="col animate-card" *ngFor="let internship of filteredInternships; let i = index" [style.animation-delay]="i * 0.05 + 's'">
+      <div class="card h-100 modern-card border-0">
+        <div class="card-header-custom">
+          <div class="d-flex flex-column gap-1">
+            <h3 class="card-title">{{ internship.title }}</h3>
+            <div *ngIf="getApplicationStatus(internship.id) as status" [class]="getStatusBadgeClass(status)">
+              <i class="fas fa-check-circle me-1"></i>Applied: {{ status | titlecase }}
+            </div>
+          </div>
+          <span class="status-badge" [class.active]="internship.active">
+            {{ internship.active ? 'OPEN' : 'CLOSED' }}
+          </span>
+        </div>
+        
+        <div class="card-body-custom">
+          <div class="detail-row">
+            <div class="detail-icon"><i class="fas fa-building"></i></div>
+            <div class="detail-text">
+              <span class="detail-label">Company</span>
+              <span class="detail-value">{{ internship.companyName }}</span>
+            </div>
+          </div>
+
+          <div class="detail-row">
+            <div class="detail-icon"><i class="fas fa-map-marker-alt"></i></div>
+            <div class="detail-text">
+              <span class="detail-label">Location</span>
+              <span class="detail-value text-truncate">{{ internship.location }}</span>
+            </div>
+          </div>
+
+          <div class="detail-row">
+            <div class="detail-icon"><i class="fas fa-graduation-cap"></i></div>
+            <div class="detail-text">
+              <span class="detail-label">Level</span>
+              <span class="detail-value">{{ internship.requiredStudyLevel }}</span>
+            </div>
+          </div>
+
+          <div class="detail-row">
+            <div class="detail-icon"><i class="far fa-clock"></i></div>
+            <div class="detail-text">
+              <span class="detail-label">Duration</span>
+              <span class="detail-value">{{ internship.startDate | date:'MMM yyyy' }} - {{ internship.endDate | date:'MMM yyyy' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-footer-custom px-4 pb-4 bg-transparent border-0 d-flex gap-2">
+          <button class="btn btn-details flex-grow-1" (click)="openDetails(internship.id)">
+            View Details
+          </button>
+          <button class="btn btn-apply flex-grow-1" (click)="applyForInternship(internship.id)" [disabled]="!internship.active">
+            Apply Now <i class="fas fa-paper-plane ms-1"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && filteredInternships.length === 0" class="empty-state-wrapper animate-fade-in shadow-sm">
+    <div class="empty-circle">
+      <i class="fas fa-search"></i>
+    </div>
+    <h2 class="fw-bold">No internships found</h2>
+    <p class="text-secondary max-w-400 mx-auto">We couldn't find any opportunities matching your request. Try adjusting your search keywords or filters.</p>
+    <button class="btn btn-outline-primary px-4 mt-3" (click)="resetFilters()">Clear Filters</button>
+  </div>
+</div>
