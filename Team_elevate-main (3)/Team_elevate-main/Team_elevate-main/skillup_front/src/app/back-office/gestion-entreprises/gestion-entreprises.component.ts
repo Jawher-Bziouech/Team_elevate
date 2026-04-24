@@ -91,6 +91,6 @@ export class GestionEntreprisesComponent implements OnInit {
   }
 
   private emptyForm(): Entreprise {
-    return { nom: '', secteur: '', description: '', adresse: '', email: '', telephone: '', siteWeb: '', taille: '', dateCreation: '' };
+    return { nom: '', secteur: '', description: '', adresse: '', email: '', telephone: '', siteWeb: '', taille: '' };
   }
 }

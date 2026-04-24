@@ -46,6 +46,9 @@ import { CourseManagementComponent } from './admin/course-management/course-mana
 import { TrainerCoursesComponent } from './user/trainer-courses/trainer-courses.component';
 import { FormationPaymentComponent } from './user/formation-payment/formation-payment.component';
 import { UserFormationPaymentsComponent } from './user/user-formation-payments/user-formation-payments.component';
+import { GestionEntreprisesComponent } from './back-office/gestion-entreprises/gestion-entreprises.component';
+import { EntreprisesComponent } from './entreprises/entreprises.component';
+import { CheckoutComponent } from './checkout/checkout.component';
 
 const routes: Routes = [
   // 🔓 PUBLIC ROUTES (No guards needed)
@@ -70,6 +73,8 @@ const routes: Routes = [
   { path: 'analytics', component: AnalyticsDashboardComponent, canActivate: [AuthGuard] },
   { path: 'badge', component: BadgeSimpleComponent, canActivate: [AuthGuard] },
   
+  { path: 'entreprises', component: EntreprisesComponent, canActivate: [AuthGuard] },
+  { path: 'checkout', component: CheckoutComponent, canActivate: [AuthGuard] },
   { path: 'job-offers', component: JobOffersComponent, canActivate: [AuthGuard] },
   { path: 'payments', component: PaymentListComponent, canActivate: [AuthGuard] },
   { path: 'payments/new', component: PaymentFormComponent, canActivate: [AuthGuard] },
@@ -99,6 +104,7 @@ const routes: Routes = [
       {path: 'payments', component: PaymentListComponent },
       { path: 'avis', component: AdminAvisComponent },
       { path: 'courses', component: CourseManagementComponent },
+      { path: 'entreprises', component: GestionEntreprisesComponent },
       { path: '', redirectTo: 'formations', pathMatch: 'full' }
     ]
   }

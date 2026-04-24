@@ -1,4 +1,12 @@
-FROM eclipse-temurin:17
+FROM maven:3.9-eclipse-temurin-17 AS builder
+WORKDIR /app
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
+COPY src ./src
+RUN mvn clean package -DskipTests -B
+
+FROM eclipse-temurin:17-jre-alpine
+WORKDIR /app
 EXPOSE 8086
-ADD target/Course-0.0.1-SNAPSHOT.jar course.jar
-ENTRYPOINT ["java", "-jar", "course.jar"]
+COPY --from=builder /app/target/Course-0.0.1-SNAPSHOT.jar app.jar
+ENTRYPOINT ["java", "-jar", "app.jar"]

@@ -63,7 +63,7 @@
       <ng-container matColumnDef="company">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Company </th>
         <td mat-cell *matCellDef="let offer">
-          <span class="company-tag">{{offer.firm?.nom}}</span>
+          <span class="company-tag">{{offer.entrepriseNom || offer.firm?.nom}}</span>
         </td>
       </ng-container>
 

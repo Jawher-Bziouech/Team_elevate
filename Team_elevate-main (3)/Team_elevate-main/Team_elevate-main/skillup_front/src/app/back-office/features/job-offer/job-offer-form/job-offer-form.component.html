@@ -17,15 +17,15 @@
             <mat-error *ngIf="form.get('jobTitle')?.hasError('required')">Required</mat-error>
           </mat-form-field>
 
-          <!-- Firm -->
+          <!-- Company -->
           <mat-form-field appearance="outline">
-            <mat-label>Associated Firm</mat-label>
-            <select matNativeControl formControlName="firmId">
-              <option value="" disabled selected>Select a firm</option>
-              <option *ngFor="let firm of firms" [value]="firm.id">{{ firm.nom }}</option>
-            </select>
+            <mat-label>Associated Company</mat-label>
+            <mat-select formControlName="entrepriseId">
+              <mat-option [value]="null" disabled>Select a company</mat-option>
+              <mat-option *ngFor="let e of entreprises" [value]="e.id">{{ e.nom }}</mat-option>
+            </mat-select>
             <mat-icon matPrefix>business</mat-icon>
-            <mat-error *ngIf="form.get('firmId')?.hasError('required')">Please select a firm</mat-error>
+            <mat-error *ngIf="form.get('entrepriseId')?.hasError('required')">Please select a company</mat-error>
           </mat-form-field>
 
           <!-- Industry -->

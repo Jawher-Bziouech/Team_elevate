@@ -18,4 +18,5 @@ public class PaymentResponseDTO {
     private String status; // PENDING, COMPLETED, FAILED
     private String paymentMethod;
     private LocalDateTime paymentDate;
+    private String stripePaymentIntentId;
 }

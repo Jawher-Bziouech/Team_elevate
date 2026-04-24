@@ -15,7 +15,7 @@ export interface JobOffer {
     industry: string;
     location: string;
     salaryRange: string;
-    firm: FirmDto;
+    firm?: FirmDto;
     // Cross-service Entreprise MS reference
     entrepriseId?: number;
     entrepriseNom?: string;
@@ -26,8 +26,7 @@ export interface JobOffer {
 
 export interface JobOfferRequest {
     jobTitle: string;
-    firmId: number;
-    entrepriseId?: number;
+    entrepriseId: number;
     industry: string;
     location: string;
     salaryRange: string;

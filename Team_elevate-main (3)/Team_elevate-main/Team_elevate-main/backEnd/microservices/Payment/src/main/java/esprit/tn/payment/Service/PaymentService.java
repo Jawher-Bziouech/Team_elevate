@@ -307,6 +307,7 @@ public class PaymentService {
         dto.setStatus(payment.getStatus());
         dto.setPaymentMethod(payment.getPaymentMethod());
         dto.setPaymentDate(payment.getPaymentDate());
+        dto.setStripePaymentIntentId(payment.getStripePaymentIntentId());
         return dto;
     }
 }

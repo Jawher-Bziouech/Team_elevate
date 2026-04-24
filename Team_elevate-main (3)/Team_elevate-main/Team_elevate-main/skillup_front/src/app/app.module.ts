@@ -11,6 +11,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { MetricsInterceptor } from './monitoring/metrics.interceptor';
 
 // Composants
 import { SignupComponent } from './signup/signup.component';
@@ -69,6 +70,8 @@ import { TrainerCoursesComponent } from './user/trainer-courses/trainer-courses.
 import { CourseAdvancedFeaturesComponent } from './course-advanced-features/course-advanced-features.component';
 import { UserFormationPaymentsComponent } from './user/user-formation-payments/user-formation-payments.component';
 import { GestionEntreprisesComponent } from './back-office/gestion-entreprises/gestion-entreprises.component';
+import { EntreprisesComponent } from './entreprises/entreprises.component';
+import { CheckoutComponent } from './checkout/checkout.component';
 import { InternshipService } from './services/internship.service';
 import { InternshipListComponent } from './internship-list/internship-list.component';
 import { InternshipDetailComponent } from './internship-detail/internship-detail.component';
@@ -124,7 +127,9 @@ import { InternshipAdminComponent } from './admin/gestion-internships/internship
     TrainerCoursesComponent,
 
     CourseAdvancedFeaturesComponent,
-    GestionEntreprisesComponent, 
+    GestionEntreprisesComponent,
+    EntreprisesComponent,
+    CheckoutComponent,
     InternshipListComponent,
     InternshipDetailComponent,
     MyApplicationsComponent,
@@ -159,7 +164,8 @@ import { InternshipAdminComponent } from './admin/gestion-internships/internship
   providers: [
     ChatbotService,
     InternshipService,
-    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: MetricsInterceptor, multi: true }
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
   bootstrap: [AppComponent]

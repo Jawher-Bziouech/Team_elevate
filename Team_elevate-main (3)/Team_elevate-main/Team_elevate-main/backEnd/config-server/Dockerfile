@@ -1,5 +1,12 @@
-FROM eclipse-temurin:17
-EXPOSE 8080
-ADD target/config-server-0.0.1-SNAPSHOT.jar config-server.jar
+FROM maven:3.9-eclipse-temurin-17 AS builder
+WORKDIR /app
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
+COPY src ./src
+RUN mvn clean package -DskipTests -B
 
-ENTRYPOINT ["java", "-jar","config-server.jar"]
+FROM eclipse-temurin:17-jre-alpine
+WORKDIR /app
+EXPOSE 8888
+COPY --from=builder /app/target/config-server-0.0.1-SNAPSHOT.jar app.jar
+ENTRYPOINT ["java", "-jar", "app.jar"]

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { JobOfferService } from '../back-office/features/job-offer/job-offer.service';
 import { JobOffer } from '../models/job-offer.model';
 
@@ -13,6 +14,10 @@ export class JobOffersComponent implements OnInit {
   filteredOffers: JobOffer[] = [];
   displayedOffers: JobOffer[] = [];
   private latestIds: number[] = [];
+
+  // Entreprise filter (from query param when navigating from a company card)
+  filterEntrepriseId: number | null = null;
+  filterEntrepriseName: string | null = null;
 
   // Application modal
   applyingForOffer: JobOffer | null = null;
@@ -39,10 +44,47 @@ export class JobOffersComponent implements OnInit {
     { value: 'company_desc', label: 'Company Z → A' }
   ];
 
-  constructor(private jobOfferService: JobOfferService) { }
+  constructor(
+    private jobOfferService: JobOfferService,
+    private route: ActivatedRoute,
+    private router: Router
+  ) { }
 
   ngOnInit(): void {
-    this.loadJobOffers();
+    this.route.queryParams.subscribe(params => {
+      const id = params['entrepriseId'];
+      if (id) {
+        this.filterEntrepriseId = Number(id);
+        this.loadJobOffersForEntreprise(this.filterEntrepriseId);
+      } else {
+        this.filterEntrepriseId = null;
+        this.filterEntrepriseName = null;
+        this.loadJobOffers();
+      }
+    });
+  }
+
+  loadJobOffersForEntreprise(id: number): void {
+    this.loading = true;
+    this.jobOfferService.getByEntreprise(id).subscribe({
+      next: (offers) => {
+        this.jobOffers = offers || [];
+        if (this.jobOffers.length > 0 && this.jobOffers[0].entrepriseNom) {
+          this.filterEntrepriseName = this.jobOffers[0].entrepriseNom;
+        }
+        this.extractLatestIds();
+        this.extractFilters();
+        this.applyFilters();
+        this.loading = false;
+      },
+      error: () => { this.loading = false; }
+    });
+  }
+
+  clearEntrepriseFilter(): void {
+    this.filterEntrepriseId = null;
+    this.filterEntrepriseName = null;
+    this.router.navigate(['/job-offers']);
   }
 
   loadJobOffers(): void {
@@ -77,7 +119,7 @@ export class JobOffersComponent implements OnInit {
       const q = this.searchTerm.toLowerCase();
       filtered = filtered.filter(offer =>
         (offer.jobTitle || '').toLowerCase().includes(q) ||
-        (offer.firm?.nom || '').toLowerCase().includes(q)
+        (offer.entrepriseNom || offer.firm?.nom || '').toLowerCase().includes(q)
       );
     }
 
@@ -116,10 +158,10 @@ export class JobOffersComponent implements OnInit {
         sorted.sort((a, b) => this.getSalaryMiddle(a.salaryRange) - this.getSalaryMiddle(b.salaryRange));
         break;
       case 'company_asc':
-        sorted.sort((a, b) => (a.firm?.nom || '').localeCompare(b.firm?.nom || ''));
+        sorted.sort((a, b) => (a.entrepriseNom || a.firm?.nom || '').localeCompare(b.entrepriseNom || b.firm?.nom || ''));
         break;
       case 'company_desc':
-        sorted.sort((a, b) => (b.firm?.nom || '').localeCompare(a.firm?.nom || ''));
+        sorted.sort((a, b) => (b.entrepriseNom || b.firm?.nom || '').localeCompare(a.entrepriseNom || a.firm?.nom || ''));
         break;
       default:
         break;

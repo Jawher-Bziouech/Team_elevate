@@ -3,7 +3,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { JobOfferService } from '../job-offer.service';
 import { JobOffer, JobOfferRequest } from '../../../../models/job-offer.model';
-import { FirmService, Firm } from '../firm.service';
+import { EntrepriseService } from '../../../../entreprise.service';
+import { Entreprise } from '../../../../models/entreprise.model';
 
 @Component({
   selector: 'app-job-offer-form',
@@ -17,17 +18,17 @@ export class JobOfferFormComponent implements OnInit {
 
   form: FormGroup;
   isEdit = false;
-  firms: Firm[] = [];
+  entreprises: Entreprise[] = [];
 
   constructor(
     private fb: FormBuilder,
     private jobOfferService: JobOfferService,
-    private firmService: FirmService,
+    private entrepriseService: EntrepriseService,
     private snackBar: MatSnackBar
   ) {
     this.form = this.fb.group({
       jobTitle: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
-      firmId: ['', Validators.required],
+      entrepriseId: [null, Validators.required],
       industry: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
       location: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
       salaryRange: ['', [Validators.required, Validators.pattern(/^\d+-\d+$/)]]
@@ -35,24 +36,17 @@ export class JobOfferFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadFirms();
+    this.loadEntreprises();
     if (this.offerId) {
       this.isEdit = true;
       this.loadOffer(this.offerId);
     }
   }
 
-  loadFirms(): void {
-    console.log('⏳ Loading firms...');
-    this.firmService.getAll().subscribe({
-      next: (data) => {
-        console.log('✅ Firms loaded:', data);
-        this.firms = data;
-      },
-      error: (err) => {
-        console.error('❌ Error loading firms:', err);
-        this.snackBar.open('Failed to load firms', 'Close', { duration: 3000 });
-      }
+  loadEntreprises(): void {
+    this.entrepriseService.getApproved().subscribe({
+      next: (data) => { this.entreprises = data; },
+      error: () => this.snackBar.open('Failed to load companies', 'Close', { duration: 3000 })
     });
   }
 
@@ -61,7 +55,7 @@ export class JobOfferFormComponent implements OnInit {
       next: (offer) => {
         this.form.patchValue({
           jobTitle: offer.jobTitle,
-          firmId: offer.firm.id,
+          entrepriseId: offer.entrepriseId ?? offer.firm?.id,
           industry: offer.industry,
           location: offer.location,
           salaryRange: offer.salaryRange
@@ -76,7 +70,10 @@ export class JobOfferFormComponent implements OnInit {
       this.form.markAllAsTouched();
       return;
     }
-    const request = this.form.value;
+    const request: JobOfferRequest = {
+      ...this.form.value,
+      entrepriseId: Number(this.form.value.entrepriseId)
+    };
     if (this.isEdit && this.offerId) {
       this.jobOfferService.update(this.offerId, request).subscribe({
         next: () => {

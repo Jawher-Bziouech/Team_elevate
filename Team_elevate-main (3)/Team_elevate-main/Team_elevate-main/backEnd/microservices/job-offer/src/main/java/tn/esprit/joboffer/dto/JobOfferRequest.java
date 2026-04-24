@@ -8,7 +8,6 @@ public class JobOfferRequest {
     @Size(min = 3, max = 100, message = "Job title must be between 3 and 100 characters")
     private String jobTitle;
 
-    @NotNull(message = "Firm ID is required")
     private Long firmId;
 
     // Optional: cross-service reference to Entreprise MS

@@ -1,18 +1,10 @@
-version: '3.9'
-
 # SkillUp / Team Elevate — Full Stack Docker Compose
-# Atelier 2: Application multi-conteneurs
 #
 # Usage:
-#   ./build-and-push.sh        → compile JARs + build images + push to DockerHub
-#   docker compose up -d       → start all 16 containers
-#   docker compose ps          → verify all containers are Up
-#
-# Access points (local):
-#   Eureka      → http://localhost:8761
-#   API Gateway → http://localhost:9090
-#   Keycloak    → http://localhost:8099  (admin / admin)
-#   Frontend    → cd skillup_front && npm start → http://localhost:4200
+#   docker compose up -d           → build images and start all containers
+#   docker compose ps              → verify all containers are Up
+#   docker compose logs -f <svc>   → tail logs for a service
+#   docker compose down -v         → stop everything and remove volumes
 
 networks:
   elevate-net:
@@ -20,6 +12,7 @@ networks:
 
 volumes:
   mysql_data:
+  grafana_data:
 
 services:
 
@@ -27,7 +20,7 @@ services:
 
   mysqldb:
     image: mysql:8.0
-    container_name: db
+    container_name: mysqldb
     restart: unless-stopped
     environment:
       - MYSQL_ALLOW_EMPTY_PASSWORD=yes
@@ -56,6 +49,8 @@ services:
       - elevate-net
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka
+      - EUREKA_CLIENT_REGISTER_WITH_EUREKA=false
+      - EUREKA_CLIENT_FETCH_REGISTRY=false
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:8761/actuator/health || exit 1"]
       interval: 30s
@@ -66,7 +61,7 @@ services:
   config-server:
     build: ./backEnd/config-server
     image: wassimhamouda/config-server:latest
-    container_name: configServer
+    container_name: config-server
     restart: on-failure
     ports:
       - "8888:8888"
@@ -101,9 +96,6 @@ services:
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka
       - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888
-      # Uncomment when Keycloak OAuth2 is enabled in gateway config:
-      # - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://localhost:8099/realms/team-elevate
-      # - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI=http://keycloak:8099/realms/team-elevate/protocol/openid-connect/certs
 
   # ─── Microservices ──────────────────────────────────────────────────────────
 
@@ -129,6 +121,7 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysqldb:3306/db_elevate_user?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=
+      - JWT_SECRET=c2tpbGx1cC1qd3Qtc2VjcmV0LWtleS0yMDI0LWVzcHJpdC1hcHBsaWNhdGlvbg==
 
   quiz:
     build: ./backEnd/microservices/Quiz
@@ -337,6 +330,29 @@ services:
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=
 
+  entreprise:
+    build: ./backEnd/microservices/entreprise
+    image: wassimhamouda/entreprise:latest
+    container_name: entreprise
+    restart: on-failure
+    ports:
+      - "8085:8085"
+    networks:
+      - elevate-net
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+      eureka:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysqldb:3306/db_elevate_entreprise?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=
+
   internship-service:
     build: ./backEnd/microservices/internship-service
     image: wassimhamouda/internship-service:latest
@@ -360,7 +376,40 @@ services:
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=
 
-  # ─── Keycloak (IAM) — Keycloak 26.3.1, port 8099 ───────────────────────────
+  # ─── Monitoring ─────────────────────────────────────────────────────────────
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: unless-stopped
+    ports:
+      - "9091:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    networks:
+      - elevate-net
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.enable-lifecycle'
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    networks:
+      - elevate-net
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+
+  # ─── Keycloak (IAM) ─────────────────────────────────────────────────────────
 
   keycloak:
     image: quay.io/keycloak/keycloak:26.3.1

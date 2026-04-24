@@ -7,6 +7,9 @@ import esprit.tn.payment.DTO.PaymentResponseDTO;
 import esprit.tn.payment.DTO.PaymentRequestDTO;
 import esprit.tn.payment.DTO.PaymentStatsDTO;
 import esprit.tn.payment.Service.PaymentService;
+import esprit.tn.payment.Service.StripeService;
+import esprit.tn.payment.entity.Payment;
+import esprit.tn.payment.entity.PaymentStatus;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -29,6 +32,8 @@ import java.util.Map;
 public class PaymentController {
 
     private final PaymentService paymentService;
+    private final StripeService stripeService;
+    private final esprit.tn.payment.Repository.PaymentRepository paymentRepository;
 
     @PostMapping
     public ResponseEntity<PaymentResponseDTO> createPayment(@Valid @RequestBody PaymentRequestDTO request) {
@@ -160,6 +165,54 @@ public class PaymentController {
     public ResponseEntity<Void> deletePayment(@PathVariable Long id) {
         paymentService.deletePayment(id);
         return ResponseEntity.noContent().build();
+    }
+
+    // ── Stripe plan upgrade flow ──────────────────────────────────────────────
+
+    @PostMapping("/create-intent")
+    public ResponseEntity<Map<String, Object>> createStripeIntent(@RequestBody Map<String, Object> body) {
+        try {
+            double amount = Double.parseDouble(body.get("amount").toString());
+            String planName = body.getOrDefault("planName", "PLAN").toString();
+            Long userId = Long.parseLong(body.get("userId").toString());
+            Map<String, Object> result = stripeService.createPaymentIntent(amount, planName, userId);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/record-stripe")
+    public ResponseEntity<Map<String, Object>> recordStripePayment(@RequestBody Map<String, Object> body) {
+        try {
+            String paymentIntentId = body.get("paymentIntentId").toString();
+            com.stripe.model.PaymentIntent intent = stripeService.verifyPaymentIntent(paymentIntentId);
+
+            if (!"succeeded".equals(intent.getStatus())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("error", "Payment not confirmed by Stripe: " + intent.getStatus()));
+            }
+
+            Payment payment = new Payment();
+            payment.setStripePaymentIntentId(paymentIntentId);
+            payment.setUserId(Long.parseLong(body.get("userId").toString()));
+            payment.setUserName(body.getOrDefault("userName", "unknown").toString());
+            payment.setUserEmail(body.getOrDefault("userEmail", "").toString());
+            payment.setFormationName(body.getOrDefault("planName", "PLAN") + " Plan Upgrade");
+            payment.setAmount(new java.math.BigDecimal(body.get("amount").toString()));
+            payment.setPaymentMethod("CREDIT_CARD");
+            payment.setStatus(PaymentStatus.COMPLETED.name());
+
+            Payment saved = paymentRepository.save(payment);
+            return ResponseEntity.ok(Map.of(
+                    "paymentReference", saved.getPaymentReference(),
+                    "id", saved.getId()
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", e.getMessage()));
+        }
     }
 
     @GetMapping("/ping")

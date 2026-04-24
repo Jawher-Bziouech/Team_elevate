@@ -1,5 +1,12 @@
-FROM eclipse-temurin:17
-EXPOSE 8080
-ADD target/job-offer-0.0.1-SNAPSHOT.jar job-offer.jar
-ENTRYPOINT ["java", "-jar", "job-offer.jar"]
+FROM maven:3.9-eclipse-temurin-17 AS builder
+WORKDIR /app
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
+COPY src ./src
+RUN mvn clean package -DskipTests -B
 
+FROM eclipse-temurin:17-jre-alpine
+WORKDIR /app
+EXPOSE 8083
+COPY --from=builder /app/target/job-offer-0.0.1-SNAPSHOT.jar app.jar
+ENTRYPOINT ["java", "-jar", "app.jar"]

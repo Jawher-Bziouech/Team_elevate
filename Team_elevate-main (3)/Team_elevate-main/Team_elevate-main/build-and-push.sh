@@ -2,9 +2,9 @@
 # build-and-push.sh — SkillUp / Team Elevate
 # Atelier 2: Application multi-conteneurs
 #
-# Step 1 : compile every Java microservice JAR (./mvnw clean package -DskipTests)
-# Step 2 : docker compose build  → build all Docker images
-# Step 3 : docker compose push   → push all images to DockerHub
+# NOTE: Dockerfiles are now multi-stage — Maven builds happen inside Docker.
+# This script is only needed if you want to push pre-built images to DockerHub.
+# For local dev just run: docker compose up -d --build
 #
 # Usage:
 #   chmod +x build-and-push.sh
@@ -56,6 +56,8 @@ ORDERED=(
   "job-offer:backEnd/microservices/job-offer"
   "payment:backEnd/microservices/Payment"
   "ticket:backEnd/microservices/Ticket"
+  "entreprise:backEnd/microservices/entreprise"
+  "internship-service:backEnd/microservices/internship-service"
 )
 
 echo ""

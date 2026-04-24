@@ -23,11 +23,14 @@ public class Payment {
     @Column(name = "payment_reference", nullable = false, unique = true)
     private String paymentReference;
 
-    @Column(name = "formation_id", nullable = false)
+    @Column(name = "formation_id")
     private Long formationId;
 
-    @Column(name = "formation_name", nullable = false)
+    @Column(name = "formation_name")
     private String formationName;
+
+    @Column(name = "stripe_payment_intent_id")
+    private String stripePaymentIntentId;
 
     @Column(name = "user_id", nullable = false)
     private Long userId;

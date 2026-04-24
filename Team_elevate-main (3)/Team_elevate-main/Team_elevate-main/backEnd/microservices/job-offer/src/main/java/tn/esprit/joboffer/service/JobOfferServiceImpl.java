@@ -82,20 +82,27 @@ public class JobOfferServiceImpl implements JobOfferService {
 
     @Override
     public JobOfferResponse createJobOffer(JobOfferRequest request) {
-        Firm firm = firmRepository.findById(request.getFirmId())
-                .orElseThrow(() -> new RuntimeException("Firm not found with id: " + request.getFirmId()));
-
-        // Validate entrepriseId via Feign if provided
+        // Validate entrepriseId via Feign
         if (request.getEntrepriseId() != null) {
-            EntrepriseDto e = entrepriseClient.getById(request.getEntrepriseId());
-            if (e == null || e.getNom() == null || e.getNom().equals("Unknown Company")) {
-                throw new RuntimeException("Entreprise not found with id: " + request.getEntrepriseId());
+            try {
+                EntrepriseDto e = entrepriseClient.getById(request.getEntrepriseId());
+                if (e == null || e.getNom() == null) {
+                    throw new RuntimeException("Entreprise not found with id: " + request.getEntrepriseId());
+                }
+            } catch (RuntimeException ex) {
+                throw ex;
+            } catch (Exception ex) {
+                throw new RuntimeException("Could not reach Entreprise service");
             }
         }
 
         JobOffer jobOffer = new JobOffer();
         jobOffer.setJobTitle(request.getJobTitle());
-        jobOffer.setFirm(firm);
+        if (request.getFirmId() != null) {
+            Firm firm = firmRepository.findById(request.getFirmId())
+                    .orElseThrow(() -> new RuntimeException("Firm not found with id: " + request.getFirmId()));
+            jobOffer.setFirm(firm);
+        }
         jobOffer.setEntrepriseId(request.getEntrepriseId());
         jobOffer.setIndustry(request.getIndustry());
         jobOffer.setLocation(request.getLocation());
