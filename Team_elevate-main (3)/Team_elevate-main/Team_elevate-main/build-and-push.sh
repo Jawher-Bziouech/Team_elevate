@@ -77,7 +77,7 @@ for entry in "${ORDERED[@]}"; do
 
   echo ""
   echo "  → Building JAR: ${NAME} (${DIR})"
-  (cd "$ABS_DIR" && ./mvnw clean package -DskipTests --no-transfer-progress)
+  (cd "$ABS_DIR" && "$SCRIPT_DIR/backEnd/mvnw" clean package -DskipTests --no-transfer-progress)
   echo "  ✓ ${NAME} JAR ready"
 done
 
