@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: certificat
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: certificat
+  template:
+    metadata:
+      labels:
+        app: certificat
+    spec:
+      containers:
+      - name: certificat
+        image: wassimhamouda/certificat:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8022
+        env:
+        - name: SPRING_DATASOURCE_URL
+          value: "jdbc:mysql://mysql:3306/pidb?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true"
+        - name: SPRING_DATASOURCE_USERNAME
+          value: "root"
+        - name: SPRING_DATASOURCE_PASSWORD
+          value: ""
+        - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+          value: "http://eureka:8761/eureka/"
+        - name: JAVA_TOOL_OPTIONS
+          value: "-Dspring.config.import=optional:classpath:/ -Dspring.datasource.url=jdbc:mysql://mysql:3306/pidb?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true -Dspring.datasource.username=root -Dspring.datasource.password="
+        - name: SERVER_PORT
+          value: "8022"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: certificat
+spec:
+  selector:
+    app: certificat
+  ports:
+  - port: 8022
+    targetPort: 8022

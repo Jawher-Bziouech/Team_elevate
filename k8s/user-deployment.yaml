@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user
+  template:
+    metadata:
+      labels:
+        app: user
+    spec:
+      containers:
+      - name: user
+        image: wassimhamouda/user:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8024
+        env:
+        - name: SPRING_DATASOURCE_URL
+          value: "jdbc:mysql://mysql:3306/pidb?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true"
+        - name: SPRING_DATASOURCE_USERNAME
+          value: "root"
+        - name: SPRING_DATASOURCE_PASSWORD
+          value: ""
+        - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+          value: "http://eureka:8761/eureka/"
+        - name: JAVA_TOOL_OPTIONS
+          value: "-Dspring.config.import=optional:classpath:/ -Dspring.datasource.url=jdbc:mysql://mysql:3306/pidb?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true -Dspring.datasource.username=root -Dspring.datasource.password="
+        - name: SERVER_PORT
+          value: "8024"
+        - name: JWT_SECRET
+          value: "c2tpbGx1cC1qd3Qtc2VjcmV0LWtleS0yMDI0LWVzcHJpdC1hcHBsaWNhdGlvbg=="
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user
+spec:
+  selector:
+    app: user
+  ports:
+  - port: 8024
+    targetPort: 8024
