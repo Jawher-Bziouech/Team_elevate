@@ -3,7 +3,7 @@ name: Eureka CI
 on:
   push:
     paths:
-      - 'backEnd/eureka/**'
+      - 'Team_elevate-main ?3?/Team_elevate-main/Team_elevate-main/backEnd/eureka/**'
   workflow_dispatch:
 
 jobs:
@@ -11,4 +11,4 @@ jobs:
     uses: ./.github/workflows/reusable-microservice-ci.yml
     with:
       service_name: 'Eureka'
-      service_path: 'backEnd/eureka'
+      service_path: 'Team_elevate-main (3)/Team_elevate-main/Team_elevate-main/backEnd/eureka'

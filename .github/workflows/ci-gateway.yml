@@ -3,7 +3,7 @@ name: Gateway CI
 on:
   push:
     paths:
-      - 'backEnd/gateway/**'
+      - 'Team_elevate-main ?3?/Team_elevate-main/Team_elevate-main/backEnd/gateway/**'
   workflow_dispatch:
 
 jobs:
@@ -11,4 +11,4 @@ jobs:
     uses: ./.github/workflows/reusable-microservice-ci.yml
     with:
       service_name: 'Gateway'
-      service_path: 'backEnd/gateway'
+      service_path: 'Team_elevate-main (3)/Team_elevate-main/Team_elevate-main/backEnd/gateway'

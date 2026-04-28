@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: "."
+        working-directory: "Team_elevate-main (3)/Team_elevate-main/Team_elevate-main"
         
     steps:
       - name: Checkout code

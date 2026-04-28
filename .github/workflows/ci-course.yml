@@ -3,7 +3,7 @@ name: Course CI
 on:
   push:
     paths:
-      - 'backEnd/microservices/Course/**'
+      - 'Team_elevate-main ?3?/Team_elevate-main/Team_elevate-main/backEnd/microservices/Course/**'
   workflow_dispatch:
 
 jobs:
@@ -11,4 +11,4 @@ jobs:
     uses: ./.github/workflows/reusable-microservice-ci.yml
     with:
       service_name: 'Course'
-      service_path: 'backEnd/microservices/Course'
+      service_path: 'Team_elevate-main (3)/Team_elevate-main/Team_elevate-main/backEnd/microservices/Course'

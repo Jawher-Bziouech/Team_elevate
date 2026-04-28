@@ -3,7 +3,7 @@ name: Payment CI
 on:
   push:
     paths:
-      - 'backEnd/microservices/Payment/**'
+      - 'Team_elevate-main ?3?/Team_elevate-main/Team_elevate-main/backEnd/microservices/Payment/**'
   workflow_dispatch:
 
 jobs:
@@ -11,4 +11,4 @@ jobs:
     uses: ./.github/workflows/reusable-microservice-ci.yml
     with:
       service_name: 'Payment'
-      service_path: 'backEnd/microservices/Payment'
+      service_path: 'Team_elevate-main (3)/Team_elevate-main/Team_elevate-main/backEnd/microservices/Payment'

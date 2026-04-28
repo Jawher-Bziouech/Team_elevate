@@ -3,7 +3,7 @@ name: Resume-Parser CI
 on:
   push:
     paths:
-      - 'backEnd/microservices/resume-parser/**'
+      - 'Team_elevate-main ?3?/Team_elevate-main/Team_elevate-main/backEnd/microservices/resume-parser/**'
   workflow_dispatch:
 
 jobs:
@@ -11,4 +11,4 @@ jobs:
     uses: ./.github/workflows/reusable-microservice-ci.yml
     with:
       service_name: 'Resume-Parser'
-      service_path: 'backEnd/microservices/resume-parser'
+      service_path: 'Team_elevate-main (3)/Team_elevate-main/Team_elevate-main/backEnd/microservices/resume-parser'

@@ -3,7 +3,7 @@ name: Formation CI
 on:
   push:
     paths:
-      - 'backEnd/microservices/Formation/**'
+      - 'Team_elevate-main ?3?/Team_elevate-main/Team_elevate-main/backEnd/microservices/Formation/**'
   workflow_dispatch:
 
 jobs:
@@ -11,4 +11,4 @@ jobs:
     uses: ./.github/workflows/reusable-microservice-ci.yml
     with:
       service_name: 'Formation'
-      service_path: 'backEnd/microservices/Formation'
+      service_path: 'Team_elevate-main (3)/Team_elevate-main/Team_elevate-main/backEnd/microservices/Formation'

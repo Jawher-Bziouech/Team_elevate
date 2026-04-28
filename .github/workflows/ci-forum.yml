@@ -3,7 +3,7 @@ name: Forum CI
 on:
   push:
     paths:
-      - 'backEnd/microservices/forum/**'
+      - 'Team_elevate-main ?3?/Team_elevate-main/Team_elevate-main/backEnd/microservices/forum/**'
   workflow_dispatch:
 
 jobs:
@@ -11,4 +11,4 @@ jobs:
     uses: ./.github/workflows/reusable-microservice-ci.yml
     with:
       service_name: 'Forum'
-      service_path: 'backEnd/microservices/forum'
+      service_path: 'Team_elevate-main (3)/Team_elevate-main/Team_elevate-main/backEnd/microservices/forum'
