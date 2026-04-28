@@ -1,0 +1,14 @@
+name: Forum CI
+
+on:
+  push:
+    paths:
+      - 'backEnd/microservices/forum/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    uses: ./.github/workflows/reusable-microservice-ci.yml
+    with:
+      service_name: 'Forum'
+      service_path: 'backEnd/microservices/forum'

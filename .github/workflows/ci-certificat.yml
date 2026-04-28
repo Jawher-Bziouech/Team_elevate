@@ -1,0 +1,14 @@
+name: Certificat CI
+
+on:
+  push:
+    paths:
+      - 'backEnd/microservices/certificat/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    uses: ./.github/workflows/reusable-microservice-ci.yml
+    with:
+      service_name: 'Certificat'
+      service_path: 'backEnd/microservices/certificat'

@@ -1,0 +1,14 @@
+name: Payment CI
+
+on:
+  push:
+    paths:
+      - 'backEnd/microservices/Payment/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    uses: ./.github/workflows/reusable-microservice-ci.yml
+    with:
+      service_name: 'Payment'
+      service_path: 'backEnd/microservices/Payment'

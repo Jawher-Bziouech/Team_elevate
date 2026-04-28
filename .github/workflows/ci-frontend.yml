@@ -1,0 +1,29 @@
+name: Frontend CI
+
+on:
+  push:
+    paths:
+      - 'skillup_front/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: "skillup_front"
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install Dependencies
+        run: npm install --force
+
+      - name: Build Angular Project
+        run: npm run build

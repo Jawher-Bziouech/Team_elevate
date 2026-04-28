@@ -1,0 +1,14 @@
+name: Resume-Parser CI
+
+on:
+  push:
+    paths:
+      - 'backEnd/microservices/resume-parser/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    uses: ./.github/workflows/reusable-microservice-ci.yml
+    with:
+      service_name: 'Resume-Parser'
+      service_path: 'backEnd/microservices/resume-parser'

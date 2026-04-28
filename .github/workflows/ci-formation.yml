@@ -1,0 +1,14 @@
+name: Formation CI
+
+on:
+  push:
+    paths:
+      - 'backEnd/microservices/Formation/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    uses: ./.github/workflows/reusable-microservice-ci.yml
+    with:
+      service_name: 'Formation'
+      service_path: 'backEnd/microservices/Formation'

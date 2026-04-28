@@ -1,0 +1,14 @@
+name: Internship Service CI
+
+on:
+  push:
+    paths:
+      - 'backEnd/microservices/internship-service/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    uses: ./.github/workflows/reusable-microservice-ci.yml
+    with:
+      service_name: 'Internship-Service'
+      service_path: 'backEnd/microservices/internship-service'

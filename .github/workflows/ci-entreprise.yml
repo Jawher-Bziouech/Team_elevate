@@ -1,0 +1,14 @@
+name: Entreprise CI
+
+on:
+  push:
+    paths:
+      - 'backEnd/microservices/entreprise/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    uses: ./.github/workflows/reusable-microservice-ci.yml
+    with:
+      service_name: 'Entreprise'
+      service_path: 'backEnd/microservices/entreprise'

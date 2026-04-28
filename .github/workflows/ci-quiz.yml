@@ -1,0 +1,14 @@
+name: Quiz CI
+
+on:
+  push:
+    paths:
+      - 'backEnd/microservices/Quiz/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    uses: ./.github/workflows/reusable-microservice-ci.yml
+    with:
+      service_name: 'Quiz'
+      service_path: 'backEnd/microservices/Quiz'

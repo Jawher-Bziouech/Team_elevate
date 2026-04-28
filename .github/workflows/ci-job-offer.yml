@@ -1,0 +1,14 @@
+name: Job-Offer CI
+
+on:
+  push:
+    paths:
+      - 'backEnd/microservices/job-offer/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    uses: ./.github/workflows/reusable-microservice-ci.yml
+    with:
+      service_name: 'Job-Offer'
+      service_path: 'backEnd/microservices/job-offer'

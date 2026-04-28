@@ -1,0 +1,14 @@
+name: EventGestion CI
+
+on:
+  push:
+    paths:
+      - 'backEnd/microservices/eventGestion/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    uses: ./.github/workflows/reusable-microservice-ci.yml
+    with:
+      service_name: 'EventGestion'
+      service_path: 'backEnd/microservices/eventGestion'

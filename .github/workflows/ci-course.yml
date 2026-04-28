@@ -1,0 +1,14 @@
+name: Course CI
+
+on:
+  push:
+    paths:
+      - 'backEnd/microservices/Course/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    uses: ./.github/workflows/reusable-microservice-ci.yml
+    with:
+      service_name: 'Course'
+      service_path: 'backEnd/microservices/Course'

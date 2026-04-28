@@ -1,0 +1,14 @@
+name: Ticket CI
+
+on:
+  push:
+    paths:
+      - 'backEnd/microservices/Ticket/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    uses: ./.github/workflows/reusable-microservice-ci.yml
+    with:
+      service_name: 'Ticket'
+      service_path: 'backEnd/microservices/Ticket'
