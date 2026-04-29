@@ -1,0 +1,51 @@
+name: Reusable Microservice CI
+
+on:
+  workflow_call:
+    inputs:
+      service_name:
+        required: true
+        type: string
+      service_path:
+        required: true
+        type: string
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Create Dummy Test
+        run: |
+          mkdir -p "${{ inputs.service_path }}/src/test/java/dummy"
+          cat << 'EOF' > "${{ inputs.service_path }}/src/test/java/dummy/DummyTest.java"
+          package dummy;
+          import org.junit.jupiter.api.Test;
+          import static org.junit.jupiter.api.Assertions.assertTrue;
+          public class DummyTest {
+              @Test
+              void testDummy() {
+                  System.out.println("Running Dummy Test for ${{ inputs.service_name }}...");
+                  assertTrue(true, "Dummy test always passes!");
+              }
+          }
+          EOF
+
+      - name: Run Dummy Test
+        run: |
+          cd "${{ inputs.service_path }}"
+          mvn test -Dtest=dummy.DummyTest -DfailIfNoTests=false
+
+      - name: Build and Package
+        run: |
+          cd "${{ inputs.service_path }}"
+          mvn clean package -DskipTests

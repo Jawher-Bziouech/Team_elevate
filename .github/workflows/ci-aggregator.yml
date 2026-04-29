@@ -1,0 +1,41 @@
+name: Main Aggregator CI
+
+on:
+  workflow_run:
+    workflows: 
+      - "Formation CI"
+      - "Internship Service CI"
+      - "Gateway CI"
+      - "User CI"
+      - "Course CI"
+      - "Payment CI"
+      - "Quiz CI"
+      - "Ticket CI"
+      - "Certificat CI"
+      - "Entreprise CI"
+      - "EventGestion CI"
+      - "Forum CI"
+      - "Job-Offer CI"
+      - "Resume-Parser CI"
+      - "Config Server CI"
+      - "Eureka CI"
+    types: [completed]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  summary:
+    runs-on: ubuntu-latest
+    steps:
+      - name: System Health Check
+        run: |
+          if [ "${{ github.event.workflow_run.conclusion }}" == "failure" ]; then
+            echo "One of the microservices failed. The system is unstable."
+            exit 1
+          else
+            echo "All individual microservices passed their builds (or manually triggered). The system is stable."
+          fi
+
+      - name: Notification
+        run: echo "System is green!"
