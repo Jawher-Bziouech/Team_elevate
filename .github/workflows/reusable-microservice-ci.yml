@@ -40,10 +40,16 @@ jobs:
           }
           EOF
 
-      - name: Run Dummy Test
+      - name: Run Tests
         run: |
           cd "${{ inputs.service_path }}"
-          mvn test -Dtest=dummy.DummyTest -DfailIfNoTests=false
+          if [ "${{ inputs.service_name }}" == "Course" ]; then
+            # For Course, we run the real unit tests
+            mvn test -Dtest=esprit.tn.course.entity.CourseEntityTest
+          else
+            # For others, keep using the dummy test for now
+            mvn test -Dtest=dummy.DummyTest -DfailIfNoTests=false
+          fi
 
       - name: Build and Package
         run: |
