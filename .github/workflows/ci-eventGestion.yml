@@ -3,7 +3,7 @@ name: EventGestion CI
 on:
   push:
     paths:
-      - 'Team_elevate-main ?3?/Team_elevate-main/Team_elevate-main/backEnd/microservices/eventGestion/**'
+      - 'Team_elevate-main */Team_elevate-main/Team_elevate-main/backEnd/microservices/eventGestion/**'
   workflow_dispatch:
 
 jobs:

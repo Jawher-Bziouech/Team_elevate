@@ -3,7 +3,7 @@ name: Payment CI
 on:
   push:
     paths:
-      - 'Team_elevate-main ?3?/Team_elevate-main/Team_elevate-main/backEnd/microservices/Payment/**'
+      - 'Team_elevate-main */Team_elevate-main/Team_elevate-main/backEnd/microservices/Payment/**'
   workflow_dispatch:
 
 jobs:

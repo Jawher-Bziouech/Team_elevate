@@ -3,7 +3,7 @@ name: Job-Offer CI
 on:
   push:
     paths:
-      - 'Team_elevate-main ?3?/Team_elevate-main/Team_elevate-main/backEnd/microservices/job-offer/**'
+      - 'Team_elevate-main */Team_elevate-main/Team_elevate-main/backEnd/microservices/job-offer/**'
   workflow_dispatch:
 
 jobs:

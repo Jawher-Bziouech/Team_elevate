@@ -3,7 +3,7 @@ name: Formation CI
 on:
   push:
     paths:
-      - 'Team_elevate-main ?3?/Team_elevate-main/Team_elevate-main/backEnd/microservices/Formation/**'
+      - 'Team_elevate-main */Team_elevate-main/Team_elevate-main/backEnd/microservices/Formation/**'
   workflow_dispatch:
 
 jobs:

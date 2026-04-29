@@ -3,7 +3,7 @@ name: Resume-Parser CI
 on:
   push:
     paths:
-      - 'Team_elevate-main ?3?/Team_elevate-main/Team_elevate-main/backEnd/microservices/resume-parser/**'
+      - 'Team_elevate-main */Team_elevate-main/Team_elevate-main/backEnd/microservices/resume-parser/**'
   workflow_dispatch:
 
 jobs:

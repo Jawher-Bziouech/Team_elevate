@@ -3,7 +3,7 @@ name: Certificat CI
 on:
   push:
     paths:
-      - 'Team_elevate-main ?3?/Team_elevate-main/Team_elevate-main/backEnd/microservices/certificat/**'
+      - 'Team_elevate-main */Team_elevate-main/Team_elevate-main/backEnd/microservices/certificat/**'
   workflow_dispatch:
 
 jobs:

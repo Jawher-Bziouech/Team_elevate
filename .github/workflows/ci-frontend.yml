@@ -3,7 +3,7 @@ name: Frontend CI
 on:
   push:
     paths:
-      - 'Team_elevate-main ?3?/Team_elevate-main/Team_elevate-main/skillup_front/**'
+      - 'Team_elevate-main */Team_elevate-main/Team_elevate-main/skillup_front/**'
   workflow_dispatch:
 
 jobs:
