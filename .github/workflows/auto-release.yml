@@ -1,0 +1,29 @@
+name: Automated Semantic Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    name: Generate Release & Changelog
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Required to create tags and releases
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Required to retrieve all commits for semantic-release
+
+      - name: Semantic Release
+        uses: cycjimmy/semantic-release-action@v4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          # This runs the standard semantic-release process
+          # It looks at commit prefixes (feat:, fix:, etc.) to determine the version bump
+          semantic_version: 19.0.2
