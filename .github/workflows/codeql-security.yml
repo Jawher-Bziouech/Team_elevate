@@ -1,0 +1,41 @@
+name: "🔒 Security Analysis (CodeQL)"
+
+on:
+  push:
+    branches: ["main"]
+  schedule:
+    # Runs every Monday at 8am to catch new vulnerabilities in existing code
+    - cron: "0 8 * * 1"
+
+jobs:
+  analyze:
+    name: Analyze Code for Vulnerabilities
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write # Required to upload CodeQL results
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: ["java", "javascript"] # Scans both Spring Boot AND Angular
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL Engine
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          # Scans for: SQL Injection, XSS, Hardcoded credentials, and more
+          queries: security-and-quality
+
+      - name: Autobuild Project
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Run Security Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{ matrix.language }}"
