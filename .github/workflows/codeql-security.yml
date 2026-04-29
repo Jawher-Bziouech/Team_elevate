@@ -32,7 +32,24 @@ jobs:
           # Scans for: SQL Injection, XSS, Hardcoded credentials, and more
           queries: security-and-quality
 
-      - name: Autobuild Project
+      - name: Setup Java (for Java scan only)
+        if: matrix.language == 'java'
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Build Java Microservices (for Java scan only)
+        if: matrix.language == 'java'
+        run: |
+          find . -name "pom.xml" -not -path "*/node_modules/*" | while read pom; do
+            dir=$(dirname "$pom")
+            echo "Building $dir..."
+            mvn -f "$pom" compile -q -DskipTests 2>/dev/null || true
+          done
+
+      - name: Autobuild (for JavaScript/Angular scan only)
+        if: matrix.language == 'javascript'
         uses: github/codeql-action/autobuild@v3
 
       - name: Run Security Analysis
