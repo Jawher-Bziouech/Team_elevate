@@ -1,23 +1,30 @@
-name: Release Drafter
+name: Automated Semantic Release
 
 on:
   push:
-    # Trigger on pushes to main branch
     branches:
       - main
 
-permissions:
-  contents: read
-
 jobs:
-  update_release_draft:
-    permissions:
-      contents: write  # for release-drafter/release-drafter to create a github release
-      pull-requests: write  # for release-drafter/release-drafter to add label to PR
+  release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # Needed to create tags and releases
     steps:
-      - uses: release-drafter/release-drafter@v6
+      - uses: actions/checkout@v4
         with:
-          publish: true # Automatically publish the release (not just draft)
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Calculate Version & Tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          default_bump: patch
+
+      - name: Publish GitHub Release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ steps.tag_version.outputs.new_tag }}
+          name: Release ${{ steps.tag_version.outputs.new_tag }}
+          body: ${{ steps.tag_version.outputs.changelog }}
