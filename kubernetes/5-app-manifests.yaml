@@ -1,0 +1,904 @@
+# ==============================================================
+# Team Elevate — Kubernetes Manifests
+# Full microservices deployment on kubeadm cluster
+# ==============================================================
+
+# ── NAMESPACE ──────────────────────────────────────────────────
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: team-elevate
+  labels:
+    app.kubernetes.io/managed-by: kubectl
+
+---
+# ── CONFIG MAP (shared env) ─────────────────────────────────────
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: team-elevate-config
+  namespace: team-elevate
+data:
+  EUREKA_SERVER_URL: "http://eureka:8761/eureka"
+  CONFIG_SERVER_URL: "http://config-server:8888"
+  SPRING_PROFILES_ACTIVE: "docker"
+
+---
+# ══════════════════════════════════════════════════════════════
+# INFRASTRUCTURE SERVICES
+# ══════════════════════════════════════════════════════════════
+
+# ── EUREKA (Service Discovery) ──────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eureka
+  namespace: team-elevate
+  labels:
+    app: eureka
+    tier: infrastructure
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: eureka
+  template:
+    metadata:
+      labels:
+        app: eureka
+    spec:
+      containers:
+        - name: eureka
+          image: jawher20/eureka:latest
+          ports:
+            - containerPort: 8761
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "docker"
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: eureka
+  namespace: team-elevate
+spec:
+  selector:
+    app: eureka
+  ports:
+    - port: 8761
+      targetPort: 8761
+  type: ClusterIP
+
+---
+# ── CONFIG SERVER ───────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: config-server
+  namespace: team-elevate
+  labels:
+    app: config-server
+    tier: infrastructure
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: config-server
+  template:
+    metadata:
+      labels:
+        app: config-server
+    spec:
+      initContainers:
+        - name: wait-for-eureka
+          image: busybox
+          command: ['sh', '-c', 'until nc -z eureka 8761; do echo waiting for eureka; sleep 3; done']
+      containers:
+        - name: config-server
+          image: jawher20/config-server:latest
+          ports:
+            - containerPort: 8888
+          envFrom:
+            - configMapRef:
+                name: team-elevate-config
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: config-server
+  namespace: team-elevate
+spec:
+  selector:
+    app: config-server
+  ports:
+    - port: 8888
+      targetPort: 8888
+  type: ClusterIP
+
+---
+# ── API GATEWAY ─────────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway
+  namespace: team-elevate
+  labels:
+    app: gateway
+    tier: infrastructure
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gateway
+  template:
+    metadata:
+      labels:
+        app: gateway
+    spec:
+      initContainers:
+        - name: wait-for-config
+          image: busybox
+          command: ['sh', '-c', 'until nc -z config-server 8888; do echo waiting for config-server; sleep 3; done']
+      containers:
+        - name: gateway
+          image: jawher20/gateway:latest
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: team-elevate-config
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway
+  namespace: team-elevate
+spec:
+  selector:
+    app: gateway
+  ports:
+    - port: 8080
+      targetPort: 8080
+  type: NodePort
+
+---
+# ══════════════════════════════════════════════════════════════
+# MICROSERVICES
+# ══════════════════════════════════════════════════════════════
+
+# ── USER SERVICE ────────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service
+  namespace: team-elevate
+  labels:
+    app: user-service
+    tier: microservice
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: user-service
+  template:
+    metadata:
+      labels:
+        app: user-service
+    spec:
+      containers:
+        - name: user-service
+          image: jawher20/user-service:latest
+          ports:
+            - containerPort: 8081
+          envFrom:
+            - configMapRef:
+                name: team-elevate-config
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service
+  namespace: team-elevate
+spec:
+  selector:
+    app: user-service
+  ports:
+    - port: 8081
+      targetPort: 8081
+
+---
+# ── INTERNSHIP SERVICE ──────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: internship-service
+  namespace: team-elevate
+  labels:
+    app: internship-service
+    tier: microservice
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: internship-service
+  template:
+    metadata:
+      labels:
+        app: internship-service
+    spec:
+      containers:
+        - name: internship-service
+          image: jawher20/internship-service:latest
+          ports:
+            - containerPort: 8082
+          envFrom:
+            - configMapRef:
+                name: team-elevate-config
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: internship-service
+  namespace: team-elevate
+spec:
+  selector:
+    app: internship-service
+  ports:
+    - port: 8082
+      targetPort: 8082
+
+---
+# ── COURSE SERVICE ──────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: course-service
+  namespace: team-elevate
+  labels:
+    app: course-service
+    tier: microservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: course-service
+  template:
+    metadata:
+      labels:
+        app: course-service
+    spec:
+      containers:
+        - name: course-service
+          image: jawher20/course-service:latest
+          ports:
+            - containerPort: 8083
+          envFrom:
+            - configMapRef:
+                name: team-elevate-config
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: course-service
+  namespace: team-elevate
+spec:
+  selector:
+    app: course-service
+  ports:
+    - port: 8083
+      targetPort: 8083
+
+---
+# ── QUIZ SERVICE ────────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: quiz-service
+  namespace: team-elevate
+  labels:
+    app: quiz-service
+    tier: microservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: quiz-service
+  template:
+    metadata:
+      labels:
+        app: quiz-service
+    spec:
+      containers:
+        - name: quiz-service
+          image: jawher20/quiz-service:latest
+          ports:
+            - containerPort: 8084
+          envFrom:
+            - configMapRef:
+                name: team-elevate-config
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: quiz-service
+  namespace: team-elevate
+spec:
+  selector:
+    app: quiz-service
+  ports:
+    - port: 8084
+      targetPort: 8084
+
+---
+# ── ENTREPRISE SERVICE ──────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: entreprise-service
+  namespace: team-elevate
+  labels:
+    app: entreprise-service
+    tier: microservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: entreprise-service
+  template:
+    metadata:
+      labels:
+        app: entreprise-service
+    spec:
+      containers:
+        - name: entreprise-service
+          image: jawher20/entreprise-service:latest
+          ports:
+            - containerPort: 8085
+          envFrom:
+            - configMapRef:
+                name: team-elevate-config
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: entreprise-service
+  namespace: team-elevate
+spec:
+  selector:
+    app: entreprise-service
+  ports:
+    - port: 8085
+      targetPort: 8085
+
+---
+# ── JOB-OFFER SERVICE ───────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: job-offer-service
+  namespace: team-elevate
+  labels:
+    app: job-offer-service
+    tier: microservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: job-offer-service
+  template:
+    metadata:
+      labels:
+        app: job-offer-service
+    spec:
+      containers:
+        - name: job-offer-service
+          image: jawher20/job-offer-service:latest
+          ports:
+            - containerPort: 8086
+          envFrom:
+            - configMapRef:
+                name: team-elevate-config
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: job-offer-service
+  namespace: team-elevate
+spec:
+  selector:
+    app: job-offer-service
+  ports:
+    - port: 8086
+      targetPort: 8086
+
+---
+# ── FORUM SERVICE ───────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: forum-service
+  namespace: team-elevate
+  labels:
+    app: forum-service
+    tier: microservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: forum-service
+  template:
+    metadata:
+      labels:
+        app: forum-service
+    spec:
+      containers:
+        - name: forum-service
+          image: jawher20/forum-service:latest
+          ports:
+            - containerPort: 8087
+          envFrom:
+            - configMapRef:
+                name: team-elevate-config
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: forum-service
+  namespace: team-elevate
+spec:
+  selector:
+    app: forum-service
+  ports:
+    - port: 8087
+      targetPort: 8087
+
+---
+# ── PAYMENT SERVICE ─────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-service
+  namespace: team-elevate
+  labels:
+    app: payment-service
+    tier: microservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payment-service
+  template:
+    metadata:
+      labels:
+        app: payment-service
+    spec:
+      containers:
+        - name: payment-service
+          image: jawher20/payment-service:latest
+          ports:
+            - containerPort: 8088
+          envFrom:
+            - configMapRef:
+                name: team-elevate-config
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: payment-service
+  namespace: team-elevate
+spec:
+  selector:
+    app: payment-service
+  ports:
+    - port: 8088
+      targetPort: 8088
+
+---
+# ── TICKET SERVICE ──────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ticket-service
+  namespace: team-elevate
+  labels:
+    app: ticket-service
+    tier: microservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ticket-service
+  template:
+    metadata:
+      labels:
+        app: ticket-service
+    spec:
+      containers:
+        - name: ticket-service
+          image: jawher20/ticket-service:latest
+          ports:
+            - containerPort: 8089
+          envFrom:
+            - configMapRef:
+                name: team-elevate-config
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ticket-service
+  namespace: team-elevate
+spec:
+  selector:
+    app: ticket-service
+  ports:
+    - port: 8089
+      targetPort: 8089
+
+---
+# ── CERTIFICAT SERVICE ──────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: certificat-service
+  namespace: team-elevate
+  labels:
+    app: certificat-service
+    tier: microservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: certificat-service
+  template:
+    metadata:
+      labels:
+        app: certificat-service
+    spec:
+      containers:
+        - name: certificat-service
+          image: jawher20/certificat-service:latest
+          ports:
+            - containerPort: 8090
+          envFrom:
+            - configMapRef:
+                name: team-elevate-config
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: certificat-service
+  namespace: team-elevate
+spec:
+  selector:
+    app: certificat-service
+  ports:
+    - port: 8090
+      targetPort: 8090
+
+---
+# ── FORMATION SERVICE ───────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: formation-service
+  namespace: team-elevate
+  labels:
+    app: formation-service
+    tier: microservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: formation-service
+  template:
+    metadata:
+      labels:
+        app: formation-service
+    spec:
+      containers:
+        - name: formation-service
+          image: jawher20/formation-service:latest
+          ports:
+            - containerPort: 8091
+          envFrom:
+            - configMapRef:
+                name: team-elevate-config
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: formation-service
+  namespace: team-elevate
+spec:
+  selector:
+    app: formation-service
+  ports:
+    - port: 8091
+      targetPort: 8091
+
+---
+# ── RESUME-PARSER SERVICE ───────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: resume-parser-service
+  namespace: team-elevate
+  labels:
+    app: resume-parser-service
+    tier: microservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: resume-parser-service
+  template:
+    metadata:
+      labels:
+        app: resume-parser-service
+    spec:
+      containers:
+        - name: resume-parser-service
+          image: jawher20/resume-parser-service:latest
+          ports:
+            - containerPort: 8092
+          envFrom:
+            - configMapRef:
+                name: team-elevate-config
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: resume-parser-service
+  namespace: team-elevate
+spec:
+  selector:
+    app: resume-parser-service
+  ports:
+    - port: 8092
+      targetPort: 8092
+
+---
+# ── EVENT GESTION SERVICE ───────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: event-gestion-service
+  namespace: team-elevate
+  labels:
+    app: event-gestion-service
+    tier: microservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: event-gestion-service
+  template:
+    metadata:
+      labels:
+        app: event-gestion-service
+    spec:
+      containers:
+        - name: event-gestion-service
+          image: jawher20/event-gestion-service:latest
+          ports:
+            - containerPort: 8093
+          envFrom:
+            - configMapRef:
+                name: team-elevate-config
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: event-gestion-service
+  namespace: team-elevate
+spec:
+  selector:
+    app: event-gestion-service
+  ports:
+    - port: 8093
+      targetPort: 8093
+
+---
+# ══════════════════════════════════════════════════════════════
+# FRONTEND — Angular App
+# ══════════════════════════════════════════════════════════════
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: team-elevate
+  labels:
+    app: frontend
+    tier: frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: jawher20/frontend:latest
+          ports:
+            - containerPort: 4200
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "250m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: team-elevate
+spec:
+  selector:
+    app: frontend
+  ports:
+    - port: 4200
+      targetPort: 4200
+  type: NodePort
+
+---
+# ══════════════════════════════════════════════════════════════
+# HORIZONTAL POD AUTOSCALER (Excellence bonus)
+# Automatically scales user-service & internship-service under load
+# ══════════════════════════════════════════════════════════════
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: user-service-hpa
+  namespace: team-elevate
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: user-service
+  minReplicas: 2
+  maxReplicas: 5
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: internship-service-hpa
+  namespace: team-elevate
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: internship-service
+  minReplicas: 2
+  maxReplicas: 5
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70

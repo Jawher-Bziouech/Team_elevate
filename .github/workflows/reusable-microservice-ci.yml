@@ -24,32 +24,10 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      - name: Create Dummy Test
-        run: |
-          mkdir -p "${{ inputs.service_path }}/src/test/java/dummy"
-          cat << 'EOF' > "${{ inputs.service_path }}/src/test/java/dummy/DummyTest.java"
-          package dummy;
-          import org.junit.jupiter.api.Test;
-          import static org.junit.jupiter.api.Assertions.assertTrue;
-          public class DummyTest {
-              @Test
-              void testDummy() {
-                  System.out.println("Running Dummy Test for ${{ inputs.service_name }}...");
-                  assertTrue(true, "Dummy test always passes!");
-              }
-          }
-          EOF
-
       - name: Run Tests
         run: |
           cd "${{ inputs.service_path }}"
-          if [ "${{ inputs.service_name }}" == "Course" ]; then
-            # For Course, we run the real unit tests
-            mvn test -Dtest=esprit.tn.course.entity.CourseEntityTest
-          else
-            # For others, keep using the dummy test for now
-            mvn test -Dtest=dummy.DummyTest -DfailIfNoTests=false
-          fi
+          mvn test
 
       - name: Build and Package
         run: |
