@@ -48,29 +48,29 @@ SkillUp is a full-stack microservices web application that enables teams to mana
 
 ```mermaid
 graph TD
-    Client([💻 Angular 18 Frontend]) -->|API Requests| Gateway[🚪 API Gateway :8222]
+    Client(["💻 Angular 18 Frontend"]) -->|API Requests| Gateway["🚪 API Gateway :8222"]
     
-    subgraph Spring Cloud Infrastructure
-        Eureka[🔍 Eureka Server :8761]
-        Config[⚙️ Config Server :8888]
-    </subgraph>
+    subgraph Infrastructure ["Spring Cloud Infrastructure"]
+        Eureka["🔍 Eureka Server :8761"]
+        Config["⚙️ Config Server :8888"]
+    end
 
-    subgraph Backend Microservices
-        User[👤 User :8089]
-        Event[📅 EventGestion :8082]
-        Payment[💳 Payment :8075]
-        Course[🎓 Course]
-        Formation[📘 Formation]
-        Quiz[📝 Quiz]
-        Ticket[🎫 Ticket]
-        Forum[💬 Forum]
-        Job[💼 Job Offer]
-    </subgraph>
+    subgraph Microservices ["Backend Microservices"]
+        User["👤 User :8089"]
+        Event["📅 EventGestion :8082"]
+        Payment["💳 Payment :8075"]
+        Course["🎓 Course"]
+        Formation["📘 Formation"]
+        Quiz["📝 Quiz"]
+        Ticket["🎫 Ticket"]
+        Forum["💬 Forum"]
+        Job["💼 Job Offer"]
+    end
     
-    Gateway -->|Routes to| Backend Microservices
-    Eureka -.->|Service Registry| Backend Microservices
+    Gateway -->|Routes to| Microservices
+    Eureka -.->|Service Registry| Microservices
     Eureka -.->|Service Registry| Gateway
-    Config -.->|Provides Configuration| Backend Microservices
+    Config -.->|Provides Configuration| Microservices
     Config -.->|Provides Configuration| Gateway
 ```
 
